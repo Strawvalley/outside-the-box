@@ -1,0 +1,27 @@
+{
+  "name": "outside-the-box",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Strawvalley/outside-the-box.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Strawvalley/outside-the-box/issues"
+  },
+  "homepage": "https://github.com/Strawvalley/outside-the-box#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  }
+}

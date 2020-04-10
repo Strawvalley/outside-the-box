@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect } from './connection';
-import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName } from './utils'
+import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername } from './utils'
 
 console.log(`[INIT] outside-the-box`)
 
@@ -12,6 +12,7 @@ emitOnConnect(of(getUsername())).subscribe(({ socket, data }) => {
     room,
     username: data
   });
+  displayUsername(data);
   console.log(`>>>[CONNECT] ${data} to room ${room}`);
 });
 

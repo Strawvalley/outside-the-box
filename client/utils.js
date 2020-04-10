@@ -46,3 +46,7 @@ export function displayRoomName(room) {
   document.querySelector('#room').textContent = room;
   window.history.pushState(room, 'Outside the box!', `/${room}`);
 }
+
+export function displayUsername(username) {
+  document.querySelector('#username').textContent = username;
+}

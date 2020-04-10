@@ -1,34 +1,35 @@
 import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect } from './connection';
+import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName } from './utils'
 
-function getUsername() {
-  const username = sessionStorage.getItem('username')
+console.log(`[INIT] outside-the-box`)
 
-  if (username) return username
-
-  let newUsername = prompt('Please enter a username', '')
-
-  // If no username entered by user, generate random
-  if (!newUsername) {
-    const randomNum = Math.floor(Math.random() * 1000)
-    newUsername = 'user' + randomNum
-  }
-
-  sessionStorage.setItem('username', newUsername)
-
-  return newUsername
-}
-
-const room = "abc123";
+const room = getRoom();
+displayRoomName(room);
 
 emitOnConnect(of(getUsername())).subscribe(({ socket, data }) => {
   socket.emit('room', {
     room,
     username: data
   });
-  console.log(`CONNECT ${data} to room ${room}`);
+  console.log(`>>>[CONNECT] ${data} to room ${room}`);
 });
 
-listenOnConnect('user joined room').subscribe(({ username, room }) => {
-  console.log(`CONNECTED: ${username} joined the room ${room}`);
-});
+listenOnConnect('all users in room')
+  .subscribe(users => {
+    console.log(`<<<[INFO] There are currently ${users.length} users in the room`);
+    clearUsers();
+    users.forEach(({ id, username }) => addUser(id, username))
+  });
+
+listenOnConnect('user joined room')
+  .subscribe(({ username, room, id }) => {
+    console.log(`<<<[INFO] ${username} (${id}) joined the room ${room}`);
+    addUser(id, username);
+  });
+
+listenOnConnect('user left room')
+  .subscribe(({ username, room, id }) => {
+    console.log(`<<<[INFO] ${username} (${id}) left the room ${room}`);
+    removeUser(id);
+  });

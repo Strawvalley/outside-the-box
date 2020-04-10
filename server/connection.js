@@ -20,10 +20,10 @@ const connection$ = io$
 // Stream of disconnections
 const disconnect$ = connection$
   .pipe(
-    mergeMap(({ client }) =>
+    mergeMap(({ io, client }) =>
       fromEvent(client, 'disconnect')
         .pipe(
-          map(() => client)
+          map(() => ({ io, client }))
         )
     )
   )

@@ -50,3 +50,12 @@ export function displayRoomName(room) {
 export function displayUsername(username) {
   document.querySelector('#username').textContent = username;
 }
+
+export function displayGameState(gameState) {
+  document.querySelector('#state').textContent = JSON.stringify(gameState);
+  // Highlight the admin
+  const userElement = document.querySelector(`#user-${gameState.admin}`);
+  if (userElement) {
+    userElement.style.fontWeight = 700;
+  }
+}

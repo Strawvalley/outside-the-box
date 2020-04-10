@@ -51,7 +51,7 @@ listenOnConnect('room')
     client.join(data.room);
 
     if (!games[data.room]) {
-      games[data.room] =  {
+      games[data.room] = {
         started: false,
         admin: client.id,
         activePlayer: undefined,
@@ -74,4 +74,3 @@ listenOnConnect('start game')
   .subscribe(({ io, client }) => {
 
   });
-

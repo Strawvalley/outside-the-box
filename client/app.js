@@ -1,6 +1,7 @@
 import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect } from './connection';
 import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
+import initiateGame$ from './actions';
 
 console.log(`[INIT] outside-the-box`)
 
@@ -40,4 +41,11 @@ listenOnConnect('update game state')
   .subscribe(({gameState}) => {
     console.log(`<<<[INFO] GameState ${gameState.started}`);
     displayGameState(gameState);
+  });
+
+emitOnConnect(initiateGame$)
+  .subscribe(({ socket, data }) => {
+    socket.emit('initiate game', {
+      room,
+    });
   });

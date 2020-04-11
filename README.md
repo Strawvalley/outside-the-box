@@ -8,7 +8,7 @@ Built with RxJS and Socket.IO.
 npm install             # Install dependencies
 ```
 ```
-npm dev                 # Run development server
+npm run dev                 # Run development server
 ```
 
 ## Production

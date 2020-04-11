@@ -18,7 +18,7 @@ export function getUsername() {
 
 export function getRoom() {
   const roomName = location.pathname.split('/')[1]
-  if (!roomName) return Math.floor(Math.random() * 100000);
+  if (!roomName) return Math.floor(Math.random() * 100000).toString();
   return roomName;
 }
 

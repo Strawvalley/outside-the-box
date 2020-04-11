@@ -3,7 +3,7 @@ import { connection$, disconnect$, listenOnConnect } from "./connection";
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
-server.listen(port, () => console.log(`listening on port: ${port}`));
+server.listen(port, () => console.log(`[INFO] Listening on port: ${port}`));
 
 const games = {};
 
@@ -22,15 +22,14 @@ disconnect$.subscribe(({ io, client }) => {
     });
   }
 
-  const allSockets = io.sockets.sockets;
-  const allUsersInRoom = Object.entries(allSockets)
-    .map(([id, socket]: [any, any]) => ({ id, username: socket.username, room: socket.room }))
-    .filter(({ id, username, room }) => room === client.room);
+  const allUsersInRoom = getAllUsersInRoom(io, client.room);
 
   if (allUsersInRoom.length === 0) {
     delete games[client.room];
   } else if (client.id === games[client.room].admin) {
     games[client.room].admin = allUsersInRoom[0].id;
+    allUsersInRoom[0].isAdmin = true;
+    io.in(client.room).emit("all users in room update", allUsersInRoom);
     io.in(client.room).emit("update game state", { gameState: games[client.room] });
   }
 });
@@ -38,19 +37,7 @@ disconnect$.subscribe(({ io, client }) => {
 listenOnConnect("room").subscribe(({ io, client, data }) => {
   console.log(`[INFO] Client ${client.id} joins room ${data.room} as ${data.username}`);
 
-  const allSockets = io.sockets.sockets;
-
-  const allUsersInRoom = Object.entries(allSockets)
-    .map(([id, socket]: [any, any]) => ({ id, username: socket.username, room: socket.room }))
-    .filter(({ id, username, room }) => room === data.room);
-
-  client.emit("all users in room", allUsersInRoom);
-
-  allSockets[client.id].username = data.username;
-  allSockets[client.id].room = data.room;
-
-  client.join(data.room);
-
+  // Check if game already exists, if not -> create new game and set admin
   if (!games[data.room]) {
     games[data.room] = {
       started: false,
@@ -64,10 +51,17 @@ listenOnConnect("room").subscribe(({ io, client, data }) => {
     };
   }
 
-  io.sockets
-    .in(data.room)
-    .emit("user joined room", { username: data.username, room: data.room, id: client.id });
+  const allSockets = io.sockets.sockets;
+  allSockets[client.id].username = data.username;
+  allSockets[client.id].room = data.room;
+  client.join(data.room);
 
+  const allUsersInRoom = getAllUsersInRoom(io, data.room);
+
+  // Send new user list to all users
+  io.in(data.room).emit("all users in room update", allUsersInRoom);
+
+  // Send current game state to new connect client
   client.emit("update game state", { gameState: games[data.room] });
 });
 
@@ -79,8 +73,27 @@ listenOnConnect("initiate game").subscribe(({ io, client }) => {
     games[room].started = true;
     games[room].state = 'thinking';
 
-    io.sockets.in(room).emit("update game state", { gameState: games[room] });
+    io.in(room).emit("update game state", { gameState: games[room] });
   } else {
     console.log(`Unauthorized request!`);
   }
 });
+
+interface user {
+  id: string,
+  username: string,
+  room: string,
+  isAdmin: boolean
+}
+
+function getAllUsersInRoom(io, roomName: string): user[] {
+  const allSockets = io.sockets.sockets;
+  return Object.entries(allSockets)
+    .map(([id, socket]: [any, any]) => ({
+      id,
+      username: socket.username,
+      room: socket.room,
+      isAdmin: games[socket.room] ? id === games[socket.room].admin : false
+    }))
+    .filter(({ room }) => room === roomName);
+}

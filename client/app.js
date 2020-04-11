@@ -18,17 +18,11 @@ emitOnConnect(of(getUsername()))
     console.log(`>>>[CONNECT] ${data} to room ${room}`);
   });
 
-listenOnConnect('all users in room')
+listenOnConnect('all users in room update')
   .subscribe(users => {
     console.log(`<<<[INFO] There are currently ${users.length} users in the room`);
     clearUsers();
-    users.forEach(({ id, username }) => addUser(id, username))
-  });
-
-listenOnConnect('user joined room')
-  .subscribe(({ username, room, id }) => {
-    console.log(`<<<[INFO] ${username} (${id}) joined the room ${room}`);
-    addUser(id, username);
+    users.forEach(({ id, username, isAdmin }) => addUser(id, username, isAdmin));
   });
 
 listenOnConnect('user left room')

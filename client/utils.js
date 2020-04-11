@@ -22,11 +22,11 @@ export function getRoom() {
   return roomName;
 }
 
-export function addUser(id, username) {
+export function addUser(id, username, isAdmin) {
   document.querySelector('#users')
     .insertAdjacentHTML(
       'beforeend',
-      `<li id="user-${id}">${username}</li>`
+      `<li ${ isAdmin ? 'class="is-admin"': ''} id="user-${id}">${username}</li>`
     );
 }
 
@@ -54,12 +54,6 @@ export function displayUsername(username) {
 export function displayGameState(gameState, id) {
 
   document.querySelector('#state').textContent = JSON.stringify(gameState);
-
-  // Highlight the admin in user list
-  const userElement = document.querySelector(`#user-${gameState.admin}`);
-  if (userElement) {
-    userElement.style.fontWeight = 700;
-  }
 
   // Display game state and update admin / non-admin
   const game = document.querySelector('.game');

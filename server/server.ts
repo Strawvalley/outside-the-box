@@ -1,5 +1,6 @@
 import express from "express";
-import * as http from "http";
+import http from "http";
+import path from "path";
 
 const app = express();
 
@@ -14,6 +15,9 @@ if (process.env.NODE_ENV === 'development') {
 else {
   // Serve built client files
   app.use(express.static('dist'));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  });
 }
 
 // Create HTTP server with "app" as handler

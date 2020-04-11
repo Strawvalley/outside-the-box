@@ -1,10 +1,11 @@
 import { games } from "./game";
 import { User } from "./user";
+import { ExtendedSocket } from "./connection";
 
 export function getAllUsersInRoom(io, roomName: string): User[] {
   const allSockets = io.sockets.sockets;
   return Object.entries(allSockets)
-    .map(([id, socket]: [any, any]) => ({
+    .map(([id, socket]: [string, ExtendedSocket]) => ({
       id,
       username: socket.username,
       room: socket.room,

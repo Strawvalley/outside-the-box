@@ -1,5 +1,5 @@
 import { of } from 'rxjs';
-import { emitOnConnect, listenOnConnect } from './connection';
+import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from './connection';
 import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
 import initiateGame$ from './actions';
 
@@ -37,15 +37,13 @@ listenOnConnect('user left room')
     removeUser(id);
   });
 
-listenOnConnect('update game state')
-  .subscribe(({gameState}) => {
+listenOnConnectWithConnection('update game state')
+  .subscribe(([{ gameState }, socket]) => {
     console.log(`<<<[INFO] GameState ${gameState.started}`);
-    displayGameState(gameState);
+    displayGameState(gameState, socket.id);
   });
 
 emitOnConnect(initiateGame$)
-  .subscribe(({ socket, data }) => {
-    socket.emit('initiate game', {
-      room,
-    });
+  .subscribe(({ socket }) => {
+    socket.emit('initiate game');
   });

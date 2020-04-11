@@ -2,3 +2,6 @@ What happens:
 - active player leaves
 - non-active player leaves
 - player reconnects ?
+- check min players (3)
+- check max players (?)
+- check for duplicate user names in room

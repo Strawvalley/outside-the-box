@@ -51,11 +51,23 @@ export function displayUsername(username) {
   document.querySelector('#username').textContent = username;
 }
 
-export function displayGameState(gameState) {
+export function displayGameState(gameState, id) {
+
   document.querySelector('#state').textContent = JSON.stringify(gameState);
-  // Highlight the admin
+
+  // Highlight the admin in user list
   const userElement = document.querySelector(`#user-${gameState.admin}`);
   if (userElement) {
     userElement.style.fontWeight = 700;
   }
+
+  // Display game state and update admin / non-admin
+  const game = document.querySelector('.game');
+  game.className = `game ${gameState.state}`;
+  if (id === gameState.admin) {
+    game.classList.add('admin');
+  } else {
+    game.classList.add('non-admin');
+  }
+
 }

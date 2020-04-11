@@ -59,7 +59,7 @@ listenOnConnect("room").subscribe(({ io, client, data }) => {
       totalRounds: 10,
       round: 1,
       points: 0,
-      secondsLeft: 30,
+      secondsLeft: 5,
       state: "not-started" // 'not-started' | 'thinking' | 'guessing' | 'round-finished' | 'game-finished'
     };
   }
@@ -71,12 +71,13 @@ listenOnConnect("room").subscribe(({ io, client, data }) => {
   client.emit("update game state", { gameState: games[data.room] });
 });
 
-listenOnConnect("initiate game").subscribe(({ io, client, data }) => {
-  const room = data.room;
+listenOnConnect("initiate game").subscribe(({ io, client }) => {
+  const room = client.room;
   if (client.id === games[room].admin) {
     console.log(`Starting game in room ${room}`);
 
     games[room].started = true;
+    games[room].state = 'thinking';
 
     io.sockets.in(room).emit("update game state", { gameState: games[room] });
   } else {

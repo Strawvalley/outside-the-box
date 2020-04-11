@@ -18,4 +18,9 @@ export class Game {
     this.points = 0;
     this.secondsLeft = 30;
   }
+
+  public startGame() {
+    this.started = true;
+    this.state = 'thinking';
+  }
 }

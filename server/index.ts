@@ -62,22 +62,19 @@ listenOnConnect("room").subscribe(({ io, client, data }) => {
 listenOnConnect("initiate game").subscribe(({ io, client }) => {
   const room = client.room;
   if (client.id === games[room].admin) {
-    console.log(`Starting game in room ${room}`);
-
-    games[room].started = true;
-    games[room].state = 'thinking';
-
+    console.log(`[INFO] Starting game in room ${room}`);
+    games[room].startGame();
     io.in(room).emit("update game state", { gameState: games[room] });
   } else {
-    console.log(`Unauthorized request!`);
+    console.log(`[INFO] Unauthorized request!`);
   }
 });
 
 interface IUser {
-  id: string,
-  username: string,
-  room: string,
-  isAdmin: boolean
+  id: string;
+  username: string;
+  room: string;
+  isAdmin: boolean;
 }
 
 function getAllUsersInRoom(io, roomName: string): IUser[] {

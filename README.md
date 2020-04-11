@@ -1,6 +1,6 @@
 # outside-the-box
 
-Built with RxJS and Socket.IO.
+Built on NodeJs with RxJS, Socket.IO and TypeScript.
 
 ## Development
 

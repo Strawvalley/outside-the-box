@@ -3,16 +3,21 @@ import { map, switchMap, mergeMap, takeUntil } from 'rxjs/operators';
 import { server } from './server';
 import io from 'socket.io';
 
+export interface ExtendedSocket extends io.Socket {
+  username: string;
+  room: string;
+}
+
 // Initialise Socket.IO and wrap in observable
 const io$ = of(io(server))
 
 // Stream of connections
 export const connection$ = io$
   .pipe(
-    switchMap((io: any) =>
-      fromEvent(io, 'connection')
+    switchMap((io: io.Server) =>
+      fromEvent(io as any, 'connection')
         .pipe(
-          map((client: any) => ({ io, client }))
+          map((client: ExtendedSocket) => ({ io, client }))
         )
     )
   )
@@ -29,7 +34,7 @@ export const disconnect$ = connection$
   )
 
 // On connection, listen for event
-export function listenOnConnect(event) {
+export function listenOnConnect<T>(event) {
   return connection$
     .pipe(
       mergeMap(({ io, client }) =>
@@ -38,7 +43,7 @@ export function listenOnConnect(event) {
             takeUntil(
               fromEvent(client, 'disconnect')
             ),
-            map((data: any) => ({ io, client, data }))
+            map((data: T) => ({ io, client, data }))
           )
       )
     )

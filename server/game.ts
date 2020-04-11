@@ -1,3 +1,8 @@
+
+export const games: {
+  [key: string]: Game
+} = {};
+
 export class Game {
   started: boolean;
   admin: string;
@@ -23,4 +28,10 @@ export class Game {
     this.started = true;
     this.state = 'thinking';
   }
+}
+
+export function createNewGame(room: string, admin: string): Game {
+  const newGame = new Game(admin);
+  games[room] = newGame;
+  return newGame;
 }

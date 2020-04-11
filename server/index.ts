@@ -1,14 +1,11 @@
 import { server } from "./server";
-import { connection$, disconnect$, listenOnConnect } from "./connection";
-import { Game } from "./game";
+import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
+import { games, createNewGame } from "./game";
+import { getAllUsersInRoom } from "./utils";
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`[INFO] Listening on port: ${port}`));
-
-const games: {
-  [key: string]: Game
-} = {};
 
 connection$.subscribe(({ io, client }) => {
   console.log(`[CONNECTED] Client ${client.id}`);
@@ -39,11 +36,11 @@ disconnect$.subscribe(({ io, client }) => {
   }
 });
 
-listenOnConnect("room").subscribe(({ io, client, data }) => {
+listenOnConnect<{ username: string, room: string }>("room").subscribe(({ io, client, data }) => {
   console.log(`[INFO] Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room
-  const allSockets = io.sockets.sockets;
+  const allSockets = io.sockets.sockets as {[id: string]: ExtendedSocket};
   allSockets[client.id].username = data.username;
   allSockets[client.id].room = data.room;
   client.join(data.room);
@@ -59,7 +56,7 @@ listenOnConnect("room").subscribe(({ io, client, data }) => {
   client.emit("update game state", { gameState: game });
 });
 
-listenOnConnect("initiate game").subscribe(({ io, client }) => {
+listenOnConnect<void>("initiate game").subscribe(({ io, client }) => {
   const room = client.room;
   if (client.id === games[room].admin) {
     console.log(`[INFO] Starting game in room ${room}`);
@@ -69,28 +66,3 @@ listenOnConnect("initiate game").subscribe(({ io, client }) => {
     console.log(`[INFO] Unauthorized request!`);
   }
 });
-
-interface IUser {
-  id: string;
-  username: string;
-  room: string;
-  isAdmin: boolean;
-}
-
-function getAllUsersInRoom(io, roomName: string): IUser[] {
-  const allSockets = io.sockets.sockets;
-  return Object.entries(allSockets)
-    .map(([id, socket]: [any, any]) => ({
-      id,
-      username: socket.username,
-      room: socket.room,
-      isAdmin: games[socket.room] ? id === games[socket.room].admin : false
-    }))
-    .filter(({ room }) => room === roomName);
-}
-
-function createNewGame(room: string, admin: string): Game {
-  const newGame = new Game(admin);
-  games[room] = newGame;
-  return newGame;
-}

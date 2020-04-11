@@ -19,11 +19,11 @@
   display: none;
 }
 
-.game.not-started .game-state.game-state-not-started,
-.game.thinking .game-state.game-state-thinking,
-.game.guessing .game-state.game-state-guessing,
-.game.round-finished .game-state.game-state-round-finished,
-.game.game-finished .game-state.game-state-game-finished {
+.game.NOT_STARTED .game-state.game-state-NOT_STARTED,
+.game.THINKING .game-state.game-state-THINKING,
+.game.GUESSING .game-state.game-state-GUESSING,
+.game.ROUND_FINISHED .game-state.game-state-ROUND_FINISHED,
+.game.GAME_FINISHED .game-state.game-state-GAME_FINISHED {
   display: block;
 }
 

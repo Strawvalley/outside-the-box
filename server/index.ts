@@ -20,6 +20,7 @@ disconnect$.subscribe(({ io, client }) => {
       room: client.room,
       id: client.id
     });
+    games[client.room].removeUser(client.username);
   }
 
   const allUsersInRoom = getAllUsersInRoom(io, client.room);
@@ -44,13 +45,13 @@ listenOnConnect<{ username: string, room: string }>("room").subscribe(({ io, cli
   allSockets[client.id].username = data.username;
   allSockets[client.id].room = data.room;
   client.join(data.room);
+  // Check if game already exists, if not -> create new game and set admin
+  const game = games[data.room] ? games[data.room] : createNewGame(data.room, client.id);
+  game.addUser(data.username);
 
   // Send new user list to all users
   const allUsersInRoom = getAllUsersInRoom(io, data.room);
   io.in(data.room).emit("all users in room update", allUsersInRoom);
-
-  // Check if game already exists, if not -> create new game and set admin
-  const game = games[data.room] ? games[data.room] : createNewGame(data.room, client.id);
 
   // Send current game state to new connect client
   client.emit("update game state", { gameState: game });
@@ -66,3 +67,11 @@ listenOnConnect<void>("initiate game").subscribe(({ io, client }) => {
     console.log(`[INFO] Unauthorized request!`);
   }
 });
+
+listenOnConnect<string>("player submits word")
+  .subscribe(({ io, client, data }) => {
+    console.log(`[INFO] Player ${client.username} submitted word ${data} in room ${client.room}`);
+    games[client.room].submitWordForPlayer(client.username, data);
+    io.in(client.room).emit("update game state", { gameState: games[client.room] });
+  });
+

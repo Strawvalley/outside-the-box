@@ -2,7 +2,7 @@ import { games } from "./game";
 import { User } from "./user";
 import { ExtendedSocket } from "./connection";
 
-export function getAllUsersInRoom(io, roomName: string): User[] {
+export function getAllUsersInRoom(io, room: string): User[] {
   const allSockets = io.sockets.sockets;
   return Object.entries(allSockets)
     .map(([id, socket]: [string, ExtendedSocket]) => ({
@@ -11,5 +11,5 @@ export function getAllUsersInRoom(io, roomName: string): User[] {
       room: socket.room,
       isAdmin: games[socket.room] ? id === games[socket.room].admin : false
     }))
-    .filter(({ room }) => room === roomName);
+    .filter(user => user.room === room);
 }

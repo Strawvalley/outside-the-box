@@ -5,3 +5,4 @@ What happens:
 - check min players (3)
 - check max players (?)
 - check for duplicate user names in room
+- do not store games in memory

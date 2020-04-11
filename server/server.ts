@@ -1,5 +1,6 @@
-const express = require('express');
-const http = require('http');
+import express from "express";
+import * as http from "http";
+
 const app = express();
 
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
@@ -16,6 +17,4 @@ else {
 }
 
 // Create HTTP server with "app" as handler
-const server = http.createServer(app);
-
-module.exports = server;
+export const server = http.createServer(app);

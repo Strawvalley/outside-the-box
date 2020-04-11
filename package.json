@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel build client/index.html && node server/index.js",
-    "dev": "set NODE_ENV=development&& nodemon server/index.js"
-  },
-  "nodemonConfig": {
-    "watch": "server/*"
+    "tsc": "tsc",
+    "start": "parcel build client/index.html && tsc && set NODE_ENV=production&&node build/index.js",
+    "dev": "set NODE_ENV=development&& ts-node-dev server/index.ts"
   },
   "repository": {
     "type": "git",
@@ -21,13 +19,16 @@
   },
   "homepage": "https://github.com/Strawvalley/outside-the-box#readme",
   "dependencies": {
+    "@types/express": "^4.17.6",
+    "@types/socket.io": "^2.1.4",
     "express": "^4.17.1",
     "rxjs": "^6.5.5",
     "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0"
+    "socket.io-client": "^2.3.0",
+    "typescript": "^3.8.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.3",
-    "parcel-bundler": "^1.12.4"
+    "parcel-bundler": "^1.12.4",
+    "ts-node-dev": "^1.0.0-pre.44"
   }
 }

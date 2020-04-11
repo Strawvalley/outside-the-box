@@ -1,24 +1,24 @@
-const { of, fromEvent } = require('rxjs')
-const { map, switchMap, mergeMap, takeUntil } = require('rxjs/operators')
-const io = require('socket.io')
-const server = require('./server')
+import { of, fromEvent } from 'rxjs';
+import { map, switchMap, mergeMap, takeUntil } from 'rxjs/operators';
+import { server } from './server';
+import io from 'socket.io';
 
 // Initialise Socket.IO and wrap in observable
 const io$ = of(io(server))
 
 // Stream of connections
-const connection$ = io$
+export const connection$ = io$
   .pipe(
-    switchMap(io =>
+    switchMap((io: any) =>
       fromEvent(io, 'connection')
         .pipe(
-          map(client => ({ io, client }))
+          map((client: any) => ({ io, client }))
         )
     )
   )
 
 // Stream of disconnections
-const disconnect$ = connection$
+export const disconnect$ = connection$
   .pipe(
     mergeMap(({ io, client }) =>
       fromEvent(client, 'disconnect')
@@ -29,7 +29,7 @@ const disconnect$ = connection$
   )
 
 // On connection, listen for event
-function listenOnConnect(event) {
+export function listenOnConnect(event) {
   return connection$
     .pipe(
       mergeMap(({ io, client }) =>
@@ -38,14 +38,8 @@ function listenOnConnect(event) {
             takeUntil(
               fromEvent(client, 'disconnect')
             ),
-            map(data => ({ io, client, data }))
+            map((data: any) => ({ io, client, data }))
           )
       )
     )
-}
-
-module.exports = {
-  connection$,
-  disconnect$,
-  listenOnConnect
 }

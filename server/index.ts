@@ -1,5 +1,5 @@
-const server = require("./server");
-const { connection$, disconnect$, listenOnConnect } = require("./connection");
+import { server } from "./server";
+import { connection$, disconnect$, listenOnConnect } from "./connection";
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
@@ -24,7 +24,7 @@ disconnect$.subscribe(({ io, client }) => {
 
   const allSockets = io.sockets.sockets;
   const allUsersInRoom = Object.entries(allSockets)
-    .map(([id, socket]) => ({ id, username: socket.username, room: socket.room }))
+    .map(([id, socket]: [any, any]) => ({ id, username: socket.username, room: socket.room }))
     .filter(({ id, username, room }) => room === client.room);
 
   if (allUsersInRoom.length === 0) {
@@ -41,7 +41,7 @@ listenOnConnect("room").subscribe(({ io, client, data }) => {
   const allSockets = io.sockets.sockets;
 
   const allUsersInRoom = Object.entries(allSockets)
-    .map(([id, socket]) => ({ id, username: socket.username, room: socket.room }))
+    .map(([id, socket]: [any, any]) => ({ id, username: socket.username, room: socket.room }))
     .filter(({ id, username, room }) => room === data.room);
 
   client.emit("all users in room", allUsersInRoom);

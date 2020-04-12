@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from './connection';
 import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
 import { initiateGame$, submitThinkingWord$ } from './actions';
-import { SocketEventNames } from '../lib/enums/socket_event_names';
+import { SocketEventNames } from '../shared/enums/socket_event_names';
 
 console.log(`[INIT] outside-the-box`)
 

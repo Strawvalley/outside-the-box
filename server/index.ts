@@ -1,7 +1,7 @@
 import { server } from "./server";
 import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
 import { GameManager } from "./managers/game_manager";
-import { SocketEventNames } from '../lib/enums/socket_event_names';
+import { SocketEventNames } from '../shared/enums/socket_event_names';
 import { logInfo, logWarning } from './managers/log_manager';
 
 // Create HTTP server with "app" as handler

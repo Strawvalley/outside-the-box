@@ -1,4 +1,5 @@
 import { Game } from "./models/game";
+import { User } from "./models/user";
 
 export class GameManager {
   private games: {
@@ -9,13 +10,13 @@ export class GameManager {
     this.games = {}
   }
 
-  public addUserToGame(gameId: string, userId: string, username: string) {
+  public addUserToGame(gameId: string, userId: string, username: string): void {
     const game = this.games[gameId];
     // TODO: check if user already part of game
     game.users[userId] = username;
   }
 
-  public removeUserFromGame(gameId: string, userId: string) {
+  public removeUserFromGame(gameId: string, userId: string): void {
     const game = this.games[gameId];
     // game.users = game.users.filter(u => u !== username);
     delete game.users[userId];
@@ -29,24 +30,24 @@ export class GameManager {
     }
   }
 
-  public getUsersFromGame(gameId: string) {
+  public getUsersFromGame(gameId: string): User[] {
     const game = this.games[gameId];
     return Object.entries(game.users).map(([userid, username]) => ({
-      userid,
+      id: userid,
       username: username,
       room: gameId,
       isAdmin: game ? userid === game.admin : false
     }))
   }
 
-  public createOrJoinGame(gameId: string, userId: string, username: string) {
+  public createOrJoinGame(gameId: string, userId: string, username: string): void {
     if (!this.games[gameId]) {
       this.games[gameId] = new Game(userId, gameId);
     } 
     this.addUserToGame(gameId, userId, username);
   }
 
-  public startGame(gameId: string, clientId: string) {
+  public startGame(gameId: string, clientId: string): void {
     const game = this.games[gameId];
     if (game.admin === clientId) {
       game.startGame();
@@ -55,16 +56,17 @@ export class GameManager {
     }
   }
 
-  public submitWordForPlayer(gameId: string, username: string, word: string) {
+  public submitWordForPlayer(gameId: string, username: string, word: string): void {
     const game = this.games[gameId];
     game.submitWordForPlayer(username, word);
   }
   
-  public getGameState(gameId: string): Object {
+  public getGameState(gameId: string): { gameState: Game } {
+    // TODO: We should not send private properties (wordToGuess, wordsInRound) to the clients...
     return { gameState: this.games[gameId] }
   }
 
-  public isGameRunning(gameId: string) {
+  public hasGame(gameId: string): boolean {
     return this.games.hasOwnProperty(gameId);
   }
 }

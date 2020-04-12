@@ -21,10 +21,10 @@ disconnect$.subscribe(({ io, client }) => {
       room: client.room,
       id: client.id
     });
-    gameManager.removeUserFromGame(client.room, client.username, client.id);
+    gameManager.removeUserFromGame(client.room, client.username);
   }
 
-  if (gameManager.isGameRunning(client.room)) {
+  if (gameManager.hasGame(client.room)) {
     io.in(client.room).emit("all users in room update", gameManager.getUsersFromGame(client.room));
     io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
   }

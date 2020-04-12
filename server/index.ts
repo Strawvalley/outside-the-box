@@ -1,11 +1,12 @@
 import { server } from "./server";
 import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
-import { games, createNewGame } from "./game";
-import { getAllUsersInRoom } from "./utils";
+import { GameManager } from "./game_manager";
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
 server.listen(port, () => console.log(`[INFO] Listening on port: ${port}`));
+
+const gameManager = new GameManager();
 
 connection$.subscribe(({ io, client }) => {
   console.log(`[CONNECTED] Client ${client.id}`);
@@ -20,20 +21,12 @@ disconnect$.subscribe(({ io, client }) => {
       room: client.room,
       id: client.id
     });
-    games[client.room].removeUser(client.username);
+    gameManager.removeUserFromGame(client.room, client.username, client.id);
   }
 
-  const allUsersInRoom = getAllUsersInRoom(io, client.room);
-
-  if (allUsersInRoom.length === 0) {
-    // If last player of room left, delete the game
-    delete games[client.room];
-  } else if (client.id === games[client.room].admin) {
-    // If the admin left the game -> assign new admin and update users for all clients
-    games[client.room].admin = allUsersInRoom[0].id;
-    allUsersInRoom[0].isAdmin = true;
-    io.in(client.room).emit("all users in room update", allUsersInRoom);
-    io.in(client.room).emit("update game state", { gameState: games[client.room] });
+  if (gameManager.isGameRunning(client.room)) {
+    io.in(client.room).emit("all users in room update", gameManager.getUsersFromGame(client.room));
+    io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
   }
 });
 
@@ -41,29 +34,27 @@ listenOnConnect<{ username: string, room: string }>("room").subscribe(({ io, cli
   console.log(`[INFO] Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room
-  const allSockets = io.sockets.sockets as {[id: string]: ExtendedSocket};
+  const allSockets = io.sockets.sockets as { [id: string]: ExtendedSocket };
   allSockets[client.id].username = data.username;
   allSockets[client.id].room = data.room;
   client.join(data.room);
+
   // Check if game already exists, if not -> create new game and set admin
-  const game = games[data.room] ? games[data.room] : createNewGame(data.room, client.id);
-  game.addUser(data.username);
+  gameManager.createOrJoinGame(data.room, client.id, data.username);
 
   // Send new user list to all users
-  const allUsersInRoom = getAllUsersInRoom(io, data.room);
-  io.in(data.room).emit("all users in room update", allUsersInRoom);
+  io.in(data.room).emit("all users in room update", gameManager.getUsersFromGame(client.room));
 
   // Send current game state to new connect client
-  client.emit("update game state", { gameState: game });
+  client.emit("update game state", gameManager.getGameState(data.room));
 });
 
 listenOnConnect<void>("initiate game").subscribe(({ io, client }) => {
-  const room = client.room;
-  if (client.id === games[room].admin) {
-    console.log(`[INFO] Starting game in room ${room}`);
-    games[room].startGame();
-    io.in(room).emit("update game state", { gameState: games[room] });
-  } else {
+  try {
+    gameManager.startGame(client.room, client.id);
+    console.log(`[INFO] Starting game in room ${client.room}`);
+    io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
+  } catch (err) {
     console.log(`[INFO] Unauthorized request!`);
   }
 });
@@ -71,7 +62,7 @@ listenOnConnect<void>("initiate game").subscribe(({ io, client }) => {
 listenOnConnect<string>("player submits word")
   .subscribe(({ io, client, data }) => {
     console.log(`[INFO] Player ${client.username} submitted word ${data} in room ${client.room}`);
-    games[client.room].submitWordForPlayer(client.username, data);
-    io.in(client.room).emit("update game state", { gameState: games[client.room] });
+    gameManager.submitWordForPlayer(client.room, client.username, data);
+    io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
   });
 

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "start": "parcel build client/index.html && tsc && set NODE_ENV=production&&node build/index.js",
+    "start": "parcel build client/index.html && tsc && set NODE_ENV=production&&node build/server/index.js",
     "dev": "set NODE_ENV=development&& ts-node-dev server/index.ts"
   },
   "repository": {

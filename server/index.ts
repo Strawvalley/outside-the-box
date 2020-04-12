@@ -1,20 +1,21 @@
 import { server } from "./server";
 import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
-import { GameManager } from "./game_manager";
+import { GameManager } from "./managers/game_manager";
 import { SocketEventNames } from '../lib/enums/socket_event_names';
+import { logInfo, logWarning } from './managers/log_manager';
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
-server.listen(port, () => console.log(`[INFO] Listening on port: ${port}`));
+server.listen(port, () => logInfo(`Listening on port: ${port}`));
 
 const gameManager = new GameManager();
 
 connection$.subscribe(({ io, client }) => {
-  console.log(`[CONNECTED] Client ${client.id}`);
+  logInfo(`Client ${client.id} connected`);
 });
 
 disconnect$.subscribe(({ io, client }) => {
-  console.log(`[DISCONNECTED] Client ${client.id}`);
+  logInfo(`Client ${client.id} disconnected`);
 
   if (client.room) {
     io.in(client.room).emit(SocketEventNames.USER_LEFT_ROOM, {
@@ -32,7 +33,7 @@ disconnect$.subscribe(({ io, client }) => {
 });
 
 listenOnConnect<{ username: string, room: string }>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
-  console.log(`[INFO] Client ${client.id} joins room ${data.room} as ${data.username}`);
+  logInfo(`Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room
   // TODO: Make sure that user is only in one room!
@@ -54,16 +55,16 @@ listenOnConnect<{ username: string, room: string }>(SocketEventNames.JOIN_ROOM).
 listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ io, client }) => {
   try {
     gameManager.startGame(client.room, client.id);
-    console.log(`[INFO] Starting game in room ${client.room}`);
+    logInfo(`Starting game in room ${client.room}`);
     io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   } catch (err) {
-    console.log(`[INFO] Unauthorized request!`);
+    logWarning(`Unauthorized request!`);
   }
 });
 
 listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
   .subscribe(({ io, client, data }) => {
-    console.log(`[INFO] Player ${client.username} submitted word ${data} in room ${client.room}`);
+    logInfo(`Player ${client.username} submitted word ${data} in room ${client.room}`);
     gameManager.submitWordForPlayer(client.room, client.username, data);
     io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   });

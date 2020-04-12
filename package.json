@@ -6,7 +6,8 @@
   "scripts": {
     "tsc": "tsc",
     "start": "parcel build client/index.html && tsc && set NODE_ENV=production&&node build/server/index.js",
-    "dev": "set NODE_ENV=development&& ts-node-dev server/index.ts"
+    "dev": "set NODE_ENV=development&& ts-node-dev server/index.ts",
+    "lint": "./node_modules/.bin/eslint ./**"
   },
   "repository": {
     "type": "git",

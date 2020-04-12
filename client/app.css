@@ -34,3 +34,11 @@
 .game.admin .admin, .game.non-admin .non-admin {
   display: block;
 }
+
+.game .active-player, .game .player {
+  display: none;
+}
+
+.game.active-player .active-player, .game.player .player {
+  display: block;
+}

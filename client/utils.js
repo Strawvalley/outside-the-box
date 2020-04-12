@@ -64,4 +64,11 @@ export function displayGameState(gameState, id) {
     game.classList.add('non-admin');
   }
 
+    // Update active-player / player
+    if (id === gameState.activePlayer) {
+      game.classList.add('active-player');
+    } else {
+      game.classList.add('player');
+    }
+
 }

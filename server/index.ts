@@ -34,6 +34,7 @@ listenOnConnect<{ username: string, room: string }>("room").subscribe(({ io, cli
   console.log(`[INFO] Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room
+  // TODO: Make sure that user is only in one room!
   const allSockets = io.sockets.sockets as { [id: string]: ExtendedSocket };
   allSockets[client.id].username = data.username;
   allSockets[client.id].room = data.room;

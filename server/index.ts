@@ -68,4 +68,3 @@ listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
     gameManager.submitWordForPlayer(client.room, client.username, data);
     io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   });
-

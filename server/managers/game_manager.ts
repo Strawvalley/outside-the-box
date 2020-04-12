@@ -69,4 +69,3 @@ export class GameManager {
     return Object.prototype.hasOwnProperty.call(this.games, gameId);
   }
 }
-

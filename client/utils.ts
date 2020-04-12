@@ -1,4 +1,6 @@
-export function getUsername() {
+import { IGame } from "../shared/models/igame";
+
+export function getUsername(): string {
   const username = sessionStorage.getItem('username');
 
   if (username) return username;
@@ -16,13 +18,13 @@ export function getUsername() {
   return newUsername;
 }
 
-export function getRoom() {
+export function getRoom(): string {
   const roomName = location.pathname.split('/')[1]
   if (!roomName) return Math.floor(Math.random() * 100000).toString();
   return roomName;
 }
 
-export function addUser(id, username, isAdmin) {
+export function addUser(id: string, username: string, isAdmin: boolean): void {
   document.querySelector('#users')
     .insertAdjacentHTML(
       'beforeend',
@@ -30,7 +32,7 @@ export function addUser(id, username, isAdmin) {
     );
 }
 
-export function removeUser(id) {
+export function removeUser(id: string): void {
   const userToRemove = document.querySelector(`#users #user-${id}`);
 
   if (userToRemove) {
@@ -38,20 +40,20 @@ export function removeUser(id) {
   }
 }
 
-export function clearUsers() {
+export function clearUsers(): void {
   document.querySelector('#users').innerHTML = '';
 }
 
-export function displayRoomName(room) {
+export function displayRoomName(room: string): void {
   document.querySelector('#room').textContent = room;
   window.history.pushState(room, 'Outside the box!', `/${room}`);
 }
 
-export function displayUsername(username) {
+export function displayUsername(username: string): void {
   document.querySelector('#username').textContent = username;
 }
 
-export function displayGameState(gameState, id) {
+export function displayGameState(gameState: IGame, id: string): void {
 
   document.querySelector('#state').textContent = JSON.stringify(gameState);
 
@@ -64,11 +66,11 @@ export function displayGameState(gameState, id) {
     game.classList.add('non-admin');
   }
 
-    // Update active-player / player
-    if (id === gameState.activePlayer) {
-      game.classList.add('active-player');
-    } else {
-      game.classList.add('player');
-    }
+  // Update active-player / player
+  if (id === gameState.activePlayer) {
+    game.classList.add('active-player');
+  } else {
+    game.classList.add('player');
+  }
 
 }

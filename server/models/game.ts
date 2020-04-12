@@ -1,6 +1,7 @@
-import { GameState } from "../enums/game_state";
+import { GameState } from "../../shared/enums/game_state";
+import { IGame } from "shared/models/igame";
 
-export class Game {
+export class Game implements IGame {
   started: boolean = false;
   admin: string;
   room: string;

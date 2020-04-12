@@ -1,9 +1,9 @@
-import { of, fromEvent, combineLatest } from 'rxjs'
-import { map, switchMap } from 'rxjs/operators'
-import io from 'socket.io-client'
+import { of, fromEvent, combineLatest, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import io from 'socket.io-client';
 
 // Initialise Socket.IO and wrap in observable
-const socket$ = of(io())
+const socket$ = of(io());
 
 // Stream of connections
 export const connect$ = socket$
@@ -14,36 +14,36 @@ export const connect$ = socket$
           map(() => socket)
         )
     )
-  )
+  );
 
 // On connection, listen for event
 export function listenOnConnect(event) {
   return connect$
     .pipe(
-      switchMap(socket =>
+      switchMap((socket: SocketIOClient.Socket) =>
         fromEvent(socket, event)
       )
-    )
-}
+    );
+};
 
 export function listenOnConnectWithConnection(event) {
   return connect$
-  .pipe(
-    switchMap(socket =>
-      combineLatest(fromEvent(socket, event), of(socket))
-    )
-  )
-}
+    .pipe(
+      switchMap((socket: SocketIOClient.Socket) =>
+        combineLatest(fromEvent(socket, event), of(socket))
+      )
+    );
+};
 
 // On connection, emit data from observable
-export function emitOnConnect(observable$) {
+export function emitOnConnect<T>(observable$: Observable<any>) {
   return connect$
     .pipe(
-      switchMap(socket =>
+      switchMap((socket: SocketIOClient.Socket) =>
         observable$
           .pipe(
-            map(data => ({ socket, data }))
+            map((data: T) => ({ socket, data }))
           )
       )
-    )
-}
+    );
+};

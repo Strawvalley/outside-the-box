@@ -1,5 +1,5 @@
 import { Game } from "../models/game";
-import { User } from "../models/user";
+import { IUser } from "../../shared/models/iuser";
 
 export class GameManager {
   private games: {
@@ -29,7 +29,7 @@ export class GameManager {
     }
   }
 
-  public getUsersFromGame(gameId: string): User[] {
+  public getUsersFromGame(gameId: string): IUser[] {
     const game = this.games[gameId];
     return Object.entries(game.users).map(([userid, username]) => ({
       id: userid,

@@ -1,12 +1,12 @@
 import { Game } from "../models/game";
-import { UserDto } from "../../shared";
+import { UserDto, GameDto } from "../../shared";
 
 export class GameManager {
   private games: {
     [key: string]: Game;
   };
 
-  constructor() {
+  constructor(public updateGame: (room: string, payload: { gameState: GameDto }) => void) {
     this.games = {}
   }
 
@@ -53,7 +53,7 @@ export class GameManager {
 
   public createOrJoinGame(gameId: string, userId: string, username: string): void {
     if (!this.games[gameId]) {
-      this.games[gameId] = new Game(userId, gameId);
+      this.games[gameId] = new Game(userId, gameId, this.updateGame);
     }
     this.addUserToGame(gameId, userId, username);
   }
@@ -72,9 +72,14 @@ export class GameManager {
     game.submitWordForPlayer(username, word);
   }
 
-  public getGameState(gameId: string): { gameState: Game } {
+  public guessWordForPlayer(gameId: string, username: string, word: string): void {
+    const game = this.games[gameId];
+    game.guessWordForPlayer(username, word);
+  }
+
+  public getGameState(gameId: string): { gameState: GameDto } {
     // TODO: We should not send private properties (wordToGuess, wordsInRound) to the clients...
-    return { gameState: this.games[gameId] }
+    return this.games[gameId].toDto();
   }
 
   public hasGame(gameId: string): boolean {

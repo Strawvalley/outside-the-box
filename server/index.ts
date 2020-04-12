@@ -1,14 +1,16 @@
 import { server } from "./server";
-import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
+import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToRoom } from "./connection";
 import { GameManager } from "./managers/game_manager";
-import { SocketEventNames, JoinRoomDto } from '../shared';
+import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
 server.listen(port, () => logInfo(`Listening on port: ${port}`));
 
-const gameManager = new GameManager();
+const gameManager = new GameManager(
+  (room: string, payload: { gameState: GameDto }) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload)
+);
 
 connection$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} connected`);
@@ -52,19 +54,23 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   client.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(data.room));
 });
 
-listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ io, client }) => {
+listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ client }) => {
   try {
     gameManager.startGame(client.room, client.id);
     logInfo(`Starting game in room ${client.room}`);
-    io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   } catch (err) {
-    logWarning(`Unauthorized request!`);
+    logWarning(`Unauthorized request: ${err}`);
   }
 });
 
 listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
-  .subscribe(({ io, client, data }) => {
+  .subscribe(({ client, data }) => {
     logInfo(`Player ${client.username} submitted word ${data} in room ${client.room}`);
     gameManager.submitWordForPlayer(client.room, client.username, data);
-    io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
+  });
+
+listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
+  .subscribe(({ client, data }) => {
+    logInfo(`Player ${client.username} guessed word ${data} in room ${client.room}`);
+    gameManager.guessWordForPlayer(client.room, client.username, data);
   });

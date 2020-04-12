@@ -1,4 +1,6 @@
 import { GameState, GameDto } from "../../shared";
+import { Subject } from "rxjs";
+import { filter, timeout, take } from "rxjs/operators";
 
 export class Game implements GameDto {
   started: boolean;
@@ -24,7 +26,10 @@ export class Game implements GameDto {
     [username: string]: string;
   };
 
-  constructor(admin: string, room: string) {
+  private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
+  private readonly THINKING_TIME_MS = 10000;
+
+  constructor(admin: string, room: string, public updateGame: (room: string, payload: { gameState: GameDto}) => void) {
     this.admin = admin;
     this.room = room;
 
@@ -49,23 +54,23 @@ export class Game implements GameDto {
 
     // Set word for this player in this round
     this.wordsInRound[username] = word;
-    this.tryNextState();
+
+    // Check if all connected players (except activePlayer) submitted a word -> nextState
+    const everyPlayerSubmittedWord = Object.entries(this.users)
+      .filter(([username, user]) => username !== this.activePlayer && user.connected)
+      .every(([username]) => this.wordsInRound[username] !== undefined);
+
+    this.everyPlayerSubmittedWord$.next(everyPlayerSubmittedWord);
   }
 
-  public tryNextState(): void {
-    switch (this.state) {
-      case GameState.THINKING: {
-        // Check if all connected players (except activePlayer) submitted a word -> nextState
-        const everyPlayerSubmittedWord = Object.entries(this.users)
-          .filter(([username, user]) => username !== this.activePlayer && user.connected)
-          .every(([username]) => this.wordsInRound[username] !== undefined);
+  public guessWordForPlayer(username: string, word: string): void {
+    if (this.state !== GameState.GUESSING) return;
+    if (username !== this.activePlayer) return;
 
-        if (everyPlayerSubmittedWord) {
-          this.state = GameState.GUESSING;
-        }
-
-        break;
-      }
+    // If word matched word to guess
+    // TODO: Better word matching
+    if (word.toLowerCase().trim() === this.wordToGuess.toLowerCase().trim()) {
+      console.log("NICE");
     }
   }
 
@@ -75,10 +80,41 @@ export class Game implements GameDto {
     this.wordToGuess = this.generateWord();
     this.wordsInRound = {};
     this.state = GameState.THINKING;
-    // TODO: Setup timer to go to next step
+
+    this.updateGame(this.room, this.toDto());
+    this.everyPlayerSubmittedWord$.pipe(
+      filter(everyPlayerSubmittedWord => everyPlayerSubmittedWord),
+      timeout(this.THINKING_TIME_MS),
+      take(1)
+    ).subscribe(
+      () => this.goToGuessing(),
+      () => this.goToGuessing(),
+    );
+  }
+
+  private goToGuessing(): void {
+    this.state = GameState.GUESSING;
+    this.updateGame(this.room, this.toDto());
+
+    // TODO: START TIMER
   }
 
   private generateWord(): string {
     return "GUESS ME I AM A WORD";
+  }
+
+  public toDto(): { gameState: GameDto} {
+    return {
+      gameState: {
+        started: this.started,
+        admin: this.admin,
+        state: this.state,
+        totalRounds: this.totalRounds,
+        round: this.round,
+        points: this.points,
+        activePlayer: this.activePlayer,
+        users: this.users
+      }
+    };
   }
 }

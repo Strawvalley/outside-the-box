@@ -17,26 +17,26 @@ export const connect$ = socket$
   );
 
 // On connection, listen for event
-export function listenOnConnect(event) {
+export function listenOnConnect<T>(event): Observable<T> {
   return connect$
     .pipe(
       switchMap((socket: SocketIOClient.Socket) =>
-        fromEvent(socket, event)
+        fromEvent<T>(socket, event)
       )
     );
-};
+}
 
-export function listenOnConnectWithConnection(event) {
+export function listenOnConnectWithConnection<T>(event: string): Observable<[T, SocketIOClient.Socket]> {
   return connect$
     .pipe(
       switchMap((socket: SocketIOClient.Socket) =>
-        combineLatest(fromEvent(socket, event), of(socket))
+        combineLatest(fromEvent<T>(socket, event), of(socket))
       )
     );
-};
+}
 
 // On connection, emit data from observable
-export function emitOnConnect<T>(observable$: Observable<any>) {
+export function emitOnConnect<T>(observable$: Observable<T>): Observable<{ socket: SocketIOClient.Socket; data: T }> {
   return connect$
     .pipe(
       switchMap((socket: SocketIOClient.Socket) =>
@@ -46,4 +46,4 @@ export function emitOnConnect<T>(observable$: Observable<any>) {
           )
       )
     );
-};
+}

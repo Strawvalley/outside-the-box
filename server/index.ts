@@ -3,6 +3,7 @@ import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./con
 import { GameManager } from "./managers/game_manager";
 import { SocketEventNames } from '../shared/enums/socket_event_names';
 import { logInfo, logWarning } from './managers/log_manager';
+import { JoinRoomDto } from "shared/models/dto";
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
@@ -32,7 +33,7 @@ disconnect$.subscribe(({ io, client }) => {
   }
 });
 
-listenOnConnect<{ username: string; room: string }>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
+listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
   logInfo(`Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room

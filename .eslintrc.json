@@ -24,6 +24,7 @@
     "linebreak-style": "off",
     "no-multiple-empty-lines": 1,
     "no-trailing-spaces": 1,
-    "no-multi-spaces": 1
+    "no-multi-spaces": 1,
+    "eol-last": "warn"
   }
 }

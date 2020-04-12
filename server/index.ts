@@ -32,7 +32,7 @@ disconnect$.subscribe(({ io, client }) => {
   }
 });
 
-listenOnConnect<{ username: string, room: string }>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
+listenOnConnect<{ username: string; room: string }>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
   logInfo(`Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room

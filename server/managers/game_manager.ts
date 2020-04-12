@@ -1,9 +1,9 @@
-import { Game } from "../models/game";
-import { User } from "../models/user";
+import { Game } from '../models/game';
+import { User } from '../models/user';
 
 export class GameManager {
   private games: {
-    [key: string]: Game
+    [key: string]: Game;
   };
 
   constructor() {
@@ -66,7 +66,7 @@ export class GameManager {
   }
 
   public hasGame(gameId: string): boolean {
-    return this.games.hasOwnProperty(gameId);
+    return Object.prototype.hasOwnProperty.call(this.games, gameId);
   }
 }
 

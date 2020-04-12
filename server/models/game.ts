@@ -1,37 +1,42 @@
-import { GameState } from "../enums/game_state";
+import { GameState } from '../enums/game_state';
 
 export class Game {
-  started: boolean = false;
+  started: boolean;
   admin: string;
   room: string;
-  state: GameState = GameState.NOT_STARTED;
+  state: GameState;
 
-  totalRounds: number = 10;
-  round: number = 1;
-  points: number = 0;
+  totalRounds: number;
+  round: number;
+  points: number;
   activePlayer: string;
 
   users: {
-    [userId: string]: string
+    [userId: string]: string;
   }
   wordToGuess: string;
   wordsInRound: {
-    [username: string]: string
+    [username: string]: string;
   };
 
   constructor(admin: string, room: string) {
+    this.started = false;
     this.admin = admin;
     this.room = room;
+    this.state = GameState.NOT_STARTED;
+    this.totalRounds = 10;
+    this.round = 1;
+    this.points = 0;
     this.users = {};
     this.wordsInRound = {};
   }
 
-  public startGame() {
+  public startGame(): void {
     this.started = true;
     this.initiateNewRound();
   }
 
-  public submitWordForPlayer(username: string, word: string) {
+  public submitWordForPlayer(username: string, word: string): void {
     if (this.state !== GameState.THINKING) return;
     if (username === this.activePlayer) return;
     if (this.wordsInRound[username] !== undefined) return;
@@ -41,7 +46,7 @@ export class Game {
     this.tryNextState();
   }
 
-  public tryNextState() {
+  public tryNextState(): void {
     switch (this.state) {
       case GameState.THINKING: {
         // Check if all players (except activePlayer) submitted a word -> nextState
@@ -57,7 +62,7 @@ export class Game {
     }
   }
   
-  private initiateNewRound() {
+  private initiateNewRound(): void {
     // TODO: Select user for round!
     this.activePlayer = Object.keys(this.users)[0];
     this.wordToGuess = this.generateWord();

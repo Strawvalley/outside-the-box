@@ -42,7 +42,7 @@ export class GameManager {
   public createOrJoinGame(gameId: string, userId: string, username: string): void {
     if (!this.games[gameId]) {
       this.games[gameId] = new Game(userId, gameId);
-    } 
+    }
     this.addUserToGame(gameId, userId, username);
   }
 
@@ -59,7 +59,7 @@ export class GameManager {
     const game = this.games[gameId];
     game.submitWordForPlayer(username, word);
   }
-  
+
   public getGameState(gameId: string): { gameState: Game } {
     // TODO: We should not send private properties (wordToGuess, wordsInRound) to the clients...
     return { gameState: this.games[gameId] }

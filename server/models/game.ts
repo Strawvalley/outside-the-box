@@ -2,7 +2,7 @@ import { GameState } from "../../shared/enums/game_state";
 import { IGame } from "shared/models/igame";
 
 export class Game implements IGame {
-  started: boolean = false;
+  started: boolean;
   admin: string;
   room: string;
   state: GameState;
@@ -55,14 +55,14 @@ export class Game implements IGame {
           .filter(username => username !== this.activePlayer)
           .map(username => this.users[username])
           .every(username => this.wordsInRound[username] !== undefined);
-        if(everyPlayerSubmittedWord) {
+        if (everyPlayerSubmittedWord) {
           this.state = GameState.GUESSING;
         }
         break;
       }
     }
   }
-  
+
   private initiateNewRound(): void {
     // TODO: Select user for round!
     this.activePlayer = Object.keys(this.users)[0];
@@ -71,7 +71,7 @@ export class Game implements IGame {
     this.state = GameState.THINKING;
     // TODO: Setup timer to go to next step
   }
-  
+
   private generateWord(): string {
     return "GUESS ME I AM A WORD";
   }

@@ -3,7 +3,7 @@ import { IUser } from "../../shared/models/iuser";
 
 export class GameManager {
   private games: {
-    [key: string]: Game
+    [key: string]: Game;
   };
 
   constructor() {
@@ -66,7 +66,7 @@ export class GameManager {
   }
 
   public hasGame(gameId: string): boolean {
-    return this.games.hasOwnProperty(gameId);
+    return Object.prototype.hasOwnProperty.call(this.games, gameId);
   }
 }
 

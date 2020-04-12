@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import path from "path";
 import { logDebug } from "./managers/log_manager";
-import Bundler from 'parcel-bundler';
+import Bundler from "parcel-bundler";
 
 const app = express();
 

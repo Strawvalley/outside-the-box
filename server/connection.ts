@@ -1,4 +1,4 @@
-import { of, fromEvent } from 'rxjs';
+import { of, fromEvent, Observable } from 'rxjs';
 import { map, switchMap, mergeMap, takeUntil } from 'rxjs/operators';
 import { server } from './server';
 import io from 'socket.io';
@@ -34,7 +34,7 @@ export const disconnect$ = connection$
   )
 
 // On connection, listen for event
-export function listenOnConnect<T>(event) {
+export function listenOnConnect<T>(event): Observable<{io: io.Server; client: ExtendedSocket; data: T}> {
   return connection$
     .pipe(
       mergeMap(({ io, client }) =>

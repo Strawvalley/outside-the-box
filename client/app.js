@@ -2,6 +2,7 @@ import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from './connection';
 import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
 import { initiateGame$, submitThinkingWord$ } from './actions';
+import { SocketEventNames } from '../lib/enums/socket_event_names';
 
 console.log(`[INIT] outside-the-box`)
 
@@ -10,7 +11,7 @@ displayRoomName(room);
 
 emitOnConnect(of(getUsername()))
   .subscribe(({ socket, data }) => {
-    socket.emit('room', {
+    socket.emit(SocketEventNames.JOIN_ROOM, {
       room,
       username: data
     });
@@ -18,20 +19,20 @@ emitOnConnect(of(getUsername()))
     console.log(`>>>[CONNECT] ${data} to room ${room}`);
   });
 
-listenOnConnect('all users in room update')
+listenOnConnect(SocketEventNames.UPDATE_ROOM_USERS)
   .subscribe(users => {
     console.log(`<<<[INFO] There are currently ${users.length} users in the room`);
     clearUsers();
     users.forEach(({ id, username, isAdmin }) => addUser(id, username, isAdmin));
   });
 
-listenOnConnect('user left room')
+listenOnConnect(SocketEventNames.USER_LEFT_ROOM)
   .subscribe(({ username, room, id }) => {
     console.log(`<<<[INFO] ${username} (${id}) left the room ${room}`);
     removeUser(id);
   });
 
-listenOnConnectWithConnection('update game state')
+listenOnConnectWithConnection(SocketEventNames.UPDATE_GAME_STATE)
   .subscribe(([{ gameState }, socket]) => {
     console.log(`<<<[INFO] GameState ${gameState.started}`);
     displayGameState(gameState, socket.id);
@@ -39,10 +40,10 @@ listenOnConnectWithConnection('update game state')
 
 emitOnConnect(initiateGame$)
   .subscribe(({ socket }) => {
-    socket.emit('initiate game');
+    socket.emit(SocketEventNames.INITIATE_GAME);
   });
 
 emitOnConnect(submitThinkingWord$)
   .subscribe(({ socket, data }) => {
-    socket.emit('player submits word', data);
+    socket.emit(SocketEventNames.SUBMIT_WORD, data);
   });

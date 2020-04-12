@@ -1,6 +1,7 @@
 import { server } from "./server";
 import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
 import { GameManager } from "./game_manager";
+import { SocketEventNames } from '../lib/enums/socket_event_names';
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
@@ -16,7 +17,7 @@ disconnect$.subscribe(({ io, client }) => {
   console.log(`[DISCONNECTED] Client ${client.id}`);
 
   if (client.room) {
-    io.in(client.room).emit("user left room", {
+    io.in(client.room).emit(SocketEventNames.USER_LEFT_ROOM, {
       username: client.username,
       room: client.room,
       id: client.id
@@ -25,12 +26,12 @@ disconnect$.subscribe(({ io, client }) => {
   }
 
   if (gameManager.hasGame(client.room)) {
-    io.in(client.room).emit("all users in room update", gameManager.getUsersFromGame(client.room));
-    io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
+    io.in(client.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
+    io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   }
 });
 
-listenOnConnect<{ username: string, room: string }>("room").subscribe(({ io, client, data }) => {
+listenOnConnect<{ username: string, room: string }>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
   console.log(`[INFO] Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room
@@ -44,26 +45,26 @@ listenOnConnect<{ username: string, room: string }>("room").subscribe(({ io, cli
   gameManager.createOrJoinGame(data.room, client.id, data.username);
 
   // Send new user list to all users
-  io.in(data.room).emit("all users in room update", gameManager.getUsersFromGame(client.room));
+  io.in(data.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
 
   // Send current game state to new connect client
-  client.emit("update game state", gameManager.getGameState(data.room));
+  client.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(data.room));
 });
 
-listenOnConnect<void>("initiate game").subscribe(({ io, client }) => {
+listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ io, client }) => {
   try {
     gameManager.startGame(client.room, client.id);
     console.log(`[INFO] Starting game in room ${client.room}`);
-    io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
+    io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   } catch (err) {
     console.log(`[INFO] Unauthorized request!`);
   }
 });
 
-listenOnConnect<string>("player submits word")
+listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
   .subscribe(({ io, client, data }) => {
     console.log(`[INFO] Player ${client.username} submitted word ${data} in room ${client.room}`);
     gameManager.submitWordForPlayer(client.room, client.username, data);
-    io.in(client.room).emit("update game state", gameManager.getGameState(client.room));
+    io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
   });
 

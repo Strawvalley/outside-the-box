@@ -1,9 +1,8 @@
 import { server } from "./server";
 import { connection$, disconnect$, listenOnConnect, ExtendedSocket } from "./connection";
 import { GameManager } from "./managers/game_manager";
-import { SocketEventNames } from '../shared/enums/socket_event_names';
+import { SocketEventNames, JoinRoomDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
-import { JoinRoomDto } from "shared/models/dto";
 
 // Create HTTP server with "app" as handler
 const port = process.env.PORT || 3000;
@@ -24,7 +23,7 @@ disconnect$.subscribe(({ io, client }) => {
       room: client.room,
       id: client.id
     });
-    gameManager.removeUserFromGame(client.room, client.id);
+    gameManager.removeUserFromGame(client.room, client.id, client.username);
   }
 
   if (gameManager.hasGame(client.room)) {

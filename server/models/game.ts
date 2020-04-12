@@ -1,7 +1,6 @@
-import { GameState } from "../../shared/enums/game_state";
-import { IGame } from "shared/models/igame";
+import { GameState, GameDto } from "../../shared";
 
-export class Game implements IGame {
+export class Game implements GameDto {
   started: boolean;
   admin: string;
   room: string;
@@ -13,17 +12,23 @@ export class Game implements IGame {
   activePlayer: string;
 
   users: {
-    [userId: string]: string;
-  }
+    [username: string]: {
+      socketId: string;
+      connected: boolean;
+    };
+  };
+
+  // Extend the interface
   wordToGuess: string;
   wordsInRound: {
     [username: string]: string;
   };
 
   constructor(admin: string, room: string) {
-    this.started = false;
     this.admin = admin;
     this.room = room;
+
+    this.started = false;
     this.state = GameState.NOT_STARTED;
     this.totalRounds = 10;
     this.round = 1;
@@ -50,14 +55,15 @@ export class Game implements IGame {
   public tryNextState(): void {
     switch (this.state) {
       case GameState.THINKING: {
-        // Check if all players (except activePlayer) submitted a word -> nextState
-        const everyPlayerSubmittedWord = Object.keys(this.users)
-          .filter(username => username !== this.activePlayer)
-          .map(username => this.users[username])
-          .every(username => this.wordsInRound[username] !== undefined);
+        // Check if all connected players (except activePlayer) submitted a word -> nextState
+        const everyPlayerSubmittedWord = Object.entries(this.users)
+          .filter(([username, user]) => username !== this.activePlayer && user.connected)
+          .every(([username]) => this.wordsInRound[username] !== undefined);
+
         if (everyPlayerSubmittedWord) {
           this.state = GameState.GUESSING;
         }
+
         break;
       }
     }

@@ -1,4 +1,4 @@
-import { IGame } from "../shared/models/igame";
+import { GameDto } from "../shared/models/igame";
 
 export function getUsername(): string {
   const username = sessionStorage.getItem('username');
@@ -53,7 +53,7 @@ export function displayUsername(username: string): void {
   document.querySelector('#username').textContent = username;
 }
 
-export function displayGameState(gameState: IGame, id: string): void {
+export function displayGameState(gameState: GameDto, id: string): void {
 
   document.querySelector('#state').textContent = JSON.stringify(gameState);
 
@@ -67,7 +67,7 @@ export function displayGameState(gameState: IGame, id: string): void {
   }
 
   // Update active-player / player
-  if (id === gameState.activePlayer) {
+  if (sessionStorage.getItem('username') === gameState.activePlayer) {
     game.classList.add('active-player');
   } else {
     game.classList.add('player');

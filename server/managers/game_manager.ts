@@ -1,5 +1,5 @@
 import { Game } from "../models/game";
-import { IUser } from "../../shared/models/iuser";
+import { UserDto } from "../../shared";
 
 export class GameManager {
   private games: {
@@ -12,30 +12,42 @@ export class GameManager {
 
   public addUserToGame(gameId: string, userId: string, username: string): void {
     const game = this.games[gameId];
-    // TODO: check if user already part of game
-    game.users[userId] = username;
-  }
-
-  public removeUserFromGame(gameId: string, userId: string): void {
-    const game = this.games[gameId];
-    delete game.users[userId];
-
-    if (Object.keys(game.users).length === 0) {
-      // if no users left, delete game
-      delete this.games[gameId];
-    } else if (userId === game.admin) {
-      // If the admin left the game -> assign new admin
-      game.admin = Object.keys(game.users)[0];
+    if (game.users[username] === undefined) {
+      game.users[username] = {
+        socketId: userId,
+        connected: true
+      };
+    }
+    if (game.users[username].connected) {
+      // TODO: User with same name already connected!
+    } else {
+      game.users[username].socketId = userId;
+      game.users[username].connected = true
     }
   }
 
-  public getUsersFromGame(gameId: string): IUser[] {
+  public removeUserFromGame(gameId: string, userId: string, username: string): void {
     const game = this.games[gameId];
-    return Object.entries(game.users).map(([userid, username]) => ({
-      id: userid,
+
+    game.users[username].socketId = undefined;
+    game.users[username].connected = false;
+
+    if (Object.values(game.users).every((user) => !user.connected)) {
+      // if no users left (all users disconnected), delete game
+      delete this.games[gameId];
+    } else if (userId === game.admin) {
+      // If the admin left the game -> assign new admin
+      game.admin = Object.values(game.users).find(user => user.connected).socketId;
+    }
+  }
+
+  public getUsersFromGame(gameId: string): UserDto[] {
+    const game = this.games[gameId];
+    return Object.entries(game.users).map(([username, user]) => ({
+      id: user.socketId,
       username: username,
       room: gameId,
-      isAdmin: game ? userid === game.admin : false
+      isAdmin: game ? user.socketId === game.admin : false
     }))
   }
 

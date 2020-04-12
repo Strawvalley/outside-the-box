@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from './connection';
 import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
 import { initiateGame$, submitThinkingWord$ } from './actions';
-import { JoinRoomDto, IGame, IUser, SocketEventNames } from '../shared';
+import { JoinRoomDto, GameDto, UserDto, SocketEventNames } from '../shared';
 
 console.log(`[INIT] outside-the-box`)
 
@@ -20,7 +20,7 @@ emitOnConnect<string>(of(getUsername()))
     console.log(`>>>[CONNECT] ${data} to room ${room}`);
   });
 
-listenOnConnect<IUser[]>(SocketEventNames.UPDATE_ROOM_USERS)
+listenOnConnect<UserDto[]>(SocketEventNames.UPDATE_ROOM_USERS)
   .subscribe((users) => {
     console.log(`<<<[INFO] There are currently ${users.length} users in the room`);
     clearUsers();
@@ -33,7 +33,7 @@ listenOnConnect<{ username: string; room: string; id: string }>(SocketEventNames
     removeUser(id);
   });
 
-listenOnConnectWithConnection<{ gameState: IGame }>(SocketEventNames.UPDATE_GAME_STATE)
+listenOnConnectWithConnection<{ gameState: GameDto }>(SocketEventNames.UPDATE_GAME_STATE)
   .subscribe(([{ gameState }, socket]) => {
     console.log(`<<<[INFO] GameState ${gameState.started}`);
     displayGameState(gameState, socket.id);

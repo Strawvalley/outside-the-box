@@ -1,6 +1,6 @@
-import { GameState } from "shared/enums/game_state";
+import { GameState } from "shared";
 
-export interface IGame {
+export interface GameDto {
   started: boolean;
   admin: string;
   state: GameState;
@@ -11,6 +11,9 @@ export interface IGame {
   activePlayer: string;
 
   users: {
-    [userId: string]: string
-  }
+    [username: string]: {
+      socketId: string;
+      connected: boolean;
+    };
+  };
 }

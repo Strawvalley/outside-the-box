@@ -21,7 +21,7 @@ disconnect$.subscribe(({ io, client }) => {
       room: client.room,
       id: client.id
     });
-    gameManager.removeUserFromGame(client.room, client.username);
+    gameManager.removeUserFromGame(client.room, client.id);
   }
 
   if (gameManager.hasGame(client.room)) {

@@ -18,7 +18,6 @@ export class GameManager {
 
   public removeUserFromGame(gameId: string, userId: string): void {
     const game = this.games[gameId];
-    // game.users = game.users.filter(u => u !== username);
     delete game.users[userId];
 
     if (Object.keys(game.users).length === 0) {

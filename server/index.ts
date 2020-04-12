@@ -10,7 +10,7 @@ server.listen(port, () => logInfo(`Listening on port: ${port}`));
 
 const gameManager = new GameManager();
 
-connection$.subscribe(({ io, client }) => {
+connection$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} connected`);
 });
 

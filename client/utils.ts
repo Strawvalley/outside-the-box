@@ -91,6 +91,10 @@ export function displayGameState(gameState: GameDto, id: string): void {
     time.textContent = ``;
   }
 
+  // Update rounds
+  const rounds = document.querySelector('#rounds');
+  rounds.textContent = `${gameState.round}/${gameState.totalRounds}`;
+
   if (gameState.wordToGuess) {
     document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {
       element.textContent = gameState.wordToGuess;

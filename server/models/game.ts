@@ -42,6 +42,7 @@ export class Game implements GameDto {
 
   private readonly THINKING_TIME = 10;
   private readonly GUESSING_TIME = 15;
+  private readonly ROUND_FINISHED_TIME = 10;
   private readonly WRONG_GUESS_COUNT = 3;
 
   constructor(admin: string, room: string, public updateGame: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void) {
@@ -51,7 +52,7 @@ export class Game implements GameDto {
     this.started = false;
     this.state = GameState.NOT_STARTED;
     this.totalRounds = 10;
-    this.round = 1;
+    this.round = 0;
     this.points = 0;
     this.pointsInRound = 0;
     this.users = {};
@@ -114,6 +115,7 @@ export class Game implements GameDto {
     // TODO: Select user for round!
     this.activePlayer = Object.keys(this.users)[0];
     this.wordToGuess = this.generateWord();
+    this.round++;
     this.wordsInRound = {};
     this.state = GameState.THINKING;
     this.pointsInRound = 0;
@@ -150,6 +152,24 @@ export class Game implements GameDto {
   }
 
   private goToRoundFinished(): void {
+    this.state = GameState.ROUND_FINISHED;
+    this.totalSeconds = this.ROUND_FINISHED_TIME;
+    this.secondsLeft = this.ROUND_FINISHED_TIME;
+    this.updateGame(this.room, this.toDto.bind(this));
+    merge(this.startTimer()).pipe(
+      first(condition => condition)
+    ).subscribe(
+      () => {
+        if (this.round < this.totalRounds) {
+          this.initiateNewRound();
+        } else {
+          this.goToGameFinished();
+        }
+      }
+    );
+  }
+
+  private goToGameFinished(): void {
     this.state = GameState.ROUND_FINISHED;
     this.totalSeconds = undefined;
     this.secondsLeft = undefined;

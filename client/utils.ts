@@ -1,4 +1,4 @@
-import { GameDto } from "../shared/models/igame";
+import { GameDto } from "../shared";
 
 export function getUsername(): string {
   const username = sessionStorage.getItem('username');
@@ -92,7 +92,7 @@ export function displayGameState(gameState: GameDto, id: string): void {
   }
 
   document.querySelectorAll('.guesses-left').forEach((element) => {
-    element.textContent = gameState.guessesLeft;
+    element.textContent = gameState.guessesLeft.toString();
   });
 
 }

@@ -6,7 +6,7 @@ export class GameManager {
     [key: string]: Game;
   };
 
-  constructor(public updateGame: (room: string, payload: { gameState: GameDto }) => void) {
+  constructor(public updateGame: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void) {
     this.games = {}
   }
 
@@ -77,9 +77,9 @@ export class GameManager {
     game.guessWordForPlayer(username, word);
   }
 
-  public getGameState(gameId: string): { gameState: GameDto } {
+  public getGameState(gameId: string, clientid: string): { gameState: GameDto } {
     // TODO: We should not send private properties (wordToGuess, wordsInRound) to the clients...
-    return this.games[gameId].toDto();
+    return this.games[gameId].toDto(clientid);
   }
 
   public hasGame(gameId: string): boolean {

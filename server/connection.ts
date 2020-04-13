@@ -51,14 +51,18 @@ export function listenOnConnect<T>(event): Observable<{io: io.Server; client: Ex
     )
 }
 
-const sendToRoom$: Subject<{room: string; event: SocketEventNames; payload: any}> = new Subject<{room: string; event: SocketEventNames; payload: any}>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sendToRoomWithUserCallback$: Subject<{room: string; event: SocketEventNames; callback: (socketId: string) => any}> = new Subject<{room: string; event: SocketEventNames; callback: (socketId: string) => any}>();
 
-export function sendToRoom<T>(room: string, event: SocketEventNames, payload: T): void {
-  sendToRoom$.next({room, event, payload});
+export function sendToRoomWithUserCallback<T>(room: string, event: SocketEventNames, callback: (socketId: string) => T): void {
+  sendToRoomWithUserCallback$.next({room, event, callback});
 }
 
-combineLatest(io$, sendToRoom$)
-  .subscribe(([io, { room, event, payload }]) => {
+combineLatest(io$, sendToRoomWithUserCallback$)
+  .subscribe(([io, { room, event, callback }]) => {
     logInfo(`Send event ${event} to room ${room}`);
-    io.in(room).emit(event, payload);
+    Object.entries(io.in(room).sockets)
+      .forEach(([id, socket]) => {
+        socket.emit(event, callback(id));
+      });
   });

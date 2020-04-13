@@ -39,7 +39,7 @@ export class Game implements GameDto {
   private readonly GUESSING_TIME = 15;
   private readonly WRONG_GUESS_COUNT = 3;
 
-  constructor(admin: string, room: string, public updateGame: (room: string, payload: { gameState: GameDto}) => void) {
+  constructor(admin: string, room: string, public updateGame: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void) {
     this.admin = admin;
     this.room = room;
 
@@ -88,7 +88,7 @@ export class Game implements GameDto {
     } else if (this.guesses.length === this.WRONG_GUESS_COUNT) {
       this.wrongGuessesCountReached$.next(true);
     } else {
-      this.updateGame(this.room, this.toDto());
+      this.updateGame(this.room, this.toDto.bind(this));
     }
 
   }
@@ -101,7 +101,7 @@ export class Game implements GameDto {
     this.state = GameState.THINKING;
     this.totalSeconds = this.THINKING_TIME;
     this.secondsLeft = this.THINKING_TIME;
-    this.updateGame(this.room, this.toDto());
+    this.updateGame(this.room, this.toDto.bind(this));
     merge(this.startTimer(), this.everyPlayerSubmittedWord$).pipe(
       first(condition => condition)
     ).subscribe(
@@ -122,7 +122,7 @@ export class Game implements GameDto {
     this.guessesLeft = this.WRONG_GUESS_COUNT;
     this.totalSeconds = this.GUESSING_TIME;
     this.secondsLeft = this.GUESSING_TIME;
-    this.updateGame(this.room, this.toDto());
+    this.updateGame(this.room, this.toDto.bind(this));
     merge(this.startTimer(), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
       first(condition => condition)
     ).subscribe(
@@ -134,14 +134,18 @@ export class Game implements GameDto {
     this.state = GameState.ROUND_FINISHED;
     this.totalSeconds = undefined;
     this.secondsLeft = undefined;
-    this.updateGame(this.room, this.toDto());
+    this.updateGame(this.room, this.toDto.bind(this));
   }
 
   private generateWord(): string {
     return "GUESS ME I AM A WORD";
   }
 
-  public toDto(): { gameState: GameDto} {
+  public toDto(clientId: string): { gameState: GameDto} {
+    // Do not send wordToGuess to activePlayer in Thinking and Guessing State!
+    const shouldnotIncludeWordToGuess: boolean =
+      (this.state === GameState.THINKING || this.state === GameState.GUESSING)
+      && this.users[this.activePlayer].socketId === clientId;
     return {
       gameState: {
         started: this.started,
@@ -154,7 +158,9 @@ export class Game implements GameDto {
         users: this.users,
         secondsLeft: this.secondsLeft,
         totalSeconds: this.totalSeconds,
-        guessesLeft: this.guessesLeft
+        guessesLeft: this.guessesLeft,
+        guesses: this.guesses,
+        wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.wordToGuess,
       }
     };
   }

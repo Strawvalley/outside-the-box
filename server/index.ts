@@ -1,5 +1,5 @@
 import { server } from "./server";
-import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToRoom } from "./connection";
+import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToRoomWithUserCallback } from "./connection";
 import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 server.listen(port, () => logInfo(`Listening on port: ${port}`));
 
 const gameManager = new GameManager(
-  (room: string, payload: { gameState: GameDto }) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload)
+  (room: string, toDto: (clientId: string) => { gameState: GameDto }) => sendToRoomWithUserCallback(room, SocketEventNames.UPDATE_GAME_STATE, toDto)
 );
 
 connection$.subscribe(({ client }) => {
@@ -30,7 +30,9 @@ disconnect$.subscribe(({ io, client }) => {
 
   if (gameManager.hasGame(client.room)) {
     io.in(client.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
-    io.in(client.room).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room));
+    Object.entries(io.in(client.room).sockets).map(([id, socket]) => {
+      socket.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room, id));
+    });
   }
 });
 
@@ -51,7 +53,7 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   io.in(data.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
 
   // Send current game state to new connect client
-  client.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(data.room));
+  client.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(data.room, client.id));
 });
 
 listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ client }) => {

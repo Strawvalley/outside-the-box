@@ -1,4 +1,4 @@
-import { GameDto } from "../shared";
+import { GameDto, GameState } from "../shared";
 
 export function getUsername(): string {
   const username = sessionStorage.getItem('username');
@@ -91,8 +91,27 @@ export function displayGameState(gameState: GameDto, id: string): void {
     time.textContent = ``;
   }
 
-  document.querySelectorAll('.guesses-left').forEach((element) => {
-    element.textContent = gameState.guessesLeft.toString();
-  });
+  if (gameState.state === GameState.GUESSING) {
+    // Update guesses left
+    document.querySelectorAll<HTMLElement>('.guesses-left').forEach((element) => {
+      element.textContent = gameState.guessesLeft.toString();
+    });
+  }
+
+  if (gameState.state === GameState.GUESSING || gameState.state === GameState.ROUND_FINISHED) {
+    // Update list of guesses
+    document.querySelectorAll<HTMLUListElement>('.guesses').forEach((list) => {
+      list.innerHTML = ``;
+      gameState.guesses.forEach((guess) => {
+        const item = document.createElement('li');
+        item.innerHTML = guess;
+        list.appendChild(item);
+      });
+    });
+
+    document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {
+      element.textContent = gameState.wordToGuess;
+    });
+  }
 
 }

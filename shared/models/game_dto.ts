@@ -9,9 +9,12 @@ export interface GameDto {
   round: number ;
   points: number;
   activePlayer: string;
-  secondsLeft: number;
-  totalSeconds: number;
-  guessesLeft: number;
+
+  secondsLeft?: number;
+  totalSeconds?: number;
+  guessesLeft?: number;
+  guesses?: string[];
+  wordToGuess?: string;
 
   users: {
     [username: string]: {

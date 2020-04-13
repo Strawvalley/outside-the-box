@@ -43,17 +43,23 @@
         <div>You have <span class="guesses-left"></span> guesses left.</div>
         <input id="guessing-word" />
         <button id="guessing">Guess word</button>
+        <div>Guesses so far:</div>
+        <ul class="guesses"></ul>
       </div>
       <div class="player">
         <div>The player is guessing the word.</div>
         <div>He has <span class="guesses-left"></span> guesses left.</div>
+        <div>Guesses so far:</div>
+        <ul class="guesses"></ul>
       </div>
 
     </div>
 
     <div class="game-state game-state-ROUND_FINISHED">
       <h1>Round finished</h1>
-
+      <div>The word to guess was: <span class="word-to-guess"></span></div>
+      <div>Guesses:</div>
+      <ul class="guesses"></ul>
     </div>
 
     <div class="game-state game-state-GAME_FINISHED">

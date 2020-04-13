@@ -60,9 +60,22 @@ export function sendToRoomWithUserCallback<T>(room: string, event: SocketEventNa
 
 combineLatest(io$, sendToRoomWithUserCallback$)
   .subscribe(([io, { room, event, callback }]) => {
-    logInfo(`Send event ${event} to room ${room}`);
+    logInfo(`Send event ${event} to users in room ${room} based on clientId.`);
     Object.entries(io.in(room).sockets)
       .forEach(([id, socket]) => {
         socket.emit(event, callback(id));
       });
+  });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sendToRoom$: Subject<{room: string; event: SocketEventNames; payload: any}> = new Subject<{room: string; event: SocketEventNames; payload: any}>();
+
+export function sendToRoom<T>(room: string, event: SocketEventNames, payload: T): void {
+  sendToRoom$.next({room, event, payload});
+}
+
+combineLatest(io$, sendToRoom$)
+  .subscribe(([io, { room, event, payload }]) => {
+    logInfo(`Send event ${event} to users room ${room}.`);
+    io.in(room).emit(event, payload);
   });

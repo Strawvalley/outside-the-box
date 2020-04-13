@@ -15,6 +15,8 @@ export interface GameDto {
   guessesLeft?: number;
   guesses?: string[];
   wordToGuess?: string;
+  pointsInRound?: number;
+  wordWasGuessed?: boolean;
 
   wordsInRound?: {
     [username: string]: string;

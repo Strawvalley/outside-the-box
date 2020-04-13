@@ -12,6 +12,7 @@ export class Game implements GameDto {
   totalRounds: number;
   round: number;
   points: number;
+  pointsInRound: number;
   activePlayer: string;
   totalSeconds: number;
   secondsLeft: number;
@@ -33,6 +34,7 @@ export class Game implements GameDto {
   };
   guesses?: string[];
   guessesLeft?: number;
+  wordWasGuessed?: boolean;
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
@@ -51,6 +53,7 @@ export class Game implements GameDto {
     this.totalRounds = 10;
     this.round = 1;
     this.points = 0;
+    this.pointsInRound = 0;
     this.users = {};
     this.wordsInRound = {};
   }
@@ -70,6 +73,7 @@ export class Game implements GameDto {
 
     this.filteredWordsInRound = {};
     const counter = {}
+    // TODO: Better word matching
     Object.values(this.wordsInRound).forEach((word) => {
       counter[word] = (counter[word] || 0) + 1;
     });
@@ -94,6 +98,9 @@ export class Game implements GameDto {
     // TODO: Better word matching
     if (word.toLowerCase().trim() === this.wordToGuess.toLowerCase().trim()) {
       logInfo(`Player ${username} guessed the word in room ${this.room}`);
+      this.pointsInRound = 100;
+      this.points += this.pointsInRound;
+      this.wordWasGuessed = true;
       this.userGuessedWord$.next(true);
     } else if (this.guesses.length === this.WRONG_GUESS_COUNT) {
       this.wrongGuessesCountReached$.next(true);
@@ -109,6 +116,8 @@ export class Game implements GameDto {
     this.wordToGuess = this.generateWord();
     this.wordsInRound = {};
     this.state = GameState.THINKING;
+    this.pointsInRound = 0;
+    this.wordWasGuessed = false;
     this.totalSeconds = this.THINKING_TIME;
     this.secondsLeft = this.THINKING_TIME;
     this.updateGame(this.room, this.toDto.bind(this));
@@ -173,6 +182,8 @@ export class Game implements GameDto {
         filteredWordsInRound: this.state === GameState.GUESSING ? this.filteredWordsInRound : undefined,
         wordsInRound: this.state === GameState.ROUND_FINISHED ? this.wordsInRound : undefined,
         wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.wordToGuess,
+        wordWasGuessed: this.wordWasGuessed,
+        pointsInRound: this.pointsInRound
       }
     };
   }

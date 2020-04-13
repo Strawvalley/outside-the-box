@@ -91,6 +91,12 @@ export function displayGameState(gameState: GameDto, id: string): void {
     time.textContent = ``;
   }
 
+  if (gameState.wordToGuess) {
+    document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {
+      element.textContent = gameState.wordToGuess;
+    });
+  }
+
   if (gameState.state === GameState.GUESSING) {
     // Update guesses left
     document.querySelectorAll<HTMLElement>('.guesses-left').forEach((element) => {
@@ -118,10 +124,6 @@ export function displayGameState(gameState: GameDto, id: string): void {
         list.appendChild(item);
       });
     });
-
-    document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {
-      element.textContent = gameState.wordToGuess;
-    });
   }
 
   if (gameState.state === GameState.ROUND_FINISHED) {
@@ -134,6 +136,13 @@ export function displayGameState(gameState: GameDto, id: string): void {
           element.appendChild(div);
         });
       });
+    }
+
+    const result = document.querySelector('#result');
+    if (gameState.wordWasGuessed) {
+      result.textContent = `The word was guessed +${gameState.pointsInRound} Points -> Total Points: ${gameState.points}`;
+    } else {
+      result.textContent = `The word was not guessed +0 Points -> Total Points: ${gameState.points}`;
     }
   }
 

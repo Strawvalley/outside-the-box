@@ -28,6 +28,7 @@
     <div class="game-state game-state-THINKING">
       <h1>Thinking</h1>
       <div class="player">
+        <div>The word in this round is<span class="word-to-guess"></span></div>
         <input id="thinking-word" />
         <button id="thinking">Submit word</button>
       </div>
@@ -63,6 +64,7 @@
       <div>The word to guess was: <span class="word-to-guess"></span></div>
       <div>Guesses:</div>
       <ul class="guesses"></ul>
+      <div id="result"></div>
     </div>
 
     <div class="game-state game-state-GAME_FINISHED">

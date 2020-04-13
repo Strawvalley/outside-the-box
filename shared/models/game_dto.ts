@@ -9,6 +9,8 @@ export interface GameDto {
   round: number ;
   points: number;
   activePlayer: string;
+  secondsLeft: number;
+  totalSeconds: number;
 
   users: {
     [username: string]: {

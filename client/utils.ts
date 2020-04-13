@@ -53,6 +53,8 @@ export function displayUsername(username: string): void {
   document.querySelector('#username').textContent = username;
 }
 
+let interval;
+
 export function displayGameState(gameState: GameDto, id: string): void {
 
   document.querySelector('#state').textContent = JSON.stringify(gameState);
@@ -71,6 +73,22 @@ export function displayGameState(gameState: GameDto, id: string): void {
     game.classList.add('active-player');
   } else {
     game.classList.add('player');
+  }
+
+  // Update Timer
+  if (interval) clearInterval(interval);
+  const time = document.querySelector('#time');
+  if (gameState.secondsLeft !== undefined) {
+    time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
+    interval = setInterval(() => {
+      gameState.secondsLeft--;
+      time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
+      if (gameState.secondsLeft <= 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+  } else {
+    time.textContent = ``;
   }
 
 }

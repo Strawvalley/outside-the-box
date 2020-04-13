@@ -1,6 +1,6 @@
 import { GameState, GameDto } from "../../shared";
-import { Subject } from "rxjs";
-import { filter, timeout, take } from "rxjs/operators";
+import { Subject, merge, interval, Observable } from "rxjs";
+import { filter, take, tap, map, first } from "rxjs/operators";
 
 export class Game implements GameDto {
   started: boolean;
@@ -12,6 +12,8 @@ export class Game implements GameDto {
   round: number;
   points: number;
   activePlayer: string;
+  totalSeconds: number;
+  secondsLeft: number;
 
   users: {
     [username: string]: {
@@ -27,7 +29,8 @@ export class Game implements GameDto {
   };
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
-  private readonly THINKING_TIME_MS = 10000;
+  private readonly THINKING_TIME = 10;
+  private readonly GUESSING_TIME = 15;
 
   constructor(admin: string, room: string, public updateGame: (room: string, payload: { gameState: GameDto}) => void) {
     this.admin = admin;
@@ -80,23 +83,40 @@ export class Game implements GameDto {
     this.wordToGuess = this.generateWord();
     this.wordsInRound = {};
     this.state = GameState.THINKING;
-
+    this.totalSeconds = this.THINKING_TIME;
+    this.secondsLeft = this.THINKING_TIME;
     this.updateGame(this.room, this.toDto());
-    this.everyPlayerSubmittedWord$.pipe(
-      filter(everyPlayerSubmittedWord => everyPlayerSubmittedWord),
-      timeout(this.THINKING_TIME_MS),
-      take(1)
+    merge(this.startTimer(), this.everyPlayerSubmittedWord$).pipe(
+      first(condition => condition)
     ).subscribe(
-      () => this.goToGuessing(),
-      () => this.goToGuessing(),
+      () => this.goToGuessing()
+    );
+  }
+
+  private startTimer(): Observable<boolean> {
+    return interval(1000).pipe(
+      tap(() => this.secondsLeft--),
+      map(() => this.secondsLeft <= 0)
     );
   }
 
   private goToGuessing(): void {
     this.state = GameState.GUESSING;
+    this.totalSeconds = this.GUESSING_TIME;
+    this.secondsLeft = this.GUESSING_TIME;
     this.updateGame(this.room, this.toDto());
+    merge(this.startTimer()).pipe(
+      first(condition => condition)
+    ).subscribe(
+      () => this.goToRoundFinished()
+    );
+  }
 
-    // TODO: START TIMER
+  private goToRoundFinished(): void {
+    this.state = GameState.ROUND_FINISHED;
+    this.totalSeconds = undefined;
+    this.secondsLeft = undefined;
+    this.updateGame(this.room, this.toDto());
   }
 
   private generateWord(): string {
@@ -113,7 +133,9 @@ export class Game implements GameDto {
         round: this.round,
         points: this.points,
         activePlayer: this.activePlayer,
-        users: this.users
+        users: this.users,
+        secondsLeft: this.secondsLeft,
+        totalSeconds: this.totalSeconds
       }
     };
   }

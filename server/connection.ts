@@ -2,8 +2,8 @@ import { of, fromEvent, Observable, Subject, combineLatest } from 'rxjs';
 import { map, switchMap, mergeMap, takeUntil } from 'rxjs/operators';
 import { server } from './server';
 import io from 'socket.io';
-import { SocketEventNames } from 'shared/enums/socket_event_names';
-import { logInfo } from './managers/log_manager';
+import { logInfo, logWarning } from './managers/log_manager';
+import { SocketEventNames } from '../shared';
 
 export interface ExtendedSocket extends io.Socket {
   username: string;
@@ -61,10 +61,11 @@ export function sendToRoomWithUserCallback<T>(room: string, event: SocketEventNa
 combineLatest(io$, sendToRoomWithUserCallback$)
   .subscribe(([io, { room, event, callback }]) => {
     logInfo(`Send event ${event} to users in room ${room} based on clientId.`);
-    Object.entries(io.in(room).sockets)
-      .forEach(([id, socket]) => {
-        socket.emit(event, callback(id));
-      });
+    io.in(room).clients((error, clientIds: string[]) => {
+      if (error) logWarning(error);
+      logInfo(`There are ${clientIds.length} users in room ${room}.`);
+      clientIds.forEach(clientId => io.to(clientId).emit(event, callback(clientId)));
+    });
   });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

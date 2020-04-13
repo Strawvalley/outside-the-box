@@ -30,8 +30,9 @@ disconnect$.subscribe(({ io, client }) => {
 
   if (gameManager.hasGame(client.room)) {
     io.in(client.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
-    Object.entries(io.in(client.room).sockets).map(([id, socket]) => {
-      socket.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room, id));
+    io.in(client.room).clients((error, clientIds: string[]) => {
+      if (error) logWarning(error);
+      clientIds.forEach(clientId => io.to(clientId).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room, clientId)));
     });
   }
 });

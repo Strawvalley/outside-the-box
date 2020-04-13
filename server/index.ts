@@ -69,8 +69,8 @@ listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
     gameManager.submitWordForPlayer(client.room, client.username, data);
   });
 
-listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
+listenOnConnect<string>(SocketEventNames.SUBMIT_GUESS)
   .subscribe(({ client, data }) => {
-    logInfo(`Player ${client.username} guessed word ${data} in room ${client.room}`);
+    logInfo(`Player ${client.username} submited guess ${data} in room ${client.room}`);
     gameManager.guessWordForPlayer(client.room, client.username, data);
   });

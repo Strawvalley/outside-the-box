@@ -14,9 +14,17 @@ const thinkingInput = document.querySelector<HTMLInputElement>('#thinking-word')
 
 const submitThinkingWord$ = fromEvent(thinkingButton, 'click').pipe(
   switchMap(() => of(thinkingInput.value))
-)
+);
+
+const guessingButton = document.querySelector<HTMLButtonElement>('#guessing');
+const guessingInput = document.querySelector<HTMLInputElement>('#guessing-word');
+
+const submitGuessingWord$ = fromEvent(guessingButton, 'click').pipe(
+  switchMap(() => of(guessingInput.value))
+);
 
 export {
   initiateGame$,
-  submitThinkingWord$
+  submitThinkingWord$,
+  submitGuessingWord$,
 }

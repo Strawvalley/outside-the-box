@@ -91,4 +91,8 @@ export function displayGameState(gameState: GameDto, id: string): void {
     time.textContent = ``;
   }
 
+  document.querySelectorAll('.guesses-left').forEach((element) => {
+    element.textContent = gameState.guessesLeft;
+  });
+
 }

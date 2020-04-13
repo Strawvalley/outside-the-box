@@ -11,6 +11,7 @@ export interface GameDto {
   activePlayer: string;
   secondsLeft: number;
   totalSeconds: number;
+  guessesLeft: number;
 
   users: {
     [username: string]: {

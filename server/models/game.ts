@@ -1,6 +1,7 @@
 import { GameState, GameDto } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
-import { filter, take, tap, map, first } from "rxjs/operators";
+import { tap, map, first } from "rxjs/operators";
+import { logInfo } from "../managers/log_manager";
 
 export class Game implements GameDto {
   started: boolean;
@@ -27,10 +28,16 @@ export class Game implements GameDto {
   wordsInRound: {
     [username: string]: string;
   };
+  guesses: string[];
+  guessesLeft: number;
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
+  private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
+  private wrongGuessesCountReached$: Subject<boolean> = new Subject<boolean>();
+
   private readonly THINKING_TIME = 10;
   private readonly GUESSING_TIME = 15;
+  private readonly WRONG_GUESS_COUNT = 3;
 
   constructor(admin: string, room: string, public updateGame: (room: string, payload: { gameState: GameDto}) => void) {
     this.admin = admin;
@@ -70,11 +77,20 @@ export class Game implements GameDto {
     if (this.state !== GameState.GUESSING) return;
     if (username !== this.activePlayer) return;
 
+    this.guesses.push(word);
+    this.guessesLeft--;
+
     // If word matched word to guess
     // TODO: Better word matching
     if (word.toLowerCase().trim() === this.wordToGuess.toLowerCase().trim()) {
-      console.log("NICE");
+      logInfo(`Player ${username} guessed the word in room ${this.room}`);
+      this.userGuessedWord$.next(true);
+    } else if (this.guesses.length === this.WRONG_GUESS_COUNT) {
+      this.wrongGuessesCountReached$.next(true);
+    } else {
+      this.updateGame(this.room, this.toDto());
     }
+
   }
 
   private initiateNewRound(): void {
@@ -102,10 +118,12 @@ export class Game implements GameDto {
 
   private goToGuessing(): void {
     this.state = GameState.GUESSING;
+    this.guesses = [];
+    this.guessesLeft = this.WRONG_GUESS_COUNT;
     this.totalSeconds = this.GUESSING_TIME;
     this.secondsLeft = this.GUESSING_TIME;
     this.updateGame(this.room, this.toDto());
-    merge(this.startTimer()).pipe(
+    merge(this.startTimer(), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
       first(condition => condition)
     ).subscribe(
       () => this.goToRoundFinished()
@@ -135,7 +153,8 @@ export class Game implements GameDto {
         activePlayer: this.activePlayer,
         users: this.users,
         secondsLeft: this.secondsLeft,
-        totalSeconds: this.totalSeconds
+        totalSeconds: this.totalSeconds,
+        guessesLeft: this.guessesLeft
       }
     };
   }

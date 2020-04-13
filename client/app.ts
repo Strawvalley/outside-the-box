@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from './connection';
 import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
-import { initiateGame$, submitThinkingWord$ } from './actions';
+import { initiateGame$, submitThinkingWord$, submitGuessingWord$ } from './actions';
 import { JoinRoomDto, GameDto, UserDto, SocketEventNames } from '../shared';
 
 console.log(`[INIT] outside-the-box`)
@@ -47,4 +47,9 @@ emitOnConnect(initiateGame$)
 emitOnConnect<string>(submitThinkingWord$)
   .subscribe(({ socket, data }) => {
     socket.emit(SocketEventNames.SUBMIT_WORD, data);
+  });
+
+emitOnConnect<string>(submitGuessingWord$)
+  .subscribe(({ socket, data }) => {
+    socket.emit(SocketEventNames.SUBMIT_GUESS, data);
   });

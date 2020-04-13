@@ -19,11 +19,11 @@ export interface GameDto {
   wordWasGuessed?: boolean;
 
   wordsInRound?: {
-    [username: string]: string;
+    [word: string]: string[];
   };
 
   filteredWordsInRound?: {
-    [username: string]: string;
+    [word: string]: string[];
   };
 
   users: {

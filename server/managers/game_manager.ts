@@ -34,6 +34,7 @@ export class GameManager {
 
     if (Object.values(game.users).every((user) => !user.connected)) {
       // if no users left (all users disconnected), delete game
+      this.games[gameId].deleteGame();
       delete this.games[gameId];
     } else if (userId === game.admin) {
       // If the admin left the game -> assign new admin

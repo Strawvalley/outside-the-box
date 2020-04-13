@@ -109,9 +109,13 @@ export function displayGameState(gameState: GameDto, id: string): void {
     if (gameState.filteredWordsInRound) {
       document.querySelectorAll<HTMLElement>('.user-filtered-words').forEach((element) => {
         element.innerHTML = ``;
-        Object.entries(gameState.filteredWordsInRound).forEach(([username, word]) => {
+        Object.entries(gameState.filteredWordsInRound).forEach(([word, userList]) => {
           const div = document.createElement('div');
-          div.innerHTML = `${username}: ${word}`;
+          if (userList.length > 1) {
+            div.innerHTML = `"Damn we got the same word!": ${userList}`;
+          } else {
+            div.innerHTML = `${word}: ${userList}`;
+          }
           element.appendChild(div);
         });
       });
@@ -134,9 +138,9 @@ export function displayGameState(gameState: GameDto, id: string): void {
     if (gameState.wordsInRound) {
       document.querySelectorAll<HTMLElement>('.user-words').forEach((element) => {
         element.innerHTML = ``;
-        Object.entries(gameState.wordsInRound).forEach(([username, word]) => {
+        Object.entries(gameState.wordsInRound).forEach(([word, usernames]) => {
           const div = document.createElement('div');
-          div.innerHTML = `${username}: ${word}`;
+          div.innerHTML = `${usernames}: ${word}`;
           element.appendChild(div);
         });
       });

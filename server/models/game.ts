@@ -1,6 +1,6 @@
 import { GameState, GameDto } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
-import { tap, map, first } from "rxjs/operators";
+import { tap, map, first, takeUntil } from "rxjs/operators";
 import { logInfo } from "../managers/log_manager";
 
 export class Game implements GameDto {
@@ -27,10 +27,10 @@ export class Game implements GameDto {
   // Extend the interface
   wordToGuess?: string;
   wordsInRound?: {
-    [username: string]: string;
+    [word: string]: string[];
   };
   filteredWordsInRound?: {
-    [username: string]: string;
+    [word: string]: string[];
   };
   guesses?: string[];
   guessesLeft?: number;
@@ -39,6 +39,7 @@ export class Game implements GameDto {
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
   private wrongGuessesCountReached$: Subject<boolean> = new Subject<boolean>();
+  private deleteGame$: Subject<void> = new Subject<void>();
 
   private readonly THINKING_TIME = 10;
   private readonly GUESSING_TIME = 15;
@@ -67,18 +68,22 @@ export class Game implements GameDto {
   public submitWordForPlayer(username: string, word: string): void {
     if (this.state !== GameState.THINKING) return;
     if (username === this.activePlayer) return;
-    if (this.wordsInRound[username] !== undefined) return;
+    if (Object.values(this.wordsInRound).some(userList => userList.find(u => u === username))) return;
 
     // Set word for this player in this round
-    this.wordsInRound[username] = word;
+    if (this.wordsInRound[word]) {
+      this.wordsInRound[word].push(username);
+    } else {
+      this.wordsInRound[word] = [username];
+    }
 
     this.filteredWordsInRound = {};
-    const counter = {}
-    // TODO: Better word matching
-    Object.values(this.wordsInRound).forEach((word) => {
-      counter[word] = (counter[word] || 0) + 1;
-    });
-    Object.entries(this.wordsInRound).forEach(([username, word]) => this.filteredWordsInRound[username] = counter[word] === 1 ? word : "ZONK");
+    Object.entries(this.wordsInRound)
+      .forEach(([word, userList]) =>
+        userList.length > 1
+          ? this.filteredWordsInRound[`<<${Object.keys(this.filteredWordsInRound).length}>>`] = userList
+          : this.filteredWordsInRound[word] = userList
+      );
 
     // Check if all connected players (except activePlayer) submitted a word -> nextState
     const everyPlayerSubmittedWord = Object.entries(this.users)
@@ -132,6 +137,7 @@ export class Game implements GameDto {
 
   private startTimer(): Observable<boolean> {
     return interval(1000).pipe(
+      takeUntil(this.deleteGame$),
       tap(() => this.secondsLeft--),
       map(() => this.secondsLeft <= 0)
     );
@@ -178,6 +184,11 @@ export class Game implements GameDto {
 
   private generateWord(): string {
     return "GUESS ME I AM A WORD";
+  }
+
+  public deleteGame() {
+    this.deleteGame$.next();
+    this.deleteGame$.complete();
   }
 
   public toDto(clientId: string): { gameState: GameDto} {

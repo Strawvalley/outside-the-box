@@ -96,6 +96,14 @@ export function displayGameState(gameState: GameDto, id: string): void {
     document.querySelectorAll<HTMLElement>('.guesses-left').forEach((element) => {
       element.textContent = gameState.guessesLeft.toString();
     });
+    document.querySelectorAll<HTMLElement>('.user-filtered-words').forEach((element) => {
+      element.innerHTML = ``;
+      Object.entries(gameState.filteredWordsInRound).forEach(([username, word]) => {
+        const div = document.createElement('div');
+        div.innerHTML = `${username}: ${word}`;
+        element.appendChild(div);
+      });
+    });
   }
 
   if (gameState.state === GameState.GUESSING || gameState.state === GameState.ROUND_FINISHED) {
@@ -111,6 +119,17 @@ export function displayGameState(gameState: GameDto, id: string): void {
 
     document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {
       element.textContent = gameState.wordToGuess;
+    });
+  }
+
+  if (gameState.state === GameState.ROUND_FINISHED) {
+    document.querySelectorAll<HTMLElement>('.user-words').forEach((element) => {
+      element.innerHTML = ``;
+      Object.entries(gameState.wordsInRound).forEach(([username, word]) => {
+        const div = document.createElement('div');
+        div.innerHTML = `${username}: ${word}`;
+        element.appendChild(div);
+      });
     });
   }
 

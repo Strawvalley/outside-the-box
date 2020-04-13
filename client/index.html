@@ -40,6 +40,7 @@
     <div class="game-state game-state-GUESSING">
       <h1>Guessing</h1>
       <div class="active-player">
+        <div class="user-filtered-words"></div>
         <div>You have <span class="guesses-left"></span> guesses left.</div>
         <input id="guessing-word" />
         <button id="guessing">Guess word</button>
@@ -48,6 +49,7 @@
       </div>
       <div class="player">
         <div>The player is guessing the word.</div>
+        <div class="user-filtered-words"></div>
         <div>He has <span class="guesses-left"></span> guesses left.</div>
         <div>Guesses so far:</div>
         <ul class="guesses"></ul>
@@ -57,6 +59,7 @@
 
     <div class="game-state game-state-ROUND_FINISHED">
       <h1>Round finished</h1>
+      <div class="user-words"></div>
       <div>The word to guess was: <span class="word-to-guess"></span></div>
       <div>Guesses:</div>
       <ul class="guesses"></ul>

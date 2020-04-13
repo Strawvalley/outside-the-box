@@ -24,12 +24,15 @@ export class Game implements GameDto {
   };
 
   // Extend the interface
-  wordToGuess: string;
-  wordsInRound: {
+  wordToGuess?: string;
+  wordsInRound?: {
     [username: string]: string;
   };
-  guesses: string[];
-  guessesLeft: number;
+  filteredWordsInRound?: {
+    [username: string]: string;
+  };
+  guesses?: string[];
+  guessesLeft?: number;
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
@@ -64,6 +67,13 @@ export class Game implements GameDto {
 
     // Set word for this player in this round
     this.wordsInRound[username] = word;
+
+    this.filteredWordsInRound = {};
+    const counter = {}
+    Object.values(this.wordsInRound).forEach((word) => {
+      counter[word] = (counter[word] || 0) + 1;
+    });
+    Object.entries(this.wordsInRound).forEach(([username, word]) => this.filteredWordsInRound[username] = counter[word] === 1 ? word : "ZONK");
 
     // Check if all connected players (except activePlayer) submitted a word -> nextState
     const everyPlayerSubmittedWord = Object.entries(this.users)
@@ -160,6 +170,8 @@ export class Game implements GameDto {
         totalSeconds: this.totalSeconds,
         guessesLeft: this.guessesLeft,
         guesses: this.guesses,
+        filteredWordsInRound: this.state === GameState.GUESSING ? this.filteredWordsInRound : undefined,
+        wordsInRound: this.state === GameState.ROUND_FINISHED ? this.wordsInRound : undefined,
         wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.wordToGuess,
       }
     };

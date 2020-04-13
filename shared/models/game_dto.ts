@@ -16,6 +16,14 @@ export interface GameDto {
   guesses?: string[];
   wordToGuess?: string;
 
+  wordsInRound?: {
+    [username: string]: string;
+  };
+
+  filteredWordsInRound?: {
+    [username: string]: string;
+  };
+
   users: {
     [username: string]: {
       socketId: string;

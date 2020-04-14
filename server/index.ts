@@ -1,12 +1,7 @@
-import { server } from "./server";
 import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToRoomWithUserCallback, sendToUser } from "./connection";
 import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
-
-// Create HTTP server with "app" as handler
-const port = process.env.PORT || 3000;
-server.listen(port, () => logInfo(`Listening on port: ${port}`));
 
 const gameManager = new GameManager(
   (room: string, toDto: (clientId: string) => { gameState: GameDto }) => sendToRoomWithUserCallback(room, SocketEventNames.UPDATE_GAME_STATE, toDto),

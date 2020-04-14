@@ -2,10 +2,14 @@
   "name": "outside-the-box",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "10.x"
+  },
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "start": "parcel build client/index.html && tsc && set NODE_ENV=production&&node build/server/index.js",
+    "build": "parcel build client/index.html && tsc",
+    "start": "npm run build && set NODE_ENV=production&&node build/server/index.js",
     "dev": "set NODE_ENV=development&& ts-node-dev server/index.ts",
     "lint": "./node_modules/.bin/eslint ./**"
   },

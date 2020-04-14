@@ -1,7 +1,7 @@
 import express from "express";
 import http from "http";
 import path from "path";
-import { logDebug } from "./managers/log_manager";
+import { logDebug, logInfo } from "./managers/log_manager";
 import Bundler from "parcel-bundler";
 
 const app = express();
@@ -23,3 +23,5 @@ else {
 
 // Create HTTP server with "app" as handler
 export const server = http.createServer(app);
+const port = process.env.PORT || 3000;
+server.listen(port, () => logInfo(`Listening on port: ${port}`));

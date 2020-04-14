@@ -20,9 +20,13 @@ connection$.subscribe(({ client }) => {
 disconnect$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} disconnected`);
   if (gameManager.hasGame(client.room)) {
-    gameManager.disconnectUserFromGame(client.room, client.id, client.username);
-    // Update gameState for all users in room
-    sendToRoomWithUserCallback(client.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(client.room, clientId));
+    const gameWasDeleted = gameManager.disconnectUserFromGame(client.room, client.id, client.username);
+    if (!gameWasDeleted) {
+      // Update gameState for all users in room
+      sendToRoomWithUserCallback(client.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(client.room, clientId));
+    } else {
+      logInfo(`Game ${client.room} was deleted because all users were disconnected`);
+    }
   }
 });
 

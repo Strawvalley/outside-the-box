@@ -63,10 +63,10 @@ export function displayGameState(gameState: GameDto, id: string): void {
   if (interval) clearInterval(interval);
   const time = document.querySelector('#time');
   if (gameState.secondsLeft !== undefined) {
-    time.textContent = `${gameState.secondsLeft}/${gameState.totalSeconds}`;
+    time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
     interval = setInterval(() => {
       gameState.secondsLeft--;
-      time.textContent = `${gameState.secondsLeft}/${gameState.totalSeconds}`;
+      time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
       if (gameState.secondsLeft <= 0) {
         clearInterval(interval);
       }

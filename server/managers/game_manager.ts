@@ -57,7 +57,12 @@ export class GameManager {
     }
   }
 
-  public disconnectUserFromGame(gameId: string, userId: string, username: string): void {
+  /**
+   * Sets the user to disconnected. If all users are disconnected from game, the game is also deleted.
+   * If admin disconneced, a new admin is assigned.
+   * @returns true if the game was deleted
+   */
+  public disconnectUserFromGame(gameId: string, userId: string, username: string): boolean {
     const game = this.games[gameId];
 
     game.users[username].socketId = undefined;
@@ -68,11 +73,13 @@ export class GameManager {
       if (this.hasGame(gameId)) {
         this.games[gameId].deleteGame();
         delete this.games[gameId];
+        return true;
       }
     } else if (userId === game.admin) {
       // If the admin left the game -> assign new admin
       game.admin = Object.values(game.users).find(user => user.connected).socketId;
     }
+    return false;
   }
 
   /**

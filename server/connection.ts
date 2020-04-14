@@ -60,10 +60,10 @@ export function sendToRoomWithUserCallback<T>(room: string, event: SocketEventNa
 
 combineLatest(io$, sendToRoomWithUserCallback$)
   .subscribe(([io, { room, event, callback }]) => {
-    logInfo(`Send event ${event} to users in room ${room} based on clientId.`);
+    logInfo(`Send event ${event} to users in room ${room} based on clientId`);
     io.in(room).clients((error, clientIds: string[]) => {
       if (error) logWarning(error);
-      logInfo(`There are ${clientIds.length} users in room ${room}.`);
+      logInfo(`There are ${clientIds.length} users in room ${room}`);
       clientIds.forEach(clientId => io.to(clientId).emit(event, callback(clientId)));
     });
   });
@@ -77,7 +77,7 @@ export function sendToRoom<T>(room: string, event: SocketEventNames, payload: T)
 
 combineLatest(io$, sendToRoom$)
   .subscribe(([io, { room, event, payload }]) => {
-    logInfo(`Send event ${event} to users room ${room}.`);
+    logInfo(`Send event ${event} to users room ${room}`);
     io.in(room).emit(event, payload);
   });
 
@@ -89,6 +89,6 @@ export function sendToUser<T>(clientId: string, event: SocketEventNames, payload
 
 combineLatest(io$, sendToUser$)
   .subscribe(([io, { clientId, event, payload }]) => {
-    logInfo(`Send event ${event} to user ${clientId}.`);
+    logInfo(`Send event ${event} to user ${clientId}`);
     io.to(clientId).emit(event, payload);
   });

@@ -1,6 +1,6 @@
 # outside-the-box
 
-Built on NodeJs with RxJS, Socket.IO and TypeScript.
+Built on NodeJs with RxJS and Socket.IO using TypeScript and Parcel Bundler.
 
 ## Development
 
@@ -8,7 +8,7 @@ Built on NodeJs with RxJS, Socket.IO and TypeScript.
 npm install             # Install dependencies
 ```
 ```
-npm run dev                 # Run development server
+npm run dev             # Run development server
 ```
 
 ## Production

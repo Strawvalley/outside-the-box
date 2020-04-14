@@ -13,19 +13,38 @@ export class GameManager {
     this.games = {}
   }
 
-  public addUserToGame(gameId: string, userId: string, username: string): void {
+  public addUserToGame(gameId: string, userId: string, username: string): string {
     const game = this.games[gameId];
+
     if (game.users[username] === undefined) {
       game.users[username] = {
         socketId: userId,
         connected: true
       };
+      return username
     }
+
     if (game.users[username].connected) {
-      // TODO: User with same name already connected!
+      const newUsername = this.getUnusedUsername(Object.keys(game.users), username);
+      game.users[newUsername] = {
+        socketId: userId,
+        connected: true
+      };
+      return newUsername;
     } else {
       game.users[username].socketId = userId;
       game.users[username].connected = true
+      return username;
+    }
+  }
+
+  private getUnusedUsername(usersInRoom: string[], username: string): string {
+    const randomNum = Math.floor(Math.random() * 1000);
+    const newUsername = `${username}_${randomNum}`;
+    if (usersInRoom.includes(newUsername)) {
+      return this.getUnusedUsername(usersInRoom, newUsername);
+    } else {
+      return newUsername;
     }
   }
 
@@ -47,11 +66,11 @@ export class GameManager {
     }
   }
 
-  public createOrJoinGame(gameId: string, userId: string, username: string): void {
+  public createOrJoinGame(gameId: string, userId: string, username: string): string {
     if (!this.games[gameId]) {
       this.games[gameId] = new Game(userId, gameId, this.updateGameForAllUsers, this.updateGameForUser);
     }
-    this.addUserToGame(gameId, userId, username);
+    return this.addUserToGame(gameId, userId, username);
   }
 
   public startGame(gameId: string, clientId: string): void {

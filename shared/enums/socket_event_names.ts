@@ -5,4 +5,5 @@ export enum SocketEventNames {
   SUBMIT_WORD = ">submit_word",
   SUBMIT_GUESS = ">submit_guess",
   UPDATE_GAME_STATE = "<update_game_state",
+  USERNAME_CHANGED = "<update_username",
 }

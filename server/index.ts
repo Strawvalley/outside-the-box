@@ -30,14 +30,20 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   logInfo(`Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room
-  // TODO: Make sure that user is only in one room!
+  // TODO: Make sure that user is only in one room
   const allSockets = io.sockets.sockets as { [id: string]: ExtendedSocket };
-  allSockets[client.id].username = data.username;
   allSockets[client.id].room = data.room;
   client.join(data.room);
 
   // Check if game already exists, if not -> create new game and set admin
-  gameManager.createOrJoinGame(data.room, client.id, data.username);
+  // Returns the username under which the user joined the game to prevent duplicates
+  const userJoinedAs = gameManager.createOrJoinGame(data.room, client.id, data.username);
+
+  allSockets[client.id].username = userJoinedAs;
+
+  if (userJoinedAs !== data.username) {
+    sendToUser(client.id, SocketEventNames.USERNAME_CHANGED, userJoinedAs);
+  }
 
   // Send update to all users
   sendToRoomWithUserCallback(data.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(data.room, clientId));

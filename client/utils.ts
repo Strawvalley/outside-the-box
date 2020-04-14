@@ -1,9 +1,17 @@
 import { GameDto, GameState } from "../shared";
 
+export function setUsername(username: string): void {
+  sessionStorage.setItem('username', username);
+  document.querySelector('#username').textContent = username;
+}
+
 export function getUsername(): string {
   const username = sessionStorage.getItem('username');
 
-  if (username) return username;
+  if (username) {
+    setUsername(username);
+    return username;
+  }
 
   let newUsername = prompt('Please enter a username', '');
 
@@ -13,7 +21,7 @@ export function getUsername(): string {
     newUsername = 'user' + randomNum;
   }
 
-  sessionStorage.setItem('username', newUsername);
+  setUsername(newUsername);
 
   return newUsername;
 }
@@ -27,10 +35,6 @@ export function getRoom(): string {
 export function displayRoomName(room: string): void {
   document.querySelector('#room').textContent = room;
   window.history.pushState(room, 'Outside the box!', `/${room}`);
-}
-
-export function displayUsername(username: string): void {
-  document.querySelector('#username').textContent = username;
 }
 
 let interval;

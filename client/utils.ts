@@ -104,7 +104,7 @@ export function displayGameState(gameState: GameDto, id: string): void {
 
   if (gameState.state === GameState.THINKING) {
     const thinkElement = document.querySelector<HTMLDivElement>('#think');
-    thinkElement.style.display = gameState.userSubmittedWordInRound ? 'none': 'block';
+    thinkElement.style.display = gameState.usersSubmittedWordInRound.includes(gameState.username) ? 'none': 'block';
   }
 
   if (gameState.state === GameState.GUESSING) {

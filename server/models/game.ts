@@ -3,7 +3,7 @@ import { Subject, merge, interval, Observable } from "rxjs";
 import { tap, map, first, takeUntil } from "rxjs/operators";
 import { logInfo } from "../managers/log_manager";
 
-export class Game implements GameDto {
+export class Game {
 
   started: boolean;
   admin: string;
@@ -102,7 +102,8 @@ export class Game implements GameDto {
       .every(([username]) => Object.values(this.wordsInRound).some(userList => userList.includes(username)));
 
     this.everyPlayerSubmittedWord$.next(everyPlayerSubmittedWord);
-    this.updateGameForUser(this.users[username].socketId, this.toDto(this.users[username].socketId));
+    // this.updateGameForUser(this.users[username].socketId, this.toDto(this.users[username].socketId));
+    this.updateGameForAllUsers(this.room, this.toDto.bind(this));
   }
 
   public guessWordForPlayer(username: string, word: string): void {
@@ -209,14 +210,16 @@ export class Game implements GameDto {
       (this.state === GameState.THINKING || this.state === GameState.GUESSING)
       && this.users[this.activePlayer].socketId === clientId;
 
+    // TODO: Better way to get username...
     const username = Object.entries(this.users)
       .filter(([username, user]) => user.socketId === clientId)
       .map(([username, user]) => username)[0];
 
-    const userSubmittedWordInRound = Object.values(this.wordsInRound).some(userlist => userlist.includes(username));
+    const usersSubmittedWordInRound = [].concat.apply([], ...Object.values(this.wordsInRound));
 
     return {
       gameState: {
+        username: username,
         started: this.started,
         admin: this.admin,
         state: this.state,
@@ -234,7 +237,7 @@ export class Game implements GameDto {
         wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.wordToGuess,
         wordWasGuessed: this.wordWasGuessed,
         pointsInRound: this.pointsInRound,
-        userSubmittedWordInRound: userSubmittedWordInRound,
+        usersSubmittedWordInRound: usersSubmittedWordInRound,
       }
     };
   }

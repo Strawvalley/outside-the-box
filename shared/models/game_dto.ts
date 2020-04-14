@@ -10,6 +10,8 @@ export interface GameDto {
   points: number;
   activePlayer: string;
 
+  username: string;
+
   secondsLeft?: number;
   totalSeconds?: number;
   guessesLeft?: number;
@@ -33,5 +35,5 @@ export interface GameDto {
     };
   };
 
-  userSubmittedWordInRound?: boolean;
+  usersSubmittedWordInRound?: string[];
 }

@@ -4,6 +4,7 @@ import { tap, map, first, takeUntil } from "rxjs/operators";
 import { logInfo } from "../managers/log_manager";
 
 export class Game implements GameDto {
+
   started: boolean;
   admin: string;
   room: string;
@@ -24,7 +25,6 @@ export class Game implements GameDto {
     };
   };
 
-  // Extend the interface
   wordToGuess?: string;
   wordsInRound?: {
     [word: string]: string[];
@@ -39,6 +39,7 @@ export class Game implements GameDto {
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
   private wrongGuessesCountReached$: Subject<boolean> = new Subject<boolean>();
+  private startNextRound$: Subject<boolean> = new Subject<boolean>();
   private deleteGame$: Subject<void> = new Subject<void>();
 
   private readonly THINKING_TIME = 10;
@@ -52,17 +53,20 @@ export class Game implements GameDto {
 
     this.started = false;
     this.state = GameState.NOT_STARTED;
-    this.totalRounds = 10;
-    this.round = 0;
-    this.points = 0;
-    this.pointsInRound = 0;
+    this.totalRounds = 3;
     this.users = {};
     this.wordsInRound = {};
   }
 
   public startGame(): void {
     this.started = true;
+    this.round = 0;
+    this.points = 0;
     this.initiateNewRound();
+  }
+
+  public startNextRound() {
+    this.startNextRound$.next(true);
   }
 
   public submitWordForPlayer(username: string, word: string): void {
@@ -162,7 +166,7 @@ export class Game implements GameDto {
     this.totalSeconds = this.ROUND_FINISHED_TIME;
     this.secondsLeft = this.ROUND_FINISHED_TIME;
     this.updateGame(this.room, this.toDto.bind(this));
-    merge(this.startTimer()).pipe(
+    merge(this.startTimer(), this.startNextRound$).pipe(
       first(condition => condition)
     ).subscribe(
       () => {
@@ -176,7 +180,7 @@ export class Game implements GameDto {
   }
 
   private goToGameFinished(): void {
-    this.state = GameState.ROUND_FINISHED;
+    this.state = GameState.GAME_FINISHED;
     this.totalSeconds = undefined;
     this.secondsLeft = undefined;
     this.updateGame(this.room, this.toDto.bind(this));

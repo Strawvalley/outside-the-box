@@ -18,8 +18,9 @@
   <ul id="users"></ul>
 
   <div class="game">
-    <div id="rounds"></div>
-    <div id="time"></div>
+    <div>Points: <span class="points"></span></div>
+    <div>Round: <span id="rounds"></span></div>
+    <div>Seconds left: <span id="time"></span></div>
     <div class="game-state game-state-NOT_STARTED">
       <h1>Not Started</h1>
       <button class="admin" id="initiate">Start game</button>
@@ -66,12 +67,16 @@
       <div>Guesses:</div>
       <ul class="guesses"></ul>
       <div id="result"></div>
+      <div class="active-player">
+        <button id="next-round">Start next round</button>
+      </div>
     </div>
 
     <div class="game-state game-state-GAME_FINISHED">
       <h1>Game finished</h1>
+      <div>Points: <span class="points"></span></div>
       <button class="admin" id="restart">Start new game</button>
-
+      <div class="non-admin">Please wait for the admin to start a new game!</div>
     </div>
   </div>
 

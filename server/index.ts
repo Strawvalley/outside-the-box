@@ -42,12 +42,20 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   sendToRoomWithUserCallback(client.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(client.room, clientId));
 });
 
-listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ client }) => {
+listenOnConnect<void>(SocketEventNames.START_GAME).subscribe(({ client }) => {
   try {
     gameManager.startGame(client.room, client.id);
     logInfo(`Starting game in room ${client.room}`);
   } catch (err) {
-    logWarning(`Unauthorized request: ${err}`);
+    logWarning(`Unauthorized request "START_GAME": ${err}`);
+  }
+});
+
+listenOnConnect<void>(SocketEventNames.START_NEXT_ROUND).subscribe(({ client }) => {
+  try {
+    gameManager.startNextRound(client.room, client.username);
+  } catch (err) {
+    logWarning(`Unauthorized request "START_NEXT_ROUND: ${err}`);
   }
 });
 

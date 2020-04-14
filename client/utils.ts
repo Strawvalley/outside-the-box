@@ -59,10 +59,10 @@ export function displayGameState(gameState: GameDto, id: string): void {
   if (interval) clearInterval(interval);
   const time = document.querySelector('#time');
   if (gameState.secondsLeft !== undefined) {
-    time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
+    time.textContent = `${gameState.secondsLeft}/${gameState.totalSeconds}`;
     interval = setInterval(() => {
       gameState.secondsLeft--;
-      time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
+      time.textContent = `${gameState.secondsLeft}/${gameState.totalSeconds}`;
       if (gameState.secondsLeft <= 0) {
         clearInterval(interval);
       }
@@ -74,6 +74,10 @@ export function displayGameState(gameState: GameDto, id: string): void {
   // Update rounds
   const rounds = document.querySelector('#rounds');
   rounds.textContent = `${gameState.round}/${gameState.totalRounds}`;
+
+  // Update points
+  const points = document.querySelectorAll('.points');
+  points.forEach(element => element.textContent = `${gameState.points}`);
 
   // Update users
   const userList = document.querySelector('#users');

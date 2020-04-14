@@ -60,6 +60,15 @@ export class GameManager {
     }
   }
 
+  public startNextRound(gameId: string, username: string): void {
+    const game = this.games[gameId];
+    if (game.activePlayer === username) {
+      game.startNextRound();
+    } else {
+      throw Error();
+    }
+  }
+
   public submitWordForPlayer(gameId: string, username: string, word: string): void {
     const game = this.games[gameId];
     game.submitWordForPlayer(username, word);

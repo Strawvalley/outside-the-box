@@ -23,8 +23,12 @@ const submitGuessingWord$ = fromEvent(guessingButton, 'click').pipe(
   switchMap(() => of(guessingInput.value))
 );
 
+const nextRoundButton = document.querySelector<HTMLButtonElement>('#next-round');
+const startNextRound$ = fromEvent(nextRoundButton, 'click');
+
 export {
   initiateGame$,
   submitThinkingWord$,
   submitGuessingWord$,
+  startNextRound$,
 }

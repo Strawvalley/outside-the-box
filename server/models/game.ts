@@ -1,6 +1,6 @@
 import { GameState, GameDto } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
-import { tap, map, first, takeUntil, throwIfEmpty } from "rxjs/operators";
+import { tap, map, first, takeUntil } from "rxjs/operators";
 import { logInfo, logWarning } from "../managers/log_manager";
 import { WordManager } from "../managers/word_manager";
 
@@ -158,8 +158,11 @@ export class Game {
   }
 
   private getNextUser(activePlayer: string): string {
+
+    if (activePlayer === undefined) return Object.keys(this.users).find(u => this.users[u].connected);
+
     const usernames = Object.keys(this.users);
-    const userNameIndex = usernames.indexOf(activePlayer); // If no activePlayer (first round) index is -1
+    const userNameIndex = usernames.indexOf(activePlayer);
     let nextUsernameIndex = userNameIndex + 1;
 
     for (let i = 1; i < usernames.length; i++) {

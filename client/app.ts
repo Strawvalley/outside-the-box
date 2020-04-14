@@ -1,8 +1,8 @@
 import { of } from 'rxjs';
-import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from './connection';
-import { getUsername, getRoom, addUser, removeUser, clearUsers, displayRoomName, displayUsername, displayGameState } from './utils'
+import { emitOnConnect, listenOnConnectWithConnection } from './connection';
+import { getUsername, getRoom, displayRoomName, displayUsername, displayGameState } from './utils'
 import { initiateGame$, submitThinkingWord$, submitGuessingWord$ } from './actions';
-import { JoinRoomDto, GameDto, UserDto, SocketEventNames } from '../shared';
+import { JoinRoomDto, GameDto, SocketEventNames } from '../shared';
 
 console.log(`[INIT] outside-the-box`)
 
@@ -18,19 +18,6 @@ emitOnConnect<string>(of(getUsername()))
     socket.emit(SocketEventNames.JOIN_ROOM, payload);
     displayUsername(data);
     console.log(`>>>[CONNECT] ${data} to room ${room}`);
-  });
-
-listenOnConnect<UserDto[]>(SocketEventNames.UPDATE_ROOM_USERS)
-  .subscribe((users) => {
-    console.log(`<<<[INFO] There are currently ${users.length} users in the room`);
-    clearUsers();
-    users.forEach(({ id, username, isAdmin }) => addUser(id, username, isAdmin));
-  });
-
-listenOnConnect<{ username: string; room: string; id: string }>(SocketEventNames.USER_LEFT_ROOM)
-  .subscribe(({ username, room, id }) => {
-    console.log(`<<<[INFO] ${username} (${id}) left the room ${room}`);
-    removeUser(id);
   });
 
 listenOnConnectWithConnection<{ gameState: GameDto }>(SocketEventNames.UPDATE_GAME_STATE)

@@ -1,5 +1,5 @@
 import { Game } from "../models/game";
-import { UserDto, GameDto } from "../../shared";
+import { GameDto } from "../../shared";
 
 export class GameManager {
   private games: {
@@ -26,7 +26,7 @@ export class GameManager {
     }
   }
 
-  public removeUserFromGame(gameId: string, userId: string, username: string): void {
+  public disconnectUserFromGame(gameId: string, userId: string, username: string): void {
     const game = this.games[gameId];
 
     game.users[username].socketId = undefined;
@@ -34,22 +34,14 @@ export class GameManager {
 
     if (Object.values(game.users).every((user) => !user.connected)) {
       // if no users left (all users disconnected), delete game
-      this.games[gameId].deleteGame();
-      delete this.games[gameId];
+      if (this.hasGame(gameId)) {
+        this.games[gameId].deleteGame();
+        delete this.games[gameId];
+      }
     } else if (userId === game.admin) {
       // If the admin left the game -> assign new admin
       game.admin = Object.values(game.users).find(user => user.connected).socketId;
     }
-  }
-
-  public getUsersFromGame(gameId: string): UserDto[] {
-    const game = this.games[gameId];
-    return Object.entries(game.users).map(([username, user]) => ({
-      id: user.socketId,
-      username: username,
-      room: gameId,
-      isAdmin: game ? user.socketId === game.admin : false
-    }))
   }
 
   public createOrJoinGame(gameId: string, userId: string, username: string): void {
@@ -84,6 +76,6 @@ export class GameManager {
   }
 
   public hasGame(gameId: string): boolean {
-    return Object.prototype.hasOwnProperty.call(this.games, gameId);
+    return this.games[gameId] !== undefined;
   }
 }

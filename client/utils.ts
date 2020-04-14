@@ -24,26 +24,6 @@ export function getRoom(): string {
   return roomName;
 }
 
-export function addUser(id: string, username: string, isAdmin: boolean): void {
-  document.querySelector('#users')
-    .insertAdjacentHTML(
-      'beforeend',
-      `<li ${ isAdmin ? 'class="is-admin"': ''} id="user-${id}">${username}</li>`
-    );
-}
-
-export function removeUser(id: string): void {
-  const userToRemove = document.querySelector(`#users #user-${id}`);
-
-  if (userToRemove) {
-    userToRemove.parentNode.removeChild(userToRemove);
-  }
-}
-
-export function clearUsers(): void {
-  document.querySelector('#users').innerHTML = '';
-}
-
 export function displayRoomName(room: string): void {
   document.querySelector('#room').textContent = room;
   window.history.pushState(room, 'Outside the box!', `/${room}`);
@@ -94,6 +74,19 @@ export function displayGameState(gameState: GameDto, id: string): void {
   // Update rounds
   const rounds = document.querySelector('#rounds');
   rounds.textContent = `${gameState.round}/${gameState.totalRounds}`;
+
+  // Update users
+  const userList = document.querySelector('#users');
+  userList.innerHTML = '';
+  Object.entries(gameState.users).forEach(([username, user]) => {
+    const listItem = document.createElement('li');
+    listItem.id = `user-${id}`;
+    listItem.innerText = username;
+    listItem.innerText += user.socketId === gameState.admin ? ` [ADMIN]` : ``;
+    listItem.innerText += user.connected ? ` (connected)` : ` (disconnected)`;
+    if (username === gameState.activePlayer) listItem.classList.add("is-active");
+    userList.appendChild(listItem);
+  });
 
   if (gameState.wordToGuess) {
     document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {

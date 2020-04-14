@@ -16,24 +16,12 @@ connection$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} connected`);
 });
 
-disconnect$.subscribe(({ io, client }) => {
+disconnect$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} disconnected`);
-
-  if (client.room) {
-    io.in(client.room).emit(SocketEventNames.USER_LEFT_ROOM, {
-      username: client.username,
-      room: client.room,
-      id: client.id
-    });
-    gameManager.removeUserFromGame(client.room, client.id, client.username);
-  }
-
   if (gameManager.hasGame(client.room)) {
-    io.in(client.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
-    io.in(client.room).clients((error, clientIds: string[]) => {
-      if (error) logWarning(error);
-      clientIds.forEach(clientId => io.to(clientId).emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(client.room, clientId)));
-    });
+    gameManager.disconnectUserFromGame(client.room, client.id, client.username);
+    // Update gameState for all users in room
+    sendToRoomWithUserCallback(client.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(client.room, clientId));
   }
 });
 
@@ -50,11 +38,8 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   // Check if game already exists, if not -> create new game and set admin
   gameManager.createOrJoinGame(data.room, client.id, data.username);
 
-  // Send new user list to all users
-  io.in(data.room).emit(SocketEventNames.UPDATE_ROOM_USERS, gameManager.getUsersFromGame(client.room));
-
-  // Send current game state to new connect client
-  client.emit(SocketEventNames.UPDATE_GAME_STATE, gameManager.getGameState(data.room, client.id));
+  // Send update to all users
+  sendToRoomWithUserCallback(client.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(client.room, clientId));
 });
 
 listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ client }) => {
@@ -66,14 +51,12 @@ listenOnConnect<void>(SocketEventNames.INITIATE_GAME).subscribe(({ client }) => 
   }
 });
 
-listenOnConnect<string>(SocketEventNames.SUBMIT_WORD)
-  .subscribe(({ client, data }) => {
-    logInfo(`Player ${client.username} submitted word ${data} in room ${client.room}`);
-    gameManager.submitWordForPlayer(client.room, client.username, data);
-  });
+listenOnConnect<string>(SocketEventNames.SUBMIT_WORD).subscribe(({ client, data }) => {
+  logInfo(`Player ${client.username} submitted word ${data} in room ${client.room}`);
+  gameManager.submitWordForPlayer(client.room, client.username, data);
+});
 
-listenOnConnect<string>(SocketEventNames.SUBMIT_GUESS)
-  .subscribe(({ client, data }) => {
-    logInfo(`Player ${client.username} submited guess ${data} in room ${client.room}`);
-    gameManager.guessWordForPlayer(client.room, client.username, data);
-  });
+listenOnConnect<string>(SocketEventNames.SUBMIT_GUESS).subscribe(({ client, data }) => {
+  logInfo(`Player ${client.username} submited guess ${data} in room ${client.room}`);
+  gameManager.guessWordForPlayer(client.room, client.username, data);
+});

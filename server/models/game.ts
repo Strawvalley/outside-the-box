@@ -88,7 +88,7 @@ export class Game implements GameDto {
     // Check if all connected players (except activePlayer) submitted a word -> nextState
     const everyPlayerSubmittedWord = Object.entries(this.users)
       .filter(([username, user]) => username !== this.activePlayer && user.connected)
-      .every(([username]) => this.wordsInRound[username] !== undefined);
+      .every(([username]) => Object.values(this.wordsInRound).some(userList => userList.includes(username)));
 
     this.everyPlayerSubmittedWord$.next(everyPlayerSubmittedWord);
   }
@@ -186,7 +186,7 @@ export class Game implements GameDto {
     return "GUESS ME I AM A WORD";
   }
 
-  public deleteGame() {
+  public deleteGame(): void {
     this.deleteGame$.next();
     this.deleteGame$.complete();
   }

@@ -47,13 +47,20 @@ export class Game implements GameDto {
   private readonly ROUND_FINISHED_TIME = 10;
   private readonly WRONG_GUESS_COUNT = 3;
 
-  constructor(admin: string, room: string, public updateGame: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void) {
+  constructor(
+    admin: string,
+    room: string,
+    public updateGameForAllUsers: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void,
+    public updateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void
+  ) {
     this.admin = admin;
     this.room = room;
 
     this.started = false;
     this.state = GameState.NOT_STARTED;
     this.totalRounds = 3;
+    this.round = 0;
+    this.points = 0;
     this.users = {};
     this.wordsInRound = {};
   }
@@ -65,7 +72,7 @@ export class Game implements GameDto {
     this.initiateNewRound();
   }
 
-  public startNextRound() {
+  public startNextRound(): void {
     this.startNextRound$.next(true);
   }
 
@@ -95,6 +102,7 @@ export class Game implements GameDto {
       .every(([username]) => Object.values(this.wordsInRound).some(userList => userList.includes(username)));
 
     this.everyPlayerSubmittedWord$.next(everyPlayerSubmittedWord);
+    this.updateGameForUser(this.users[username].socketId, this.toDto(this.users[username].socketId));
   }
 
   public guessWordForPlayer(username: string, word: string): void {
@@ -115,7 +123,7 @@ export class Game implements GameDto {
     } else if (this.guesses.length === this.WRONG_GUESS_COUNT) {
       this.wrongGuessesCountReached$.next(true);
     } else {
-      this.updateGame(this.room, this.toDto.bind(this));
+      this.updateGameForAllUsers(this.room, this.toDto.bind(this));
     }
 
   }
@@ -131,7 +139,7 @@ export class Game implements GameDto {
     this.wordWasGuessed = false;
     this.totalSeconds = this.THINKING_TIME;
     this.secondsLeft = this.THINKING_TIME;
-    this.updateGame(this.room, this.toDto.bind(this));
+    this.updateGameForAllUsers(this.room, this.toDto.bind(this));
     merge(this.startTimer(), this.everyPlayerSubmittedWord$).pipe(
       first(condition => condition)
     ).subscribe(
@@ -153,7 +161,7 @@ export class Game implements GameDto {
     this.guessesLeft = this.WRONG_GUESS_COUNT;
     this.totalSeconds = this.GUESSING_TIME;
     this.secondsLeft = this.GUESSING_TIME;
-    this.updateGame(this.room, this.toDto.bind(this));
+    this.updateGameForAllUsers(this.room, this.toDto.bind(this));
     merge(this.startTimer(), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
       first(condition => condition)
     ).subscribe(
@@ -165,7 +173,7 @@ export class Game implements GameDto {
     this.state = GameState.ROUND_FINISHED;
     this.totalSeconds = this.ROUND_FINISHED_TIME;
     this.secondsLeft = this.ROUND_FINISHED_TIME;
-    this.updateGame(this.room, this.toDto.bind(this));
+    this.updateGameForAllUsers(this.room, this.toDto.bind(this));
     merge(this.startTimer(), this.startNextRound$).pipe(
       first(condition => condition)
     ).subscribe(
@@ -183,7 +191,7 @@ export class Game implements GameDto {
     this.state = GameState.GAME_FINISHED;
     this.totalSeconds = undefined;
     this.secondsLeft = undefined;
-    this.updateGame(this.room, this.toDto.bind(this));
+    this.updateGameForAllUsers(this.room, this.toDto.bind(this));
   }
 
   private generateWord(): string {
@@ -200,6 +208,13 @@ export class Game implements GameDto {
     const shouldnotIncludeWordToGuess: boolean =
       (this.state === GameState.THINKING || this.state === GameState.GUESSING)
       && this.users[this.activePlayer].socketId === clientId;
+
+    const username = Object.entries(this.users)
+      .filter(([username, user]) => user.socketId === clientId)
+      .map(([username, user]) => username)[0];
+
+    const userSubmittedWordInRound = Object.values(this.wordsInRound).some(userlist => userlist.includes(username));
+
     return {
       gameState: {
         started: this.started,
@@ -218,7 +233,8 @@ export class Game implements GameDto {
         wordsInRound: this.state === GameState.ROUND_FINISHED ? this.wordsInRound : undefined,
         wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.wordToGuess,
         wordWasGuessed: this.wordWasGuessed,
-        pointsInRound: this.pointsInRound
+        pointsInRound: this.pointsInRound,
+        userSubmittedWordInRound: userSubmittedWordInRound,
       }
     };
   }

@@ -80,3 +80,15 @@ combineLatest(io$, sendToRoom$)
     logInfo(`Send event ${event} to users room ${room}.`);
     io.in(room).emit(event, payload);
   });
+
+const sendToUser$: Subject<{clientId: string; event: SocketEventNames; payload: any}> = new Subject<{clientId: string; event: SocketEventNames; payload: any}>();
+
+export function sendToUser<T>(clientId: string, event: SocketEventNames, payload: T): void {
+  sendToUser$.next({clientId, event, payload});
+}
+
+combineLatest(io$, sendToUser$)
+  .subscribe(([io, { clientId, event, payload }]) => {
+    logInfo(`Send event ${event} to user ${clientId}.`);
+    io.to(clientId).emit(event, payload);
+  });

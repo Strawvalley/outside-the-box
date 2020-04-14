@@ -98,6 +98,11 @@ export function displayGameState(gameState: GameDto, id: string): void {
     });
   }
 
+  if (gameState.state === GameState.THINKING) {
+    const thinkElement = document.querySelector<HTMLDivElement>('#think');
+    thinkElement.style.display = gameState.userSubmittedWordInRound ? 'none': 'block';
+  }
+
   if (gameState.state === GameState.GUESSING) {
     // Update guesses left
     document.querySelectorAll<HTMLElement>('.guesses-left').forEach((element) => {

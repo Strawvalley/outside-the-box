@@ -32,4 +32,6 @@ export interface GameDto {
       connected: boolean;
     };
   };
+
+  userSubmittedWordInRound?: boolean;
 }

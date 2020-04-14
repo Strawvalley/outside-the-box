@@ -6,7 +6,10 @@ export class GameManager {
     [key: string]: Game;
   };
 
-  constructor(public updateGame: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void) {
+  constructor(
+    public updateGameForAllUsers: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void,
+    public updateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void
+  ) {
     this.games = {}
   }
 
@@ -46,7 +49,7 @@ export class GameManager {
 
   public createOrJoinGame(gameId: string, userId: string, username: string): void {
     if (!this.games[gameId]) {
-      this.games[gameId] = new Game(userId, gameId, this.updateGame);
+      this.games[gameId] = new Game(userId, gameId, this.updateGameForAllUsers, this.updateGameForUser);
     }
     this.addUserToGame(gameId, userId, username);
   }

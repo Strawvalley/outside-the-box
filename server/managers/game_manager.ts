@@ -7,7 +7,7 @@ export class GameManager {
   };
 
   constructor(
-    public updateGameForAllUsers: (room: string, toDto: (clientId: string) => { gameState: GameDto }) => void,
+    public updateGameForAllUsers: (room: string, toDto: { gameState: GameDto }) => void,
     public updateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void
   ) {
     this.games = {}
@@ -24,10 +24,7 @@ export class GameManager {
 
     // Username does not exist in game yet
     if (game.users[username] === undefined) {
-      game.users[username] = {
-        socketId: userId,
-        connected: true
-      };
+      game.addUser(username, userId);
       return username
     }
 
@@ -39,10 +36,7 @@ export class GameManager {
       return username;
     } else {
       const newUsername = this.getUnusedUsername(Object.keys(game.users), username);
-      game.users[newUsername] = {
-        socketId: userId,
-        connected: true
-      };
+      game.addUser(username, userId);
       return newUsername;
     }
   }
@@ -121,9 +115,8 @@ export class GameManager {
     game.guessWordForPlayer(username, word);
   }
 
-  public getGameState(gameId: string, clientid: string): { gameState: GameDto } {
-    // TODO: We should not send private properties (wordToGuess, wordsInRound) to the clients...
-    return this.games[gameId].toDto(clientid);
+  public sendGameUpdate(gameId: string): void {
+    this.games[gameId].updateGameForAllUsers();
   }
 
   public hasGame(gameId: string): boolean {

@@ -52,23 +52,6 @@ export function listenOnConnect<T>(event): Observable<{io: io.Server; client: Ex
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const sendToRoomWithUserCallback$: Subject<{room: string; event: SocketEventNames; callback: (socketId: string) => any}> = new Subject<{room: string; event: SocketEventNames; callback: (socketId: string) => any}>();
-
-export function sendToRoomWithUserCallback<T>(room: string, event: SocketEventNames, callback: (socketId: string) => T): void {
-  sendToRoomWithUserCallback$.next({room, event, callback});
-}
-
-combineLatest(io$, sendToRoomWithUserCallback$)
-  .subscribe(([io, { room, event, callback }]) => {
-    logInfo(`Send event ${event} to users in room ${room} based on clientId`);
-    io.in(room).clients((error, clientIds: string[]) => {
-      if (error) logWarning(error);
-      logInfo(`There are ${clientIds.length} users in room ${room}`);
-      clientIds.forEach(clientId => io.to(clientId).emit(event, callback(clientId)));
-    });
-  });
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sendToRoom$: Subject<{room: string; event: SocketEventNames; payload: any}> = new Subject<{room: string; event: SocketEventNames; payload: any}>();
 
 export function sendToRoom<T>(room: string, event: SocketEventNames, payload: T): void {
@@ -81,6 +64,7 @@ combineLatest(io$, sendToRoom$)
     io.in(room).emit(event, payload);
   });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sendToUser$: Subject<{clientId: string; event: SocketEventNames; payload: any}> = new Subject<{clientId: string; event: SocketEventNames; payload: any}>();
 
 export function sendToUser<T>(clientId: string, event: SocketEventNames, payload: T): void {

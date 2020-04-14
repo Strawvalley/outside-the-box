@@ -1,12 +1,15 @@
-import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToRoomWithUserCallback, sendToUser } from "./connection";
+import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToUser, sendToRoom } from "./connection";
 import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
+import { WordManager } from "./managers/word_manager";
 
 const gameManager = new GameManager(
-  (room: string, toDto: (clientId: string) => { gameState: GameDto }) => sendToRoomWithUserCallback(room, SocketEventNames.UPDATE_GAME_STATE, toDto),
+  (room: string, payload: { gameState: GameDto } ) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload),
   (clienId: string, payload: { gameState: GameDto }) => sendToUser(clienId, SocketEventNames.UPDATE_GAME_STATE, payload)
 );
+
+WordManager.initalizeWordLists();
 
 connection$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} connected`);
@@ -18,7 +21,7 @@ disconnect$.subscribe(({ client }) => {
     const gameWasDeleted = gameManager.disconnectUserFromGame(client.room, client.id, client.username);
     if (!gameWasDeleted) {
       // Update gameState for all users in room
-      sendToRoomWithUserCallback(client.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(client.room, clientId));
+      gameManager.sendGameUpdate(client.room);
     } else {
       logInfo(`Game ${client.room} was deleted because all users were disconnected`);
     }
@@ -45,7 +48,7 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   }
 
   // Send update to all users
-  sendToRoomWithUserCallback(data.room, SocketEventNames.UPDATE_GAME_STATE, (clientId: string) => gameManager.getGameState(data.room, clientId));
+  gameManager.sendGameUpdate(data.room);
 });
 
 listenOnConnect<void>(SocketEventNames.START_GAME).subscribe(({ client }) => {

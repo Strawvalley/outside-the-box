@@ -10,7 +10,7 @@ export interface GameDto {
   points: number;
   activePlayer: string;
 
-  username: string;
+  username?: string;
 
   secondsLeft?: number;
   totalSeconds?: number;

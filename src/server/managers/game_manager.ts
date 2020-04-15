@@ -1,5 +1,6 @@
 import { Game } from "../models/game";
 import { GameDto } from "../../shared";
+import { WordManager } from "./word_manager";
 
 export class GameManager {
   private games: {
@@ -10,6 +11,7 @@ export class GameManager {
     public updateGameForAllUsers: (room: string, toDto: { gameState: GameDto }) => void,
     public updateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void
   ) {
+    WordManager.initalizeWordLists();
     this.games = {}
   }
 

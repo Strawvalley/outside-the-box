@@ -224,7 +224,7 @@ export class Game {
 
   private getNewRound(): RoundDto {
     return {
-      activePlayer: this.getNextUser(this.round?.activePlayer),
+      activePlayer: this.getNextUser(this.round.activePlayer),
       wordToGuess: this.generateWord(),
       wordsInRound: {},
       filteredWordsInRound: {},

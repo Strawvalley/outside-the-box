@@ -2,14 +2,11 @@ import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToUser, 
 import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
-import { WordManager } from "./managers/word_manager";
 
 const gameManager = new GameManager(
   (room: string, payload: { gameState: GameDto } ) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload),
   (clienId: string, payload: { gameState: GameDto }) => sendToUser(clienId, SocketEventNames.UPDATE_GAME_STATE, payload)
 );
-
-WordManager.initalizeWordLists();
 
 connection$.subscribe(({ client }) => {
   logInfo(`Client ${client.id} connected`);

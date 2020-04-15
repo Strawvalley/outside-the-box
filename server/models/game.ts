@@ -37,7 +37,7 @@ export class Game {
   guessesLeft?: number;
   wordWasGuessed?: boolean;
 
-  public language = "de";
+  public language: string;
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
@@ -53,11 +53,13 @@ export class Game {
   constructor(
     admin: string,
     room: string,
+    lang: string,
     public sendUpdateGameForAllUsers: (room: string, payload: { gameState: GameDto}) => void,
     public sendUpdateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void
   ) {
     this.admin = admin;
     this.room = room;
+    this.language = WordManager.supportedLanguages.includes(lang) ? lang : "de";
 
     this.started = false;
     this.state = GameState.NOT_STARTED;
@@ -246,6 +248,7 @@ export class Game {
       started: this.started,
       admin: this.admin,
       state: this.state,
+      language: this.language,
       totalRounds: this.totalRounds,
       round: this.round,
       points: this.points,

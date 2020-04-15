@@ -39,7 +39,7 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
 
   // Check if game already exists, if not -> create new game and set admin
   // Returns the username under which the user joined the game to prevent duplicates
-  const userJoinedAs = gameManager.createOrJoinGame(data.room, client.id, data.username);
+  const userJoinedAs = gameManager.createOrJoinGame(data.room, client.id, data.username, data.lang);
 
   allSockets[client.id].username = userJoinedAs;
 

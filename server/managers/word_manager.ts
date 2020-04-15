@@ -3,7 +3,7 @@ import { logWarning, logInfo } from './log_manager';
 
 export class WordManager {
 
-  public static readonly supportedLanguages = ["de"];
+  public static readonly supportedLanguages = ["de", "en"];
 
   private static wordLists: {
     [languageKey: string]: string[];

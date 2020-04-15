@@ -80,9 +80,9 @@ export class GameManager {
    * Creates a new game if it does net exist yet, and adds the user to the game.
    * @returns the username under which the user is connected to the game (no duplicated allowed)
    */
-  public createOrJoinGame(gameId: string, userId: string, username: string): string {
+  public createOrJoinGame(gameId: string, userId: string, username: string, lang = "de"): string {
     if (!this.games[gameId]) {
-      this.games[gameId] = new Game(userId, gameId, this.updateGameForAllUsers, this.updateGameForUser);
+      this.games[gameId] = new Game(userId, gameId, lang, this.updateGameForAllUsers, this.updateGameForUser);
     }
     return this.addUserToGame(gameId, userId, username);
   }

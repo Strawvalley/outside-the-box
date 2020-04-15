@@ -1,6 +1,6 @@
 import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnectWithConnection, listenOnConnect } from './connection';
-import { getUsername, getRoom, displayRoomName, displayUsername, displayGameState, setUsername } from './utils'
+import { getUsername, getRoom, displayRoomName, displayGameState, setUsername } from './utils'
 import { initiateGame$, submitThinkingWord$, submitGuessingWord$, startNextRound$ } from './actions';
 import { JoinRoomDto, GameDto, SocketEventNames } from '../shared';
 
@@ -13,7 +13,8 @@ emitOnConnect<string>(of(getUsername()))
   .subscribe(({ socket, data }) => {
     const payload: JoinRoomDto = {
       room,
-      username: data
+      username: data,
+      // lang: "en"
     }
     socket.emit(SocketEventNames.JOIN_ROOM, payload);
     console.log(`>>>[INFO] Connect to room ${room}`);

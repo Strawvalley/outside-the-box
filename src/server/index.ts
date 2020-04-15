@@ -83,6 +83,11 @@ listenOnConnect<void>(SocketEventNames.START_NEXT_ROUND).subscribe(({ client }) 
   }
 });
 
+listenOnConnect<string>(SocketEventNames.SUBMIT_WORD_SELECTION).subscribe(({ client, data }) => {
+  logInfo(`Player ${client.username} submited word selection ${data} in room ${client.room}`);
+  gameManager.submitWordSelection(client.room, client.username, data);
+});
+
 listenOnConnect<string>(SocketEventNames.SUBMIT_WORD).subscribe(({ client, data }) => {
   logInfo(`Player ${client.username} submitted word ${data} in room ${client.room}`);
   gameManager.submitWordForPlayer(client.room, client.username, data);

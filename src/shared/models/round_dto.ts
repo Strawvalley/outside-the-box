@@ -4,6 +4,7 @@ export interface RoundDto {
   totalSeconds?: number;
   guessesLeft?: number;
   guesses?: string[];
+  wordsForSelection?: string[];
   wordToGuess?: string;
   pointsInRound?: number;
   wordWasGuessed?: boolean;

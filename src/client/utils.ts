@@ -116,6 +116,19 @@ export function displayGameState(gameState: GameDto, id: string): void {
     });
   }
 
+  if (gameState.state === GameState.SELECTING) {
+    if (round.wordsForSelection) {
+      document.querySelectorAll<HTMLUListElement>('.selection').forEach((list) => {
+        list.innerHTML = ``;
+        round.wordsForSelection.forEach((selection) => {
+          const item = document.createElement('li');
+          item.innerHTML = selection;
+          list.appendChild(item);
+        });
+      });
+    }
+  }
+
   if (gameState.state === GameState.THINKING) {
     const thinkElement = document.querySelector<HTMLDivElement>('#think');
     thinkElement.style.display = round.usersSubmittedWordInRound.includes(gameState.username) ? 'none': 'block';

@@ -20,6 +20,7 @@
 }
 
 .game.NOT_STARTED .game-state.game-state-NOT_STARTED,
+.game.SELECTING .game-state.game-state-SELECTING,
 .game.THINKING .game-state.game-state-THINKING,
 .game.GUESSING .game-state.game-state-GUESSING,
 .game.ROUND_FINISHED .game-state.game-state-ROUND_FINISHED,

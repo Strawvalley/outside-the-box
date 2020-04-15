@@ -114,6 +114,15 @@ export class GameManager {
     }
   }
 
+  public submitWordSelection(gameId: string, username: string, selection: string): void {
+    const game = this.games[gameId];
+    try {
+      game.submitWordSelection(username, parseInt(selection));
+    } catch {
+      throw Error("Wrongly formatted data!");
+    }
+  }
+
   public submitWordForPlayer(gameId: string, username: string, word: string): void {
     const game = this.games[gameId];
     game.submitWordForPlayer(username, word);

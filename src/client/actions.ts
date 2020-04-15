@@ -9,6 +9,12 @@ const restartButtonButtonClick$ = fromEvent(restartButton, 'click');
 
 const initiateGame$ = merge(initiateButtonClick$, restartButtonButtonClick$);
 
+const selectingSelect = document.querySelector<HTMLSelectElement>('#wordSelection');
+const selectingButton = document.querySelector<HTMLButtonElement>('#selecting');
+const submitWordSelection$ = fromEvent(selectingButton, 'click').pipe(
+  switchMap(() => of(selectingSelect.options[selectingSelect.selectedIndex].value))
+);
+
 const thinkingButton = document.querySelector<HTMLButtonElement>('#thinking');
 const thinkingInput = document.querySelector<HTMLInputElement>('#thinking-word');
 
@@ -34,6 +40,7 @@ const unpauseGame$ = fromEvent(unpauseGameButton, 'click');
 
 export {
   initiateGame$,
+  submitWordSelection$,
   submitThinkingWord$,
   submitGuessingWord$,
   startNextRound$,

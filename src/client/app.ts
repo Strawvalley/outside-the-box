@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 import { emitOnConnect, listenOnConnectWithConnection, listenOnConnect } from './connection';
 import { getUsername, getRoom, displayRoomName, displayGameState, setUsername } from './utils'
-import { initiateGame$, submitThinkingWord$, submitGuessingWord$, startNextRound$, pauseGame$, unpauseGame$ } from './actions';
+import { initiateGame$, submitWordSelection$, submitThinkingWord$, submitGuessingWord$, startNextRound$, pauseGame$, unpauseGame$ } from './actions';
 import { JoinRoomDto, GameDto, SocketEventNames } from '../shared';
 
 import './app.css';
@@ -37,6 +37,12 @@ listenOnConnect<string>(SocketEventNames.USERNAME_CHANGED)
 emitOnConnect(initiateGame$)
   .subscribe(({ socket }) => {
     socket.emit(SocketEventNames.START_GAME);
+  });
+
+
+emitOnConnect<string>(submitWordSelection$)
+  .subscribe(({ socket, data }) => {
+    socket.emit(SocketEventNames.SUBMIT_WORD_SELECTION, data);
   });
 
 emitOnConnect<string>(submitThinkingWord$)

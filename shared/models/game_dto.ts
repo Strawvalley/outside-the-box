@@ -1,33 +1,12 @@
-import { GameState } from "shared";
+import { GameState, RoundDto } from "shared";
 
 export interface GameDto {
+  username?: string;
+
   started: boolean;
   admin: string;
   state: GameState;
   language: string;
-
-  totalRounds: number;
-  round: number ;
-  points: number;
-  activePlayer: string;
-
-  username?: string;
-
-  secondsLeft?: number;
-  totalSeconds?: number;
-  guessesLeft?: number;
-  guesses?: string[];
-  wordToGuess?: string;
-  pointsInRound?: number;
-  wordWasGuessed?: boolean;
-
-  wordsInRound?: {
-    [word: string]: string[];
-  };
-
-  filteredWordsInRound?: {
-    [word: string]: string[];
-  };
 
   users: {
     [username: string]: {
@@ -36,5 +15,9 @@ export interface GameDto {
     };
   };
 
-  usersSubmittedWordInRound?: string[];
+  totalPoints: number;
+  totalRounds: number;
+  currentRound: number;
+
+  round: RoundDto;
 }

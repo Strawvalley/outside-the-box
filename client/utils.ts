@@ -53,7 +53,7 @@ export function displayGameState(gameState: GameDto, id: string): void {
   }
 
   // Update active-player / player
-  if (sessionStorage.getItem('username') === gameState.activePlayer) {
+  if (sessionStorage.getItem('username') === gameState.round.activePlayer) {
     game.classList.add('active-player');
   } else {
     game.classList.add('player');
@@ -62,12 +62,12 @@ export function displayGameState(gameState: GameDto, id: string): void {
   // Update Timer
   if (interval) clearInterval(interval);
   const time = document.querySelector('#time');
-  if (gameState.secondsLeft !== undefined) {
-    time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
+  if (gameState.round.secondsLeft !== undefined) {
+    time.textContent = `Seconds left: ${gameState.round.secondsLeft}/${gameState.round.totalSeconds}`;
     interval = setInterval(() => {
-      gameState.secondsLeft--;
-      time.textContent = `Seconds left: ${gameState.secondsLeft}/${gameState.totalSeconds}`;
-      if (gameState.secondsLeft <= 0) {
+      gameState.round.secondsLeft--;
+      time.textContent = `Seconds left: ${gameState.round.secondsLeft}/${gameState.round.totalSeconds}`;
+      if (gameState.round.secondsLeft <= 0) {
         clearInterval(interval);
       }
     }, 1000);
@@ -77,11 +77,11 @@ export function displayGameState(gameState: GameDto, id: string): void {
 
   // Update rounds
   const rounds = document.querySelector('#rounds');
-  rounds.textContent = `${gameState.round}/${gameState.totalRounds}`;
+  rounds.textContent = `${gameState.currentRound}/${gameState.totalRounds}`;
 
   // Update points
   const points = document.querySelectorAll('.points');
-  points.forEach(element => element.textContent = `${gameState.points}`);
+  points.forEach(element => element.textContent = `${gameState.totalPoints}`);
 
   // Update users
   const userList = document.querySelector('#users');
@@ -92,30 +92,30 @@ export function displayGameState(gameState: GameDto, id: string): void {
     listItem.innerText = username;
     listItem.innerText += user.socketId === gameState.admin ? ` [ADMIN]` : ``;
     listItem.innerText += user.connected ? ` (connected)` : ` (disconnected)`;
-    if (username === gameState.activePlayer) listItem.classList.add("is-active");
+    if (username === gameState.round.activePlayer) listItem.classList.add("is-active");
     userList.appendChild(listItem);
   });
 
-  if (gameState.wordToGuess) {
+  if (gameState.round.wordToGuess) {
     document.querySelectorAll<HTMLElement>('.word-to-guess').forEach((element) => {
-      element.textContent = gameState.wordToGuess;
+      element.textContent = gameState.round.wordToGuess;
     });
   }
 
   if (gameState.state === GameState.THINKING) {
     const thinkElement = document.querySelector<HTMLDivElement>('#think');
-    thinkElement.style.display = gameState.usersSubmittedWordInRound.includes(gameState.username) ? 'none': 'block';
+    thinkElement.style.display = gameState.round.usersSubmittedWordInRound.includes(gameState.username) ? 'none': 'block';
   }
 
   if (gameState.state === GameState.GUESSING) {
     // Update guesses left
     document.querySelectorAll<HTMLElement>('.guesses-left').forEach((element) => {
-      element.textContent = gameState.guessesLeft.toString();
+      element.textContent = gameState.round.guessesLeft.toString();
     });
-    if (gameState.filteredWordsInRound) {
+    if (gameState.round.filteredWordsInRound) {
       document.querySelectorAll<HTMLElement>('.user-filtered-words').forEach((element) => {
         element.innerHTML = ``;
-        Object.entries(gameState.filteredWordsInRound).forEach(([word, userList]) => {
+        Object.entries(gameState.round.filteredWordsInRound).forEach(([word, userList]) => {
           const div = document.createElement('div');
           if (userList.length > 1) {
             div.innerHTML = `"Damn we got the same word!": ${userList}`;
@@ -132,7 +132,7 @@ export function displayGameState(gameState: GameDto, id: string): void {
     // Update list of guesses
     document.querySelectorAll<HTMLUListElement>('.guesses').forEach((list) => {
       list.innerHTML = ``;
-      gameState.guesses.forEach((guess) => {
+      gameState.round.guesses.forEach((guess) => {
         const item = document.createElement('li');
         item.innerHTML = guess;
         list.appendChild(item);
@@ -141,10 +141,10 @@ export function displayGameState(gameState: GameDto, id: string): void {
   }
 
   if (gameState.state === GameState.ROUND_FINISHED) {
-    if (gameState.wordsInRound) {
+    if (gameState.round.wordsInRound) {
       document.querySelectorAll<HTMLElement>('.user-words').forEach((element) => {
         element.innerHTML = ``;
-        Object.entries(gameState.wordsInRound).forEach(([word, usernames]) => {
+        Object.entries(gameState.round.wordsInRound).forEach(([word, usernames]) => {
           const div = document.createElement('div');
           div.innerHTML = `${usernames}: ${word}`;
           element.appendChild(div);
@@ -153,11 +153,7 @@ export function displayGameState(gameState: GameDto, id: string): void {
     }
 
     const result = document.querySelector('#result');
-    if (gameState.wordWasGuessed) {
-      result.textContent = `The word was guessed +${gameState.pointsInRound} Points -> Total Points: ${gameState.points}`;
-    } else {
-      result.textContent = `The word was not guessed +0 Points -> Total Points: ${gameState.points}`;
-    }
+    result.textContent = `The word was ${gameState.round.wordWasGuessed ? '' : 'not'} guessed +${gameState.round.pointsInRound} Points -> Total Points: ${gameState.totalPoints}`;
   }
 
 }

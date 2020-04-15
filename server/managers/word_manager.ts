@@ -15,7 +15,7 @@ export class WordManager {
       fs.readFile(`word_lists/${lang}.txt`, (err, data) => {
         if (err) logWarning(`Could not read file ${lang}.txt`);
         logInfo(`Word list loaded: ${lang}`);
-        WordManager.wordLists[lang] = data.toString().split("\n");
+        WordManager.wordLists[lang] = data.toString().split("\n").map(word => word.replace('\r','').trim());
       });
     });
   }

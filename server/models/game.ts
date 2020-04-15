@@ -1,4 +1,4 @@
-import { GameState, GameDto } from "../../shared";
+import { GameState, GameDto, RoundDto } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
 import { tap, map, first, takeUntil } from "rxjs/operators";
 import { logInfo, logWarning } from "../managers/log_manager";
@@ -13,12 +13,8 @@ export class Game {
   language: string;
 
   totalRounds: number;
-  round: number;
-  points: number;
-  pointsInRound: number;
-  activePlayer: string;
-  totalSeconds: number;
-  secondsLeft: number;
+  totalPoints: number;
+  currentRound: number;
 
   users: {
     [username: string]: {
@@ -27,16 +23,7 @@ export class Game {
     };
   };
 
-  wordToGuess?: string;
-  wordsInRound?: {
-    [word: string]: string[];
-  };
-  filteredWordsInRound?: {
-    [word: string]: string[];
-  };
-  guesses?: string[];
-  guessesLeft?: number;
-  wordWasGuessed?: boolean;
+  round: RoundDto;
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
@@ -63,10 +50,10 @@ export class Game {
     this.started = false;
     this.state = GameState.NOT_STARTED;
     this.totalRounds = 3;
-    this.round = 0;
-    this.points = 0;
+    this.currentRound = 0;
+    this.totalPoints = 0;
     this.users = {};
-    this.wordsInRound = {};
+    this.round = {};
   }
 
   public addUser(username: string, userId: string): void {
@@ -78,8 +65,8 @@ export class Game {
 
   public startGame(): void {
     this.started = true;
-    this.round = 0;
-    this.points = 0;
+    this.currentRound = 0;
+    this.totalPoints = 0;
     this.initiateNewRound();
   }
 
@@ -101,28 +88,28 @@ export class Game {
 
   public submitWordForPlayer(username: string, word: string): void {
     if (this.state !== GameState.THINKING) return;
-    if (username === this.activePlayer) return;
-    if (Object.values(this.wordsInRound).some(userList => userList.find(u => u === username))) return;
+    if (username === this.round.activePlayer) return;
+    if (Object.values(this.round.wordsInRound).some(userList => userList.find(u => u === username))) return;
 
     // Set word for this player in this round
-    if (this.wordsInRound[word]) {
-      this.wordsInRound[word].push(username);
+    if (this.round.wordsInRound[word]) {
+      this.round.wordsInRound[word].push(username);
     } else {
-      this.wordsInRound[word] = [username];
+      this.round.wordsInRound[word] = [username];
     }
 
-    this.filteredWordsInRound = {};
-    Object.entries(this.wordsInRound)
+    this.round.filteredWordsInRound = {};
+    Object.entries(this.round.wordsInRound)
       .forEach(([word, userList]) =>
         userList.length > 1
-          ? this.filteredWordsInRound[`<<${Object.keys(this.filteredWordsInRound).length}>>`] = userList
-          : this.filteredWordsInRound[word] = userList
+          ? this.round.filteredWordsInRound[`<<${Object.keys(this.round.filteredWordsInRound).length}>>`] = userList
+          : this.round.filteredWordsInRound[word] = userList
       );
 
     // Check if all connected players (except activePlayer) submitted a word -> nextState
     const everyPlayerSubmittedWord = Object.entries(this.users)
-      .filter(([username, user]) => username !== this.activePlayer && user.connected)
-      .every(([username]) => Object.values(this.wordsInRound).some(userList => userList.includes(username)));
+      .filter(([username, user]) => username !== this.round.activePlayer && user.connected)
+      .every(([username]) => Object.values(this.round.wordsInRound).some(userList => userList.includes(username)));
 
     this.everyPlayerSubmittedWord$.next(everyPlayerSubmittedWord);
     // this.updateGameForUser(this.users[username].socketId, this.toDto(this.users[username].socketId));
@@ -131,20 +118,20 @@ export class Game {
 
   public guessWordForPlayer(username: string, word: string): void {
     if (this.state !== GameState.GUESSING) return;
-    if (username !== this.activePlayer) return;
+    if (username !== this.round.activePlayer) return;
 
-    this.guesses.push(word);
-    this.guessesLeft--;
+    this.round.guesses.push(word);
+    this.round.guessesLeft--;
 
     // If word matched word to guess
     // TODO: Better word matching
-    if (word.toLowerCase().trim() === this.wordToGuess.toLowerCase().trim()) {
+    if (word.toLowerCase().trim() === this.round.wordToGuess.toLowerCase().trim()) {
       logInfo(`Player ${username} guessed the word in room ${this.room}`);
-      this.pointsInRound = 100;
-      this.points += this.pointsInRound;
-      this.wordWasGuessed = true;
+      this.round.pointsInRound = 100;
+      this.round.wordWasGuessed = true;
+      this.totalPoints += this.round.pointsInRound;
       this.userGuessedWord$.next(true);
-    } else if (this.guesses.length === this.WRONG_GUESS_COUNT) {
+    } else if (this.round.guesses.length === this.WRONG_GUESS_COUNT) {
       this.wrongGuessesCountReached$.next(true);
     } else {
       this.updateGameForAllUsers();
@@ -153,21 +140,18 @@ export class Game {
   }
 
   private initiateNewRound(): void {
-    this.activePlayer = this.getNextUser(this.activePlayer);
-    this.wordToGuess = this.generateWord();
-    this.round++;
-    this.wordsInRound = {};
+    this.currentRound++;
     this.state = GameState.THINKING;
-    this.pointsInRound = 0;
-    this.wordWasGuessed = false;
-    this.totalSeconds = this.THINKING_TIME;
-    this.secondsLeft = this.THINKING_TIME;
-    this.updateGameForAllUsers();
-    merge(this.startTimer(), this.everyPlayerSubmittedWord$).pipe(
+
+    this.round = this.getNewRound();
+
+    merge(this.startTimer(this.THINKING_TIME), this.everyPlayerSubmittedWord$).pipe(
       first(condition => condition)
     ).subscribe(
       () => this.goToGuessing()
     );
+
+    this.updateGameForAllUsers();
   }
 
   private getNextUser(activePlayer: string): string {
@@ -191,55 +175,65 @@ export class Game {
     logWarning("Could not find next player");
   }
 
-  private startTimer(): Observable<boolean> {
+  private startTimer(seconds: number): Observable<boolean> {
+    this.round.totalSeconds = seconds;
+    this.round.secondsLeft = seconds;
     return interval(1000).pipe(
       takeUntil(this.deleteGame$),
-      tap(() => this.secondsLeft--),
-      map(() => this.secondsLeft <= 0)
+      tap(() => this.round.secondsLeft--),
+      map(() => this.round.secondsLeft <= 0)
     );
   }
 
   private goToGuessing(): void {
     this.state = GameState.GUESSING;
-    this.guesses = [];
-    this.guessesLeft = this.WRONG_GUESS_COUNT;
-    this.totalSeconds = this.GUESSING_TIME;
-    this.secondsLeft = this.GUESSING_TIME;
-    this.updateGameForAllUsers();
-    merge(this.startTimer(), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
+    merge(this.startTimer(this.GUESSING_TIME), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
       first(condition => condition)
     ).subscribe(
       () => this.goToRoundFinished()
     );
+    this.updateGameForAllUsers();
   }
 
   private goToRoundFinished(): void {
     this.state = GameState.ROUND_FINISHED;
-    this.totalSeconds = this.ROUND_FINISHED_TIME;
-    this.secondsLeft = this.ROUND_FINISHED_TIME;
-    this.updateGameForAllUsers();
-    merge(this.startTimer(), this.startNextRound$).pipe(
+    merge(this.startTimer(this.ROUND_FINISHED_TIME), this.startNextRound$).pipe(
       first(condition => condition)
     ).subscribe(
       () => {
-        if (this.round < this.totalRounds) {
+        if (this.currentRound < this.totalRounds) {
           this.initiateNewRound();
         } else {
           this.goToGameFinished();
         }
       }
     );
+    this.updateGameForAllUsers();
   }
 
   private goToGameFinished(): void {
     this.state = GameState.GAME_FINISHED;
-    this.totalSeconds = undefined;
-    this.secondsLeft = undefined;
+    this.round.totalSeconds = undefined;
+    this.round.secondsLeft = undefined;
     this.updateGameForAllUsers();
   }
 
   private generateWord(): string {
     return WordManager.getRandomWord(this.language);
+  }
+
+  private getNewRound(): RoundDto {
+    return {
+      activePlayer: this.getNextUser(this.round?.activePlayer),
+      wordToGuess: this.generateWord(),
+      wordsInRound: {},
+      filteredWordsInRound: {},
+      pointsInRound: 0,
+      wordWasGuessed: false,
+      guesses: [],
+      guessesLeft: this.WRONG_GUESS_COUNT,
+      usersSubmittedWordInRound: [],
+    }
   }
 
   private toDto(): GameDto {
@@ -249,20 +243,22 @@ export class Game {
       state: this.state,
       language: this.language,
       totalRounds: this.totalRounds,
-      round: this.round,
-      points: this.points,
-      activePlayer: this.activePlayer,
+      currentRound: this.currentRound,
+      totalPoints: this.totalPoints,
       users: this.users,
-      secondsLeft: this.secondsLeft,
-      totalSeconds: this.totalSeconds,
-      guessesLeft: this.guessesLeft,
-      guesses: this.guesses,
-      filteredWordsInRound: this.filteredWordsInRound,
-      wordsInRound: this.wordsInRound,
-      wordToGuess: this.wordToGuess,
-      wordWasGuessed: this.wordWasGuessed,
-      pointsInRound: this.pointsInRound,
-      usersSubmittedWordInRound: [].concat.apply([], ...Object.values(this.wordsInRound)) // flatten the userlists
+      round: {
+        totalSeconds: this.round.totalSeconds,
+        secondsLeft: this.round.secondsLeft,
+        activePlayer: this.round.activePlayer,
+        guessesLeft: this.round.guessesLeft,
+        guesses: this.round.guesses,
+        filteredWordsInRound: this.round.filteredWordsInRound,
+        wordsInRound: this.round.wordsInRound,
+        wordToGuess: this.round.wordToGuess,
+        wordWasGuessed: this.round.wordWasGuessed,
+        pointsInRound: this.round.pointsInRound,
+        usersSubmittedWordInRound: this.round.wordsInRound ? [].concat.apply([], ...Object.values(this.round.wordsInRound)) : [] // flatten the userlists
+      }
     }
   }
 
@@ -271,7 +267,7 @@ export class Game {
     // Do not send wordToGuess to activePlayer in Thinking and Guessing State!
     const shouldnotIncludeWordToGuess: boolean =
       (this.state === GameState.THINKING || this.state === GameState.GUESSING)
-      && this.users[this.activePlayer].socketId === clientId;
+      && this.users[this.round.activePlayer].socketId === clientId;
 
     const username = Object.keys(this.users).find(u => this.users[u].socketId === clientId);
 
@@ -279,9 +275,12 @@ export class Game {
       gameState: {
         ...gameDto,
         username,
-        filteredWordsInRound: this.state === GameState.GUESSING ? this.filteredWordsInRound : undefined,
-        wordsInRound: this.state === GameState.ROUND_FINISHED ? this.wordsInRound : undefined,
-        wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.wordToGuess,
+        round: {
+          ...gameDto.round,
+          filteredWordsInRound: this.state === GameState.GUESSING ? this.round.filteredWordsInRound : undefined,
+          wordsInRound: this.state === GameState.ROUND_FINISHED ? this.round.wordsInRound : undefined,
+          wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.round.wordToGuess,
+        }
       }
     };
   }

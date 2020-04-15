@@ -86,7 +86,7 @@ export class GameManager {
 
   public startNextRound(gameId: string, username: string): void {
     const game = this.games[gameId];
-    if (game.activePlayer === username) {
+    if (game.round.activePlayer === username) {
       game.startNextRound();
     } else {
       throw Error();

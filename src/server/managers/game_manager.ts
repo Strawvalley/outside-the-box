@@ -48,10 +48,9 @@ export class GameManager {
   public disconnectUserFromGame(gameId: string, userId: string, username: string): boolean {
     const game = this.games[gameId];
 
-    game.users[username].socketId = undefined;
-    game.users[username].connected = false;
+    game.removeUser(username);
 
-    if (Object.values(game.users).every((user) => !user.connected)) {
+    if (game.areAllUsersDisconnected()) {
       // if no users left (all users disconnected), delete game
       game.deleteGame();
       delete this.games[gameId];
@@ -59,12 +58,11 @@ export class GameManager {
     }
 
     // If the admin left the game -> assign new admin
-    if (userId === game.admin) {
+    if (game.isUserAdmin(userId)) {
       game.admin = Object.values(game.users).find(user => user.connected).socketId;
     }
 
-    const numberOfConnectedPlayers = Object.values(game.users).filter(u => u.connected).length;
-    if (numberOfConnectedPlayers < 3) game.pause();
+    if (game.getNumberOfConnectedPlayers() < 3) game.pause();
 
     return false;
   }
@@ -82,17 +80,16 @@ export class GameManager {
 
   public startGame(gameId: string, clientId: string): void {
     const game = this.games[gameId];
-    if (game.admin !== clientId) throw Error("Unauthorized request");
+    if (!game.isUserAdmin(clientId)) throw Error("Unauthorized request");
 
-    const numberOfConnectedPlayers = Object.values(game.users).filter(u => u.connected).length;
-    if (numberOfConnectedPlayers < 3) throw Error("Min 3 connected players required to start game");
+    if (game.getNumberOfConnectedPlayers() < 3) throw Error("Min 3 connected players required to start game");
 
     game.startGame();
   }
 
   public pauseGame(gameId: string, clientId: string): void {
     const game = this.games[gameId];
-    if (game.admin === clientId) {
+    if (game.isUserAdmin(clientId)) {
       game.pause();
     } else {
       throw Error();
@@ -101,7 +98,7 @@ export class GameManager {
 
   public unpauseGame(gameId: string, clientId: string): void {
     const game = this.games[gameId];
-    if (game.admin === clientId) {
+    if (game.isUserAdmin(clientId)) {
       game.unpause();
     } else {
       throw Error();

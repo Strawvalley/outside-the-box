@@ -65,6 +65,23 @@ export class Game {
     }
   }
 
+  public removeUser(username: string): void {
+    this.users[username].socketId = undefined;
+    this.users[username].connected = false;
+  }
+
+  public areAllUsersDisconnected(): boolean {
+    return Object.values(this.users).every((user) => !user.connected);
+  }
+
+  public getNumberOfConnectedPlayers(): number {
+    return Object.values(this.users).filter(u => u.connected).length;
+  }
+
+  public isUserAdmin(userId: string): boolean {
+    return this.admin === userId;
+  }
+
   public startGame(): void {
     this.started = true;
     this.currentRound = 0;

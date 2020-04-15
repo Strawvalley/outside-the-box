@@ -26,9 +26,17 @@ const submitGuessingWord$ = fromEvent(guessingButton, 'click').pipe(
 const nextRoundButton = document.querySelector<HTMLButtonElement>('#next-round');
 const startNextRound$ = fromEvent(nextRoundButton, 'click');
 
+const pauseGameButton = document.querySelector<HTMLButtonElement>('#pause-game');
+const pauseGame$ = fromEvent(pauseGameButton, 'click');
+
+const unpauseGameButton = document.querySelector<HTMLButtonElement>('#unpause-game');
+const unpauseGame$ = fromEvent(unpauseGameButton, 'click');
+
 export {
   initiateGame$,
   submitThinkingWord$,
   submitGuessingWord$,
   startNextRound$,
+  pauseGame$,
+  unpauseGame$,
 }

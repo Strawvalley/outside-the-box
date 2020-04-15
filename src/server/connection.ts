@@ -2,7 +2,7 @@ import { of, fromEvent, Observable, Subject, combineLatest } from 'rxjs';
 import { map, switchMap, mergeMap, takeUntil } from 'rxjs/operators';
 import { server } from './server';
 import io from 'socket.io';
-import { logInfo, logWarning } from './managers/log_manager';
+import { logInfo } from './managers/log_manager';
 import { SocketEventNames } from '../shared';
 
 export interface ExtendedSocket extends io.Socket {

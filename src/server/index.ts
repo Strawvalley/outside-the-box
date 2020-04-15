@@ -57,6 +57,24 @@ listenOnConnect<void>(SocketEventNames.START_GAME).subscribe(({ client }) => {
   }
 });
 
+listenOnConnect<void>(SocketEventNames.PAUSE_GAME).subscribe(({ client }) => {
+  try {
+    logInfo(`Pause game ${client.room}`);
+    gameManager.pauseGame(client.room, client.id);
+  } catch (err) {
+    logWarning(`Unauthorized request "PAUSE_GAME": ${err}`);
+  }
+});
+
+listenOnConnect<void>(SocketEventNames.UNPAUSE_GAME).subscribe(({ client }) => {
+  try {
+    logInfo(`Unpause game ${client.room}`);
+    gameManager.unpauseGame(client.room, client.id);
+  } catch (err) {
+    logWarning(`Unauthorized request "UNPAUSE_GAME": ${err}`);
+  }
+});
+
 listenOnConnect<void>(SocketEventNames.START_NEXT_ROUND).subscribe(({ client }) => {
   try {
     gameManager.startNextRound(client.room, client.username);

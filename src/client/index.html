@@ -7,7 +7,6 @@
   <title>Outside the box</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="app.css">
 </head>
 
 <body>
@@ -18,9 +17,11 @@
   <ul id="users"></ul>
 
   <div class="game">
+    <button class="admin" id="pause-game">Pause game</button>
     <div>Points: <span class="points"></span></div>
     <div>Round: <span id="rounds"></span></div>
     <div id="time"></div>
+  
     <div class="game-state game-state-NOT_STARTED">
       <h1>Not Started</h1>
       <button class="admin" id="initiate">Start game</button>
@@ -80,6 +81,15 @@
       <button class="admin" id="restart">Start new game</button>
       <div class="non-admin">Please wait for the admin to start a new game!</div>
     </div>
+
+    <div class="paused-overlay">
+      <div>
+        <h1>Game paused!</h1>
+        <button class="admin" id="unpause-game">Unpause game</button>
+        <div class="non-admin">Please wait for the admin to unpause the game</div>
+      </div>
+    </div>
+
   </div>
 
   <div id="state"></div>

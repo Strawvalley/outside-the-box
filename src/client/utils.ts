@@ -61,18 +61,25 @@ export function displayGameState(gameState: GameDto, id: string): void {
     game.classList.add('player');
   }
 
+  // Update active-player / player
+  if (gameState.paused) {
+    game.classList.add('paused');
+  }
+
   // Update Timer
   if (interval) clearInterval(interval);
   const time = document.querySelector('#time');
   if (round.secondsLeft !== undefined) {
     time.textContent = `Seconds left: ${round.secondsLeft}/${round.totalSeconds}`;
-    interval = setInterval(() => {
-      round.secondsLeft--;
-      time.textContent = `Seconds left: ${round.secondsLeft}/${round.totalSeconds}`;
-      if (round.secondsLeft <= 0) {
-        clearInterval(interval);
-      }
-    }, 1000);
+    if(!gameState.paused) {
+      interval = setInterval(() => {
+        round.secondsLeft--;
+        time.textContent = `Seconds left: ${round.secondsLeft}/${round.totalSeconds}`;
+        if (round.secondsLeft <= 0) {
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
   } else {
     time.textContent = ``;
   }

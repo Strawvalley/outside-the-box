@@ -1,12 +1,13 @@
 import { GameState, GameDto, RoundDto } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
-import { tap, map, first, takeUntil } from "rxjs/operators";
+import { tap, map, first, takeUntil, filter } from "rxjs/operators";
 import { logInfo, logWarning } from "../managers/log_manager";
 import { WordManager } from "../managers/word_manager";
 
 export class Game {
 
   started: boolean;
+  paused: boolean;
   admin: string;
   room: string;
   state: GameState;
@@ -47,6 +48,7 @@ export class Game {
     this.room = room;
     this.language = WordManager.supportedLanguages.includes(lang) ? lang : "de";
 
+    this.paused = false;
     this.started = false;
     this.state = GameState.NOT_STARTED;
     this.totalRounds = 3;
@@ -68,6 +70,16 @@ export class Game {
     this.currentRound = 0;
     this.totalPoints = 0;
     this.initiateNewRound();
+  }
+
+  public pause(): void {
+    this.paused = true;
+    this.updateGameForAllUsers();
+  }
+
+  public unpause(): void {
+    this.paused = false;
+    this.updateGameForAllUsers();
   }
 
   public startNextRound(): void {
@@ -180,6 +192,7 @@ export class Game {
     this.round.secondsLeft = seconds;
     return interval(1000).pipe(
       takeUntil(this.deleteGame$),
+      filter(() => !this.paused), // TODO: Or cancel and restart interval?
       tap(() => this.round.secondsLeft--),
       map(() => this.round.secondsLeft <= 0)
     );
@@ -239,6 +252,7 @@ export class Game {
   private toDto(): GameDto {
     return {
       started: this.started,
+      paused: this.paused,
       admin: this.admin,
       state: this.state,
       language: this.language,

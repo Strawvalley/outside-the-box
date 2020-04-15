@@ -27,6 +27,10 @@
   display: block;
 }
 
+.game.NOT_STARTED #pause-game {
+  display: none;
+}
+
 .game .admin, .game .non-admin {
   display: none;
 }
@@ -41,4 +45,22 @@
 
 .game.active-player .active-player, .game.player .player {
   display: block;
+}
+
+.game .paused-overlay {
+  display: none;
+}
+
+.game.paused .paused-overlay {
+  display: flex;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 100;
+  color: white;
+  align-items: center;
+  justify-content: center;
 }

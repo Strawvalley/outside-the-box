@@ -86,6 +86,24 @@ export class GameManager {
     }
   }
 
+  public pauseGame(gameId: string, clientId: string): void {
+    const game = this.games[gameId];
+    if (game.admin === clientId) {
+      game.pause();
+    } else {
+      throw Error();
+    }
+  }
+
+  public unpauseGame(gameId: string, clientId: string): void {
+    const game = this.games[gameId];
+    if (game.admin === clientId) {
+      game.unpause();
+    } else {
+      throw Error();
+    }
+  }
+
   public startNextRound(gameId: string, username: string): void {
     const game = this.games[gameId];
     if (game.round.activePlayer === username) {

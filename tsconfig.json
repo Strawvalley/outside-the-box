@@ -5,6 +5,8 @@
     "paths": {
       "~*": ["./*"]
     },
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,  
     // "noImplicitAny": true,
     // "strictNullChecks": true
   },

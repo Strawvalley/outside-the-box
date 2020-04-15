@@ -31,6 +31,10 @@
   display: none;
 }
 
+.game.admin.can-not-be-started .admin.start {
+  display: none;
+}
+
 .game .admin, .game .non-admin {
   display: none;
 }

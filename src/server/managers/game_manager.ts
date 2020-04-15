@@ -63,6 +63,9 @@ export class GameManager {
       game.admin = Object.values(game.users).find(user => user.connected).socketId;
     }
 
+    const numberOfConnectedPlayers = Object.values(game.users).filter(u => u.connected).length;
+    if (numberOfConnectedPlayers < 3) game.pause();
+
     return false;
   }
 
@@ -79,11 +82,12 @@ export class GameManager {
 
   public startGame(gameId: string, clientId: string): void {
     const game = this.games[gameId];
-    if (game.admin === clientId) {
-      game.startGame();
-    } else {
-      throw Error();
-    }
+    if (game.admin !== clientId) throw Error("Unauthorized request");
+
+    const numberOfConnectedPlayers = Object.values(game.users).filter(u => u.connected).length;
+    if (numberOfConnectedPlayers < 3) throw Error("Min 3 connected players required to start game");
+
+    game.startGame();
   }
 
   public pauseGame(gameId: string, clientId: string): void {

@@ -53,7 +53,7 @@ listenOnConnect<void>(SocketEventNames.START_GAME).subscribe(({ client }) => {
     gameManager.startGame(client.room, client.id);
     logInfo(`Starting game in room ${client.room}`);
   } catch (err) {
-    logWarning(`Unauthorized request "START_GAME": ${err}`);
+    logWarning(`Error "START_GAME": ${err}`);
   }
 });
 

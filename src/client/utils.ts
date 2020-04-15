@@ -66,6 +66,11 @@ export function displayGameState(gameState: GameDto, id: string): void {
     game.classList.add('paused');
   }
 
+  const numberOfConnectedPlayers = Object.values(gameState.users).filter(u => u.connected).length;
+  if (numberOfConnectedPlayers < 3) {
+    game.classList.add('can-not-be-started');
+  }
+
   // Update Timer
   if (interval) clearInterval(interval);
   const time = document.querySelector('#time');

@@ -10,6 +10,7 @@ export class Game {
   admin: string;
   room: string;
   state: GameState;
+  language: string;
 
   totalRounds: number;
   round: number;
@@ -36,8 +37,6 @@ export class Game {
   guesses?: string[];
   guessesLeft?: number;
   wordWasGuessed?: boolean;
-
-  public language: string;
 
   private everyPlayerSubmittedWord$: Subject<boolean> = new Subject<boolean>();
   private userGuessedWord$: Subject<boolean> = new Subject<boolean>();
@@ -86,6 +85,18 @@ export class Game {
 
   public startNextRound(): void {
     this.startNextRound$.next(true);
+  }
+
+  public deleteGame(): void {
+    this.deleteGame$.next();
+    this.deleteGame$.complete();
+  }
+
+  public updateGameForAllUsers(): void {
+    const gameState = this.toDto();
+    Object.values(this.users).forEach((user) =>{
+      this.sendUpdateGameForUser(user.socketId, this.filterGameStateForClient(user.socketId, gameState));
+    });
   }
 
   public submitWordForPlayer(username: string, word: string): void {
@@ -177,7 +188,7 @@ export class Game {
       }
       nextUsernameIndex++;
     }
-    logWarning("Could not find next player")
+    logWarning("Could not find next player");
   }
 
   private startTimer(): Observable<boolean> {
@@ -231,18 +242,6 @@ export class Game {
     return WordManager.getRandomWord(this.language);
   }
 
-  public deleteGame(): void {
-    this.deleteGame$.next();
-    this.deleteGame$.complete();
-  }
-
-  public updateGameForAllUsers(): void {
-    const gameState = this.toDto();
-    Object.values(this.users).forEach((user) =>{
-      this.sendUpdateGameForUser(user.socketId, this.filterGameStateForClient(user.socketId, gameState));
-    });
-  }
-
   private toDto(): GameDto {
     return {
       started: this.started,
@@ -267,7 +266,7 @@ export class Game {
     }
   }
 
-  public filterGameStateForClient(clientId: string, gameDto: GameDto): { gameState: GameDto} {
+  private filterGameStateForClient(clientId: string, gameDto: GameDto): { gameState: GameDto} {
 
     // Do not send wordToGuess to activePlayer in Thinking and Guessing State!
     const shouldnotIncludeWordToGuess: boolean =

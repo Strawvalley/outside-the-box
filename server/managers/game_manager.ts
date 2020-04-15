@@ -13,6 +13,10 @@ export class GameManager {
     this.games = {}
   }
 
+  public hasGame(gameId: string): boolean {
+    return this.games[gameId] !== undefined;
+  }
+
   /**
    * Adds the user to the game, ensures the usernames are unique in a room.
    * Returns a new username for the connect user, if a user with the same name is already connected to the game,
@@ -22,33 +26,16 @@ export class GameManager {
   public addUserToGame(gameId: string, userId: string, username: string): string {
     const game = this.games[gameId];
 
-    // Username does not exist in game yet
-    if (game.users[username] === undefined) {
+    // Username does not exist in game yet, or user "reconnects"
+    if (game.users[username] === undefined || !game.users[username].connected) {
       game.addUser(username, userId);
       return username
     }
 
-    // Username does already exist in game,
-    // check if it is a "reconnect" or create and return a new username for the connected user
-    if (!game.users[username].connected) {
-      game.users[username].socketId = userId;
-      game.users[username].connected = true
-      return username;
-    } else {
-      const newUsername = this.getUnusedUsername(Object.keys(game.users), username);
-      game.addUser(username, userId);
-      return newUsername;
-    }
-  }
-
-  private getUnusedUsername(usersInRoom: string[], username: string): string {
-    const randomNum = Math.floor(Math.random() * 1000);
-    const newUsername = `${username}_${randomNum}`;
-    if (usersInRoom.includes(newUsername)) {
-      return this.getUnusedUsername(usersInRoom, newUsername);
-    } else {
-      return newUsername;
-    }
+    // Connected user with same user same is already connected, change username of newly connected user
+    const newUsername = this.getUnusedUsername(Object.keys(game.users), username);
+    game.addUser(newUsername, userId);
+    return newUsername;
   }
 
   /**
@@ -64,15 +51,16 @@ export class GameManager {
 
     if (Object.values(game.users).every((user) => !user.connected)) {
       // if no users left (all users disconnected), delete game
-      if (this.hasGame(gameId)) {
-        this.games[gameId].deleteGame();
-        delete this.games[gameId];
-        return true;
-      }
-    } else if (userId === game.admin) {
-      // If the admin left the game -> assign new admin
+      game.deleteGame();
+      delete this.games[gameId];
+      return true;
+    }
+
+    // If the admin left the game -> assign new admin
+    if (userId === game.admin) {
       game.admin = Object.values(game.users).find(user => user.connected).socketId;
     }
+
     return false;
   }
 
@@ -81,7 +69,7 @@ export class GameManager {
    * @returns the username under which the user is connected to the game (no duplicated allowed)
    */
   public createOrJoinGame(gameId: string, userId: string, username: string, lang = "de"): string {
-    if (!this.games[gameId]) {
+    if (!this.hasGame(gameId)) {
       this.games[gameId] = new Game(userId, gameId, lang, this.updateGameForAllUsers, this.updateGameForUser);
     }
     return this.addUserToGame(gameId, userId, username);
@@ -119,7 +107,13 @@ export class GameManager {
     this.games[gameId].updateGameForAllUsers();
   }
 
-  public hasGame(gameId: string): boolean {
-    return this.games[gameId] !== undefined;
+  private getUnusedUsername(usersInRoom: string[], username: string): string {
+    const randomNum = Math.floor(Math.random() * 1000);
+    const newUsername = `${username}_${randomNum}`;
+    if (usersInRoom.includes(newUsername)) {
+      return this.getUnusedUsername(usersInRoom, newUsername);
+    } else {
+      return newUsername;
+    }
   }
 }

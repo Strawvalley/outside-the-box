@@ -304,6 +304,7 @@ export class Game {
 
   private toDto(): GameDto {
     return {
+      room: this.room,
       started: this.started,
       paused: this.paused,
       admin: this.admin,

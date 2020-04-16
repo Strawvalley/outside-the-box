@@ -1,57 +1,37 @@
-import { Subject, of } from "rxjs";
+import { Subject, of, combineLatest } from "rxjs";
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from "../connection";
 import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
 
-export function setUsername(username: string): void {
-  sessionStorage.setItem('username', username);
-  document.querySelector('#username').textContent = username;
-}
-
 export function getUsername(): string {
   const username = sessionStorage.getItem('username');
-
-  if (username) {
-    setUsername(username);
-    return username;
-  }
+  if (username) return username;
 
   let newUsername = prompt('Please enter a username', '');
-
-  // If no username entered by user, generate random
-  if (!newUsername) {
-    const randomNum = Math.floor(Math.random() * 1000);
-    newUsername = 'user' + randomNum;
-  }
-
-  setUsername(newUsername);
-
+  if (!newUsername) newUsername = 'user' + Math.floor(Math.random() * 1000);
+  sessionStorage.setItem('username', newUsername);
   return newUsername;
 }
 
 function getRoom(): string {
   const roomName = location.pathname.split('/')[1]
-  if (!roomName) return Math.floor(Math.random() * 100000).toString();
-  return roomName;
+  if (roomName) return roomName;
+
+  const newRoom = Math.floor(Math.random() * 100000).toString();
+  window.history.pushState(newRoom, 'Outside the box!', `/${newRoom}`);
+  return newRoom
 }
 
-function displayRoomName(room: string): void {
-  document.querySelector('#room').textContent = room;
-  window.history.pushState(room, 'Outside the box!', `/${room}`);
-}
+export function setupAppListeners(app): void {
 
-export function setupApp(app): void {
-  const room = getRoom();
-  displayRoomName(room);
-
-  emitOnConnect<string>(of(getUsername()))
+  emitOnConnect<[string, string]>(combineLatest(of(getUsername()), of(getRoom())))
     .subscribe(({ socket, data }) => {
       const payload: JoinRoomDto = {
-        room,
-        username: data,
+        username: data[0],
+        room: data[1],
         // lang: "en"
       }
       socket.emit(SocketEventNames.JOIN_ROOM, payload);
-      console.log(`>>>[INFO] Connect to room ${room}`);
+      console.log(`>>>[INFO] Connect to room ${data[1]}`);
     });
 
   listenOnConnectWithConnection<{ gameState: GameDto }>(SocketEventNames.UPDATE_GAME_STATE)
@@ -64,9 +44,8 @@ export function setupApp(app): void {
   listenOnConnect<string>(SocketEventNames.USERNAME_CHANGED)
     .subscribe((username) => {
       console.log(`<<<[INFO] Username changed: ${username}`);
-      app.username = username;
+      sessionStorage.setItem('username', username);
     });
-
 }
 
 export const initiateGame$ = new Subject<void>();

@@ -3,7 +3,7 @@ import { NotStarted, UserList, Thinking, Selecting, Guessing, RoundFinished, Gam
 import Pause from './components/pause.component.vue';
 
 import { GameState } from '../shared';
-import { setupApp, initiateGame$, submitWordSelection$, unpauseGame$, pauseGame$, submitThinkingWord$, submitGuessingWord$, startNextRound$ } from './managers/client_game_manager';
+import { setupAppListeners, initiateGame$, submitWordSelection$, unpauseGame$, pauseGame$, submitThinkingWord$, submitGuessingWord$, startNextRound$ } from './managers/client_game_manager';
 
 import './app.css';
 
@@ -14,7 +14,6 @@ const app = new Vue({
     game: {
       round: {}
     },
-    username: ""
   },
   components: {
     UserList,
@@ -60,21 +59,11 @@ const app = new Vue({
       return this.game.admin === this.socketId;
     },
     isActivePlayer(): boolean {
-      if (this.game.round === undefined) return false;
       return this.game.round.activePlayer === this.game.username;
     },
-    getWordsForSelection(): string[] {
-      if (this.game.round === undefined) return [];
-      return this.game.round.wordsForSelection;
-    },
     showTimer(): boolean {
-      if (this.game.round === undefined) return false;
       if (this.game.round.totalSeconds === undefined) return false;
       return true;
-    },
-    wordToGuess(): string {
-      if(this.game.round === undefined) return undefined;
-      return this.game.round.wordToGuess;
     },
     hasSubmittedWord(): boolean {
       return this.game.round.usersSubmittedWordInRound.includes(this.game.username);
@@ -105,10 +94,12 @@ const app = new Vue({
   },
   template:`
     <div>
+      <h2>Room: {{game.room}}</h2>
+      <h2>Username: {{game.username}}</h2>
       <button v-if="isAdmin && game.started" v-on:click="pauseGame">Pause game</button>
       <div>Points: {{ game.totalPoints }}</div>
       <div>Round: {{ game.currentRound }} / {{ game.totalRounds }}</div>
-      <user-list v-bind:users="users"></user-list>
+      <user-list v-bind:users="users" v-bind:admin="game.admin"></user-list>
       <timer v-if="showTimer" v-bind:totalSeconds="game.round.totalSeconds" v-bind:secondsLeft="game.round.secondsLeft"></timer>
 
       <not-started
@@ -122,13 +113,13 @@ const app = new Vue({
         v-if="isSelecting"
         v-bind:isActivePlayer="isActivePlayer"
         v-on:selectWord="selectWord"
-        v-bind:wordsForSelection="getWordsForSelection"
+        v-bind:wordsForSelection="game.round.wordsForSelection"
       ></selecting>
       
       <thinking
         v-if="isThinking"
         v-bind:isActivePlayer="isActivePlayer"
-        v-bind:wordToGuess="wordToGuess"
+        v-bind:wordToGuess="game.round.wordToGuess"
         v-bind:hasSubmittedWord="hasSubmittedWord"
         v-on:submitWord="submitThinkingWord"
       ></thinking>
@@ -166,4 +157,4 @@ const app = new Vue({
   `
 });
 
-setupApp(app);
+setupAppListeners(app);

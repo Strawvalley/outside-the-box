@@ -2,6 +2,7 @@ import { GameState, RoundDto } from "shared";
 
 export interface GameDto {
   username?: string;
+  room?: string;
 
   started: boolean;
   admin: string;

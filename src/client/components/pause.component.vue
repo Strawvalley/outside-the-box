@@ -1,3 +1,14 @@
+<template>
+  <div class="paused-overlay">
+    <div>
+      <h1>Game paused!</h1>
+      <div>At least 3 players have to be connected!</div>
+      <button v-if="isAdmin && canBeStarted" v-on:click="continueGame">Unpause game</button>
+      <div v-if="!isAdmin">Please wait for the admin to unpause the game</div>
+    </div>
+  </div>
+</template>
+
 <script lang="ts">
 import Vue from "vue";
 
@@ -7,19 +18,10 @@ export default Vue.extend({
     continueGame(): void {
       this.$emit("continueGame");
     }
-  },
-  template: `
-  <div class="paused-overlay">
-    <div>
-      <h1>Game paused!</h1>
-      <div>At least 3 players have to be connected!</div>
-      <button v-if="isAdmin && canBeStarted" v-on:click="continueGame">Unpause game</button>
-      <div v-if="!isAdmin">Please wait for the admin to unpause the game</div>
-    </div>
-  </div>
-  `
+  }
 });
 </script>
+
 <style>
   .paused-overlay {
     display: flex;

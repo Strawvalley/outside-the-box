@@ -100,7 +100,12 @@ const app = new Vue({
       <div>Points: {{ game.totalPoints }}</div>
       <div>Round: {{ game.currentRound }} / {{ game.totalRounds }}</div>
       <user-list v-bind:users="users" v-bind:admin="game.admin"></user-list>
-      <timer v-if="showTimer" v-bind:totalSeconds="game.round.totalSeconds" v-bind:secondsLeft="game.round.secondsLeft"></timer>
+      <timer
+        v-if="showTimer"
+        v-bind:totalSeconds="game.round.totalSeconds" 
+        v-bind:secondsLeft="game.round.secondsLeft"
+        v-bind:paused="isPaused"
+      ></timer>
 
       <not-started
         v-if="isNotStarted"

@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 export const Timer = Vue.extend({
-  props: ["totalSeconds", "secondsLeft"],
+  props: ["totalSeconds", "secondsLeft", "paused"],
   data() {
     return {
       t: undefined,
@@ -13,7 +13,12 @@ export const Timer = Vue.extend({
       this.internalSecondsLeft = parseInt(val);
       if(this.t) clearInterval(this.t);
       this.t = setInterval(() => {
-         this.internalSecondsLeft--;
+        if (!this.paused) {
+          this.internalSecondsLeft--;
+        }
+        if (this.internalSecondsLeft == 0 ) {
+          clearInterval(this.t);
+        }
       }, 1000);
     }
   },

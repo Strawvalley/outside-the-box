@@ -62,7 +62,7 @@ export class GameManager {
       game.admin = Object.values(game.users).find(user => user.connected).socketId;
     }
 
-    if (game.getNumberOfConnectedPlayers() < 3) game.pause();
+    if (game.getNumberOfConnectedPlayers() < 3 && game.started) game.pause();
 
     return false;
   }

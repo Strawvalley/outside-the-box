@@ -1,72 +1,71 @@
-import { of } from 'rxjs';
-import { emitOnConnect, listenOnConnectWithConnection, listenOnConnect } from './connection';
-import { getUsername, getRoom, displayRoomName, displayGameState, setUsername } from './utils'
-import { initiateGame$, submitWordSelection$, submitThinkingWord$, submitGuessingWord$, startNextRound$, pauseGame$, unpauseGame$ } from './actions';
-import { JoinRoomDto, GameDto, SocketEventNames } from '../shared';
+import Vue from 'vue';
+import { NotStarted, UserList, Thinking, Selecting } from './components';
+import { GameState } from '../shared';
+import { setupApp, initiateGame$, submitWordSelection$ } from './managers/client_game_manager';
 
 import './app.css';
 
-console.log(`[INIT] outside-the-box`)
-
-const room = getRoom();
-displayRoomName(room);
-
-emitOnConnect<string>(of(getUsername()))
-  .subscribe(({ socket, data }) => {
-    const payload: JoinRoomDto = {
-      room,
-      username: data,
-      // lang: "en"
+const app = new Vue({
+  el: '#game',
+  data: {
+    socketId: "",
+    game: {},
+    username: ""
+  },
+  components: {
+    UserList,
+    NotStarted,
+    Selecting,
+    Thinking
+  },
+  computed: {
+    isNotStarted: function(): boolean {
+      return this.game.state === GameState.NOT_STARTED;
+    },
+    isSelecting: function(): boolean {
+      return this.game.state === GameState.SELECTING;
+    },
+    isThinking: function(): boolean {
+      return this.game.state === GameState.THINKING;
+    },
+    users: function(): { [key: string]: {} } {
+      return this.game.users !== undefined ? this.game.users : {};
+    },
+    hasMinRequiredUsers: function(): boolean {
+      if (this.game.users === undefined) return false;
+      return Object.values(this.game.users).filter((u: { connected: boolean }) => u.connected).length >= 3;
+    },
+    isAdmin(): boolean {
+      return this.game.admin === this.socketId;
+    },
+    isActivePlayer(): boolean {
+      if (this.game.round === undefined) return false;
+      return this.game.round.activePlayer === this.game.username;
+    },
+    getWordsForSelection(): string[] {
+      if (this.game.round === undefined) return [];
+      return this.game.round.wordsForSelection;
     }
-    socket.emit(SocketEventNames.JOIN_ROOM, payload);
-    console.log(`>>>[INFO] Connect to room ${room}`);
-  });
+  },
+  methods: {
+    startGame (): void {
+      initiateGame$.next();
+    },
+    selectWord (wordIndex: string): void {
+      submitWordSelection$.next(wordIndex);
+    }
+  },
+  template:`
+    <div>
+      <user-list v-bind:users="users"></user-list>
 
-listenOnConnectWithConnection<{ gameState: GameDto }>(SocketEventNames.UPDATE_GAME_STATE)
-  .subscribe(([{ gameState }, socket]) => {
-    console.log(`<<<[INFO] GameState ${gameState.started}`);
-    displayGameState(gameState, socket.id);
-  });
+      <not-started v-if="isNotStarted" v-bind:isAdmin="isAdmin" v-bind:canBeStarted="hasMinRequiredUsers" v-on:startGame="startGame"></not-started>
+      <selecting v-if="isSelecting" v-bind:isActivePlayer="isActivePlayer" v-on:selectWord="selectWord" v-bind:wordsForSelection="getWordsForSelection"></selecting>
+      <thinking v-if="isThinking"></thinking>
 
-listenOnConnect<string>(SocketEventNames.USERNAME_CHANGED)
-  .subscribe((username) => {
-    console.log(`<<<[INFO] Username changed: ${username}`);
-    setUsername(username);
-  });
+      <div>Debug: {{JSON.stringify(game)}}</div>
+    </div>
+  `
+});
 
-emitOnConnect(initiateGame$)
-  .subscribe(({ socket }) => {
-    socket.emit(SocketEventNames.START_GAME);
-  });
-
-
-emitOnConnect<string>(submitWordSelection$)
-  .subscribe(({ socket, data }) => {
-    socket.emit(SocketEventNames.SUBMIT_WORD_SELECTION, data);
-  });
-
-emitOnConnect<string>(submitThinkingWord$)
-  .subscribe(({ socket, data }) => {
-    socket.emit(SocketEventNames.SUBMIT_WORD, data);
-  });
-
-emitOnConnect(startNextRound$)
-  .subscribe(({ socket }) => {
-    socket.emit(SocketEventNames.START_NEXT_ROUND);
-  });
-
-emitOnConnect<string>(submitGuessingWord$)
-  .subscribe(({ socket, data }) => {
-    socket.emit(SocketEventNames.SUBMIT_GUESS, data);
-  });
-
-emitOnConnect(pauseGame$)
-  .subscribe(({ socket }) => {
-    socket.emit(SocketEventNames.PAUSE_GAME);
-  });
-
-emitOnConnect(unpauseGame$)
-  .subscribe(({ socket }) => {
-    socket.emit(SocketEventNames.UNPAUSE_GAME);
-  });
-
+setupApp(app);

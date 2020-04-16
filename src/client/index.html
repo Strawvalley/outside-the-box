@@ -13,38 +13,16 @@
   <h1>Outside the box!</h1>
   <h2>Room: <span id="room"></span></h2>
   <h2>Username: <span id="username"></span></h2>
-  <h3>Users in room: </h3>
-  <ul id="users"></ul>
+  <div id="game"></div>
 
-  <div class="game">
+  <!-- <div class="game">
     <button class="admin" id="pause-game">Pause game</button>
     <div>Points: <span class="points"></span></div>
     <div>Round: <span id="rounds"></span></div>
     <div id="time"></div>
-  
-    <div class="game-state game-state-NOT_STARTED">
-      <h1>Not Started</h1>
-      <div>At least 3 players have to be connected!</div>
-      <button class="admin start" id="initiate">Start game</button>
-      <div class="non-admin">Please wait for the admin to start the game</div>
-    </div>
     
     <div class="game-state game-state-SELECTING">
-      <h1>Selecting</h1>
-      <div class="active-player">
-        <div>Please choose a number</div>
-        <select id="wordSelection">
-          <option value="0" selected>1</option>
-          <option value="1">2</option>
-          <option value="2">3</option>
-        </select>
-        <button id="selecting">Select</button>
-      </div>
-      <div class="player">
-        <div>The active player is selecting a number.</div>
-        <div>Words to choose from:</div>
-        <ul class="selection"></ul>
-      </div>
+
     </div>
 
     <div class="game-state game-state-THINKING">
@@ -108,7 +86,7 @@
       </div>
     </div>
 
-  </div>
+  </div> -->
 
   <div id="state"></div>
   <script src="app.ts"></script>

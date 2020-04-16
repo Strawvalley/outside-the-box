@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { NotStarted, UserList, Thinking, Selecting } from './components';
+import { NotStarted, UserList, Thinking, Selecting, Timer } from './components';
 import { GameState } from '../shared';
 import { setupApp, initiateGame$, submitWordSelection$ } from './managers/client_game_manager';
 
@@ -14,24 +14,25 @@ const app = new Vue({
   },
   components: {
     UserList,
+    Timer,
     NotStarted,
     Selecting,
-    Thinking
+    Thinking,
   },
   computed: {
-    isNotStarted: function(): boolean {
+    isNotStarted(): boolean {
       return this.game.state === GameState.NOT_STARTED;
     },
-    isSelecting: function(): boolean {
+    isSelecting(): boolean {
       return this.game.state === GameState.SELECTING;
     },
-    isThinking: function(): boolean {
+    isThinking(): boolean {
       return this.game.state === GameState.THINKING;
     },
-    users: function(): { [key: string]: {} } {
+    users(): { [key: string]: {} } {
       return this.game.users !== undefined ? this.game.users : {};
     },
-    hasMinRequiredUsers: function(): boolean {
+    hasMinRequiredUsers(): boolean {
       if (this.game.users === undefined) return false;
       return Object.values(this.game.users).filter((u: { connected: boolean }) => u.connected).length >= 3;
     },
@@ -45,6 +46,11 @@ const app = new Vue({
     getWordsForSelection(): string[] {
       if (this.game.round === undefined) return [];
       return this.game.round.wordsForSelection;
+    },
+    showTimer(): boolean {
+      if (this.game.round === undefined) return false;
+      if (this.game.round.totalSeconds === undefined) return false;
+      return true;
     }
   },
   methods: {
@@ -58,6 +64,7 @@ const app = new Vue({
   template:`
     <div>
       <user-list v-bind:users="users"></user-list>
+      <timer v-if="showTimer" v-bind:totalSeconds="game.round.totalSeconds" v-bind:secondsLeft="game.round.secondsLeft"></timer>
 
       <not-started v-if="isNotStarted" v-bind:isAdmin="isAdmin" v-bind:canBeStarted="hasMinRequiredUsers" v-on:startGame="startGame"></not-started>
       <selecting v-if="isSelecting" v-bind:isActivePlayer="isActivePlayer" v-on:selectWord="selectWord" v-bind:wordsForSelection="getWordsForSelection"></selecting>

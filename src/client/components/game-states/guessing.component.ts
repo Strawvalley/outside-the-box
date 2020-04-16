@@ -18,8 +18,8 @@ export const Guessing = Vue.extend({
     <div v-if="!isActivePlayer">The player is guessing the word.</div>
 
     <ul>
-      <li v-for="word in userWords">
-        {{ word }}
+      <li v-for="word in Object.keys(userWords)">
+        {{ word }}: {{ userWords[word]}}
       </li>
     </ul>
 

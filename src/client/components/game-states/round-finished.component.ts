@@ -11,9 +11,9 @@ export const RoundFinished = Vue.extend({
   <div>
     <h1>Round finished</h1>
     <ul>
-      <li v-for="word in userWords">
-        {{ word }}
-      </li>
+    <li v-for="word in Object.keys(userWords)">
+      {{ word }}: {{ userWords[word]}}
+    </li>
     </ul>
     <div>The word to guess was: {{wordToGuess}}</div>
     <div>Guesses:</div>

@@ -1,42 +1,5 @@
 import { GameDto, GameState, RoundDto } from "../shared";
 
-export function setUsername(username: string): void {
-  sessionStorage.setItem('username', username);
-  document.querySelector('#username').textContent = username;
-}
-
-export function getUsername(): string {
-  const username = sessionStorage.getItem('username');
-
-  if (username) {
-    setUsername(username);
-    return username;
-  }
-
-  let newUsername = prompt('Please enter a username', '');
-
-  // If no username entered by user, generate random
-  if (!newUsername) {
-    const randomNum = Math.floor(Math.random() * 1000);
-    newUsername = 'user' + randomNum;
-  }
-
-  setUsername(newUsername);
-
-  return newUsername;
-}
-
-export function getRoom(): string {
-  const roomName = location.pathname.split('/')[1]
-  if (!roomName) return Math.floor(Math.random() * 100000).toString();
-  return roomName;
-}
-
-export function displayRoomName(room: string): void {
-  document.querySelector('#room').textContent = room;
-  window.history.pushState(room, 'Outside the box!', `/${room}`);
-}
-
 let interval;
 
 export function displayGameState(gameState: GameDto, id: string): void {

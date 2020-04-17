@@ -168,6 +168,7 @@ const app = new Vue({
         <selecting
           v-if="isSelecting"
           v-bind:isActivePlayer="isActivePlayer"
+          v-bind:activePlayer="game.round.activePlayer"
           v-on:selectWord="selectWord"
           v-bind:wordsForSelection="game.round.wordsForSelection"
         ></selecting>
@@ -185,6 +186,7 @@ const app = new Vue({
           v-bind:isActivePlayer="isActivePlayer"
           v-bind:guessesLeft="game.round.guessesLeft"
           v-bind:guesses="game.round.guesses"
+          v-bind:activePlayer="game.round.activePlayer"
           v-bind:userWords="game.round.filteredWordsInRound"
           v-on:submitGuess="submitGuess"
         ></guessing>

@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 export const Guessing = Vue.extend({
-  props: ["isActivePlayer", "guessesLeft", "guesses", "userWords"],
+  props: ["isActivePlayer", "guessesLeft", "guesses", "userWords", "activePlayer"],
   data:() => {
     return {
       myGuess: ""
@@ -10,6 +10,8 @@ export const Guessing = Vue.extend({
   methods: {
     submitGuess(): void {
       this.$emit('submitGuess', this.myGuess);
+      this.myGuess = "";
+      this.$refs.guessinput.focus();
     }
   },
   template: `
@@ -25,12 +27,12 @@ export const Guessing = Vue.extend({
 
     <div v-if="isActivePlayer">
       <div class="mb-2">You have <span class="highlight">{{guessesLeft}}</span> guesses left.</div>
-      <input v-model="myGuess" />
+      <input class="mb-2" autofocus v-model="myGuess" ref="guessinput" />
       <button v-on:click="submitGuess">Guess word</button>
     </div>
 
     <div v-if="!isActivePlayer" class="mb-2">
-      <div>He has <span class="highlight">{{guessesLeft}}</span> guesses left.</div>
+      <div><span class="highlight">{{activePlayer}}</span> has <span class="highlight">{{guessesLeft}}</span> guesses left.</div>
     </div>
 
     <div v-if="guesses.length != 0">Guesses so far:</div>

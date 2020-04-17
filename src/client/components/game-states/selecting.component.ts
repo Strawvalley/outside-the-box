@@ -1,7 +1,7 @@
 import Vue from "vue";
 
 export const Selecting = Vue.extend({
-  props: ["isActivePlayer", "wordsForSelection"],
+  props: ["isActivePlayer", "wordsForSelection", "activePlayer"],
   methods: {
     selectWord(word: number): void {
       this.$emit('selectWord', word);
@@ -16,11 +16,11 @@ export const Selecting = Vue.extend({
         <button v-on:click="selectWord(2)">Word 3</button>
       </div>
       <div v-if="!isActivePlayer">
-        <div>The active player is selecting a number.</div>
-        <div>Words to choose from:</div>
+        <div><span class="highlight">{{activePlayer}}</span> is selecting a number.</div>
+        <div>Words behind the numbers:</div>
         <ul>
           <li class="highlight" v-for="word in wordsForSelection">
-            {{ word }}
+            {{wordsForSelection.indexOf(word) + 1}}: {{ word }}
           </li>
         </ul>
       </div>

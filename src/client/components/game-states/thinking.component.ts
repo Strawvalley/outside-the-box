@@ -18,7 +18,7 @@ export const Thinking = Vue.extend({
       <div v-if="!isActivePlayer">
         <div class="mb-2">The word in this round is: <span class="highlight">{{wordToGuess}}</span></div>
         <div v-if="!hasSubmittedWord">
-          <input v-model="word" />
+          <input class="mb-2" autofocus v-model="word" />
           <button v-on:click="submitWord">Submit word</button>
         </div>
         <div v-if="hasSubmittedWord">

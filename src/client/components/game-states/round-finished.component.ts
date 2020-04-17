@@ -17,7 +17,7 @@ export const RoundFinished = Vue.extend({
     </ul>
     <div class="mb-2">The word to guess was: <span class="highlight">{{wordToGuess}}</span></div>
     <div v-if="guesses.length != 0">Guesses:</div>
-    <ul>
+    <ul class="mb-2">
       <li class="highlight" v-for="guess in guesses">
         {{ guess }}
       </li>

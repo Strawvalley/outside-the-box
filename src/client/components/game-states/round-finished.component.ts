@@ -8,21 +8,21 @@ export const RoundFinished = Vue.extend({
     }
   },
   template: `
-  <div>
-    <h1>Round finished</h1>
-    <ul>
-    <li v-for="word in Object.keys(userWords)">
-      {{ word }}: {{ userWords[word]}}
-    </li>
+  <div style="display: flex; flex-direction: column; text-align: center;">
+    <p class="highlight mb-2">Round finished</p>
+    <ul class="mb-2">
+      <li class="highlight" v-for="word in Object.keys(userWords)">
+        {{ word }}: {{ userWords[word].join(", ")}}
+      </li>
     </ul>
-    <div>The word to guess was: {{wordToGuess}}</div>
-    <div>Guesses:</div>
+    <div class="mb-2">The word to guess was: <span class="highlight">{{wordToGuess}}</span></div>
+    <div v-if="guesses.length != 0">Guesses:</div>
     <ul>
-      <li v-for="guess in guesses">
+      <li class="highlight" v-for="guess in guesses">
         {{ guess }}
       </li>
     </ul>
-    <div>+{{pointsInRound}} Points</div>
+    <div class="highlight mb-2">+{{pointsInRound}} Points</div>
     <button v-if="isActivePlayer" v-on:click="startNextRound">Start next round</button>
   </div>
   `

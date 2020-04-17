@@ -28,13 +28,13 @@ export class GameManager {
   public addUserToGame(gameId: string, userId: string, username: string): string {
     const game = this.games[gameId];
 
-    // Username does not exist in game yet, or user "reconnects"
+    // User with the username does not exist in game yet, or user "reconnects"
     if (game.users[username] === undefined || !game.users[username].connected) {
       game.addUser(username, userId);
       return username
     }
 
-    // Connected user with same user same is already connected, change username of newly connected user
+    // User with same user same is already connected, change username of newly connected user
     const newUsername = this.getUnusedUsername(Object.keys(game.users), username);
     game.addUser(newUsername, userId);
     return newUsername;
@@ -134,7 +134,7 @@ export class GameManager {
   }
 
   public sendGameUpdate(gameId: string): void {
-    this.games[gameId].updateGameForAllUsers();
+    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers();
   }
 
   private getUnusedUsername(usersInRoom: string[], username: string): string {

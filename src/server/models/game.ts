@@ -33,11 +33,11 @@ export class Game {
   private startNextRound$: Subject<boolean> = new Subject<boolean>();
   private deleteGame$: Subject<void> = new Subject<void>();
 
-  private readonly SELECTION_TIME = 15;
-  private readonly THINKING_TIME = 10;
-  private readonly GUESSING_TIME = 15;
+  private readonly SELECTION_TIME = 20;
+  private readonly THINKING_TIME = 30;
+  private readonly GUESSING_TIME = 30;
   private readonly ROUND_FINISHED_TIME = 10;
-  private readonly WRONG_GUESS_COUNT = 3;
+  private readonly WRONG_GUESS_COUNT = 5;
   private readonly COUNT_WORDS_SELECTION = 3;
 
   constructor(

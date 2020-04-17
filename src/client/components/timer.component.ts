@@ -25,15 +25,20 @@ export const Timer = Vue.extend({
   mounted() {
     if(this.t) clearInterval(this.t);
     this.t = setInterval(() => {
-       this.internalSecondsLeft--;
+      if (!this.paused) {
+        this.internalSecondsLeft--;
+      }
+      if (this.internalSecondsLeft == 0 ) {
+        clearInterval(this.t);
+      }
     }, 1000);
   },
   destroyed() {
     if(this.t) clearInterval(this.t);
   },
   template: `
-  <div>
-    {{internalSecondsLeft}} / {{totalSeconds}}
-  </div>
+    <div class="highlight" style="position: absolute; right: 0; top: 0;">
+      {{internalSecondsLeft}} / {{totalSeconds}}
+    </div>
   `
 });

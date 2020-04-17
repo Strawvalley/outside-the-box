@@ -1,13 +1,13 @@
 import Vue from "vue";
 
 export const UserList = Vue.extend({
-  props: ["users", "admin"],
+  props: ["users", "admin", "activePlayer"],
   template: `
   <div>
-    <h3>Users in room: </h3>
-    <ul>
-      <li v-for="user in Object.keys(users)">
-        {{ user }} {{ users[user].connected ? '(c)' : '(d)' }} {{users[user].socketId === admin ? "ADMIN" : ""}}
+    <p class="stats" style="text-align: left;"><b style="text-align: left;">Users</b></p>
+    <ul style="list-style: none;">
+      <li v-for="user in Object.keys(users)" class="highlight">
+        {{ user === activePlayer ? '-->' : '' }} {{ user }} {{ users[user].connected ? '' : '(disconnected)' }} {{users[user].socketId === admin ? "[ADMIN]" : ""}}
       </li>
     </ul>
   </div>

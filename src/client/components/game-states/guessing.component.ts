@@ -13,29 +13,29 @@ export const Guessing = Vue.extend({
     }
   },
   template: `
-  <div>
-    <h1>Guessing</h1>
-    <div v-if="!isActivePlayer">The player is guessing the word.</div>
-
-    <ul>
-      <li v-for="word in Object.keys(userWords)">
-        {{ word }}: {{ userWords[word]}}
+  <div style="display: flex; flex-direction: column; text-align: center;">
+    <p class="highlight">Guessing</p>
+    <div class="mb-1" v-if="!isActivePlayer">The player is guessing the word.</div>
+    <div class="mb-1 highlight">Hints:</div>
+    <ul class="mb-2">
+      <li class="highlight" v-for="word in Object.keys(userWords)">
+        {{ word.startsWith('<<') ? userWords[word].join(", ") + ' had the same idea' : word }}
       </li>
     </ul>
 
     <div v-if="isActivePlayer">
-      <div>You have {{guessesLeft}} guesses left.</div>
+      <div class="mb-2">You have <span class="highlight">{{guessesLeft}}</span> guesses left.</div>
       <input v-model="myGuess" />
       <button v-on:click="submitGuess">Guess word</button>
     </div>
 
-    <div v-if="!isActivePlayer">
-      <div>He has {{guessesLeft}} guesses left.</div>
+    <div v-if="!isActivePlayer" class="mb-2">
+      <div>He has <span class="highlight">{{guessesLeft}}</span> guesses left.</div>
     </div>
 
-    <div>Guesses so far:</div>
+    <div v-if="guesses.length != 0">Guesses so far:</div>
     <ul>
-      <li v-for="guess in guesses">
+      <li class="highlight" v-for="guess in guesses">
         {{ guess }}
       </li>
     </ul>

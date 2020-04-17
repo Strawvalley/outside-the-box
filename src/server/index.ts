@@ -26,6 +26,9 @@ disconnect$.subscribe(({ client }) => {
 });
 
 listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
+  if (data.room === undefined) {
+    data.room = Math.floor(Math.random() * 100000).toString();
+  }
   logInfo(`Client ${client.id} joins room ${data.room} as ${data.username}`);
 
   // Add user to the room

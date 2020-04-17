@@ -2,5 +2,127 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: Arial, Helvetica, sans-serif;
+  border: none;
+  color: #004348;
+  outline: none;
+  font-size: 24px;
+}
+
+html, body {
+  background-color: #0a5f65;
+  background-image: url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23004348' fill-opacity='0.6' fill-rule='evenodd'%3E%3Cpath d='M0 0h35v35H0V0zm5 5h25v25H5V5zm5 5h15v15H10V10zm5 5h5v5h-5v-5zM40 5h25v25H40V5zm5 5h15v15H45V10zm5 5h5v5h-5v-5zM70 35H35v35h35V35zm-5 5H40v25h25V40zm-5 5H45v15h15V45zm-5 5h-5v5h5v-5zM30 40H5v25h25V40zm-5 5H10v15h15V45zm-5 5h-5v5h5v-5z'/%3E%3C/g%3E%3C/svg%3E");
+  min-height: 100vh;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+}
+
+p {
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+.game-container {
+  max-width: 800px;
+  background-color: #DDFDFF;
+  padding: 1rem;
+  min-height: 100vh;
+}
+
+ul {
+  list-style: none;
+}
+
+.start-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+p.stats {
+  margin-bottom: 0.25rem;
+}
+
+p.stats b {
+  font-size: 16px;
+  margin-right: 0.25rem;
+  min-width: 90px;
+  display: inline-block;
+  text-align: right;
+}
+
+p.stats span {
+  min-width: 60px;
+  font-family: 'Boogaloo', cursive;
+  display: inline-block;
+  text-align: left;
+}
+
+h1 {
+  font-size: 2.25rem;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.highlight {
+  font-family: 'Boogaloo', cursive;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+  margin-bottom: 0.75rem;
+}
+
+button {
+  font-family: 'Boogaloo', cursive;
+  background-color:  #068890;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  position: relative;
+  padding: 10px 20px;
+  margin: 0px 0px 10px 0px;
+  border-radius: 10px;
+  color: #DDFDFF;
+  cursor: pointer;
+  border-bottom: 5px solid #156267;
+  text-shadow: 0px -2px #156267;
+}
+
+button.large {
+  padding: 15px 30px;
+  font-size: 1.25rem;
+}
+
+button:active {
+  transform: translate(0px,5px);
+  -webkit-transform: translate(0px,5px);
+  border-bottom: 1px solid;
+  margin-bottom: 14px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  color: #ff7878;
+  text-shadow: 0px -2px #380000;
+  background-color: #500303;
+  border-bottom: 5px solid #380000;
+}
+
+input {
+  font-family: 'Boogaloo', cursive;
+  padding: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  transform: translate(0px,2.5px);
+  -webkit-transform: translate(0px,2.5px);
 }

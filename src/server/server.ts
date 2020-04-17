@@ -16,9 +16,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 else {
   // Serve built client files
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const enforce = require('express-sslify');
-  app.use(enforce.HTTPS({ trustProtoHeader: true }));
+  if (process.env.PROD_ENV !== 'local') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const enforce = require('express-sslify');
+    app.use(enforce.HTTPS({ trustProtoHeader: true }));
+  }
   app.use(express.static('dist'));
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../dist', 'index.html'));

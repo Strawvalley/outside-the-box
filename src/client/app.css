@@ -118,6 +118,13 @@ button:disabled {
   border-bottom: 5px solid #380000;
 }
 
+button:disabled:active {
+  transform: translate(0px,0px);
+  -webkit-transform: translate(0px,0px);
+  border-bottom: 5px solid #380000;
+  margin: 0px 0px 10px 0px;
+}
+
 input {
   font-family: 'Boogaloo', cursive;
   padding: 10px;

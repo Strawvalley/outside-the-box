@@ -27,7 +27,7 @@ export const Guessing = Vue.extend({
 
     <div v-if="isActivePlayer">
       <div class="mb-2">You have <span class="highlight">{{guessesLeft}}</span> guesses left.</div>
-      <input class="mb-2" autofocus v-model="myGuess" ref="guessinput" />
+      <input class="mb-2" autofocus v-model="myGuess" ref="guessinput" v-on:keyup.enter="submitGuess"/>
       <button v-on:click="submitGuess">Guess word</button>
     </div>
 

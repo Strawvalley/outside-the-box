@@ -11,7 +11,7 @@ const tracker = ua(
 tracker.set("ds", "app");
 
 export function trackMetric(action: string, label: string, value: any): void {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.PROD_ENV === 'local') {
     logInfo(`[MOCK ONLY] Tracked Metric: ${action} - ${label} - ${value}`);
   } else {
     tracker.event("Server Metric", action, label, value, { value: value }, (err) => {

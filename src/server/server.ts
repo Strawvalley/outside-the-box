@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import express from "express";
 import http from "http";
 import path from "path";
@@ -9,18 +10,20 @@ logDebug(`NODE_ENV: ${process.env.NODE_ENV}`);
 
 if (process.env.NODE_ENV === 'development') {
   // Let Parcel handle requests
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const Bundler = require('parcel-bundler')
+  const Bundler = require('parcel-bundler');
   const bundler = new Bundler('src/client/index.html');
   app.use(bundler.middleware());
-}
-else {
+} else {
   // Serve built client files
   if (process.env.PROD_ENV !== 'local') {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const enforce = require('express-sslify');
     app.use(enforce.HTTPS({ trustProtoHeader: true }));
   }
+
+  // Use compression (gzip)
+  const compression = require('compression');
+  app.use(compression());
+
   app.use(express.static('dist'));
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../dist', 'index.html'));

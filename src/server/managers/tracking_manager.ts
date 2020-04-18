@@ -1,21 +1,25 @@
 import ua from 'universal-analytics'
 import { logWarning, logInfo } from './log_manager';
 
-const trackingId = `Server${process.env.NODE_ENV === 'development' ? '-DEV' : ''}`;
-
 const tracker = ua(
   'UA-163934012-1',
-  trackingId,
+  `Server`,
   { strictCidFormat: false },
   { dh: 'https://outside-the-box.herokuapp.com/'}
 );
 
+tracker.set("ds", "app");
+
 export function trackMetric(action: string, label: string, value: any): void {
-  tracker.event("Server Metric", action, label, value, { value: value }, (err) => {
-    if (err) {
-      logWarning(`[${trackingId}] Could not track metric: ${err}`);
-    } else {
-      logInfo(`[${trackingId}] Tracked Metric: ${action} - ${label} - ${value}`);
-    }
-  });
+  if (process.env.NODE_ENV === 'development') {
+    logInfo(`[MOCK ONLY] Tracked Metric: ${action} - ${label} - ${value}`);
+  } else {
+    tracker.event("Server Metric", action, label, value, { value: value }, (err) => {
+      if (err) {
+        logWarning(`Could not track metric: ${err}`);
+      } else {
+        logInfo(`Tracked Metric: ${action} - ${label} - ${value}`);
+      }
+    });
+  }
 }

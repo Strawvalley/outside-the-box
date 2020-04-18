@@ -1,6 +1,7 @@
 import { Subject } from "rxjs";
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from "../connection";
 import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
+import { logInfo } from "./client_log_manager";
 
 export const createOrJoinGame$ = new Subject<{username: string; room?: string; lang?}>();
 
@@ -28,7 +29,7 @@ export function setupAppListeners(app): void {
 
   listenOnConnectWithConnection<{ gameState: GameDto }>(SocketEventNames.UPDATE_GAME_STATE)
     .subscribe(([{ gameState }, socket]) => {
-      console.log(`<<<[INFO] GameState ${gameState.started}`);
+      logInfo(`<<<[INFO] GameState ${gameState.started}`);
       sessionStorage.setItem('username', gameState.username);
       window.history.pushState(gameState.room, 'Outside the box!', `/${gameState.room}`);
       app.game = gameState;
@@ -37,7 +38,7 @@ export function setupAppListeners(app): void {
 
   listenOnConnect<string>(SocketEventNames.USERNAME_CHANGED)
     .subscribe((username) => {
-      console.log(`<<<[INFO] Username changed: ${username}`);
+      logInfo(`<<<[INFO] Username changed: ${username}`);
       sessionStorage.setItem('username', username);
     });
 }

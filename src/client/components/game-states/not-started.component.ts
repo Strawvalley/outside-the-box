@@ -9,10 +9,10 @@ export const NotStarted = Vue.extend({
   },
   template: `
   <div style="display: flex; flex-direction: column; text-align: center;">
-    <p class="highlight">Not Started</p>
-    <div class="mb-2" v-if="!canBeStarted">You need at least 3 players to start the game!</div>
-    <button v-if="isAdmin" v-on:click="startGame" :disabled="!canBeStarted">Start game</button>
-    <div v-if="!isAdmin">Wait for admin to start the game!</div>
+    <p class="highlight">{{ $t('notStartedTitle') }}</p>
+    <div class="mb-2" v-if="!canBeStarted">{{ $t('notStartedHintText1') }}</div>
+    <button v-if="isAdmin" v-on:click="startGame" :disabled="!canBeStarted">{{ $t('notStartedButtonStartGame') }}</button>
+    <div v-if="!isAdmin">{{ $t('notStartedHintText2') }}</div>
   </div>
   `
 });

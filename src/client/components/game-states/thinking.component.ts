@@ -14,19 +14,19 @@ export const Thinking = Vue.extend({
   },
   template: `
     <div style="display: flex; flex-direction: column; text-align: center;">
-      <p class="highlight">Thinking</p>
+      <p class="highlight">{{ $t('thinkingTitle') }}</p>
       <div v-if="!isActivePlayer">
-        <div class="mb-2">The word in this round is: <span class="highlight">{{wordToGuess}}</span></div>
+        <div class="mb-2">{{ $t('thinkingHintText1') }}<span class="highlight">{{wordToGuess}}</span></div>
         <div v-if="!hasSubmittedWord">
           <input class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord"/>
-          <button v-on:click="submitWord">Submit word</button>
+          <button v-on:click="submitWord">{{ $t('thinkingButtonSubmitWord') }}</button>
         </div>
         <div v-if="hasSubmittedWord">
-          <div>You submitted your word for this round!</div>
+          <div>{{ $t('thinkingHintText2') }}</div>
         </div>
       </div>
       <div v-if="isActivePlayer">
-        <span>Wait for other players to submit their words.</span>
+        <span>{{ $t('thinkingHintText3') }}</span>
       </div>
     </div>
   `

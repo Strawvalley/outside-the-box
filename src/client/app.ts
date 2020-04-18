@@ -17,15 +17,22 @@ import {
 
 import './app.css';
 
+import {i18n} from './plugins/i18n';
+
 const app = new Vue({
   el: '#game',
+  i18n,
   data: {
     socketId: "",
     game: {
       round: {}
     },
     gameInput: location.pathname.split('/')[1],
-    usernameInput: sessionStorage.getItem('username')
+    usernameInput: sessionStorage.getItem('username'),
+    locales: [
+      { locale: 'en', title: 'English'},
+      { locale: 'de', title: 'Deutsch'},
+    ]
   },
   components: {
     UserList,
@@ -111,42 +118,71 @@ const app = new Vue({
     },
     startNextRound(): void {
       startNextRound$.next();
+    },
+    changeLocale(event): void {
+      i18n.locale = event.target.value;
     }
   },
-  template:`
+  template:` 
     <div>
       <div class="start-screen highlight" v-if="game.room === undefined">
 
-        <div class="mb-1">Please enter your username:</div>
-        <input class="mb-2" v-model="usernameInput" type="text" maxlength="12"/>
-        <div class="mb-2">and</div>
-        <div class="mb-2">
-          <button class="large" v-on:click="createGame" v-if="!getRoomFromPath">Create Game</button>
-        </div>
-        <div class="mb-2">
-          <span v-if="!getRoomFromPath">or</span>
-          <input style="max-width: 150px;" v-model="gameInput"/>
-          <button v-on:click="joinGame" ontouchstart="">Join Game</button>
+        <div>
+          <select @change="changeLocale">
+            <option v-for="option in locales" v-bind:value="option.locale">
+              {{ option.title }}
+            </option>
+          </select>
         </div>
 
-        <h3 class="highlight mb-2">How the game works:</h3>
-        <p>One player is chosen to be the <span class="highlight">guesser</span> for the round.</p>
-        <p>All other players are presented the word for this round and have to come up with a <span class="highlight">hint</span> for the guesser. The hint can only be a single word!</p>
-        <p>As soon as all players have submitted their hints, the guesser has to <span class="highlight">find out the word</span> for this round.</p>
-        <p>But there is a <span class="highlight">twist</span>! Hints have <span class="highlight">to be unique</span>, as soon as 2 or more players submit the same hint, it can not help the guesser to find the word! So <span class="highlight">think outside the box</span>, to make sure the guesser will find the word!</p>
+        <div class="mb-1">{{ $t('roomEnterUsername') }}</div>
+        <input class="mb-2" v-model="usernameInput" type="text" maxlength="12"/>
+        <div class="mb-2">{{ $t('roomAnd') }}</div>
+        <div class="mb-2">
+          <button class="large" v-on:click="createGame" v-if="!getRoomFromPath">{{ $t('roomButtonCreateGame') }}</button>
+        </div>
+        <div class="mb-2">
+          <span v-if="!getRoomFromPath">{{ $t('roomOr') }}</span>
+          <input style="max-width: 150px;" v-model="gameInput"/>
+          <button v-on:click="joinGame" ontouchstart="">{{ $t('roomButtonJoinGame') }}</button>
+        </div>
+
+        <h3 class="highlight mb-2">{{ $t('roomInstructionTitle') }}</h3>
+        <p>
+          <i18n path="roomInstructionParagraph1">
+            <span class="highlight">{{ $t('roomInstructionParagraph1Guesser') }}</span>
+          </i18n>
+        </p>
+        <p>
+          <i18n path="roomInstructionParagraph2">
+            <span class="highlight">{{ $t('roomInstructionParagraph2Hint') }}</span>
+          </i18n>
+        </p>
+        <p>
+          <i18n path="roomInstructionParagraph3">
+            <span class="highlight">{{ $t('roomInstructionParagraph3FigureWord') }}</span>
+          </i18n>
+        </p>
+        <p>
+          <i18n path="roomInstructionParagraph4">
+            <span class="highlight">{{ $t('roomInstructionParagraph4Twist') }}</span>
+            <span class="highlight">{{ $t('roomInstructionParagraph4Unique') }}</span>
+            <span class="highlight">{{ $t('roomInstructionParagraph4OutsideTheBox') }}</span>
+          </i18n>
+        </p>
 
       </div>
       <div v-if="game.room !== undefined">
-        <button v-if="isAdmin && game.started" v-on:click="pauseGame">Pause game</button>
+        <button v-if="isAdmin && game.started" v-on:click="pauseGame">{{ $t('gameButtonPauseGame') }}</button>
         <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #004348; padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
           <div>
             <user-list v-bind:users="users" v-bind:admin="game.admin" v-bind:activePlayer="game.round.activePlayer"></user-list>
           </div>
           <div>
-            <p class="stats"><b>Username</b> <span>{{game.username}}</span></p>
-            <p class="stats"><b>Room</b> <span>{{game.room}}</span></p>
-            <p class="stats"><b>Points</b> <span>{{ game.totalPoints }}</span></p>
-            <p class="stats"><b>Round</b> <span>{{ game.currentRound }} / {{ game.totalRounds }}</span></p>
+            <p class="stats"><b>{{ $t('gameUsername') }}</b> <span>{{game.username}}</span></p>
+            <p class="stats"><b>{{ $t('gameRoom') }}</b> <span>{{game.room}}</span></p>
+            <p class="stats"><b>{{ $t('gamePoints') }}</b> <span>{{ game.totalPoints }}</span></p>
+            <p class="stats"><b>{{ $t('gameRound') }}</b> <span>{{ game.currentRound }} / {{ game.totalRounds }}</span></p>
           </div>
         </div>
         <div style="position: relative;">

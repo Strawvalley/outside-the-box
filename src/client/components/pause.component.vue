@@ -1,10 +1,10 @@
 <template>
   <div class="paused-overlay">
     <div style="display: flex; justify-content: center; flex-direction: column;">
-      <h1 class="mb-2">Game paused!</h1>
-      <div class="mb-2" v-if="!canBeStarted">At least 3 players have to be connected!</div>
-      <button v-if="isAdmin" v-on:click="continueGame" :disabled="!canBeStarted">Unpause game</button>
-      <div v-if="!isAdmin">Please wait for the admin to unpause the game</div>
+      <h1 class="mb-2">{{ $t('pauseTitle') }}</h1>
+      <div class="mb-2" v-if="!canBeStarted">{{ $t('pauseHintText1') }}</div>
+      <button v-if="isAdmin" v-on:click="continueGame" :disabled="!canBeStarted">{{ $t('pauseButtonUnpauseGame') }}</button>
+      <div v-if="!isAdmin">{{ $t('pauseHintText2') }}</div>
     </div>
   </div>
 </template>

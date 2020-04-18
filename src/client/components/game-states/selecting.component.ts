@@ -9,15 +9,15 @@ export const Selecting = Vue.extend({
   },
   template: `
     <div style="display: flex; flex-direction: column; text-align: center;">
-      <p class="highlight">Selecting</p>
+      <p class="highlight">{{ $t('selectingTitle') }}</p>
       <div v-if="isActivePlayer">
-        <button v-on:click="selectWord(0)">Word 1</button>
-        <button v-on:click="selectWord(1)">Word 2</button>
-        <button v-on:click="selectWord(2)">Word 3</button>
+        <button v-on:click="selectWord(0)">{{ $t('selectingButtonWordSelect', ['1']) }}</button>
+        <button v-on:click="selectWord(1)">{{ $t('selectingButtonWordSelect', ['2']) }}</button>
+        <button v-on:click="selectWord(2)">{{ $t('selectingButtonWordSelect', ['3']) }}</button>
       </div>
       <div v-if="!isActivePlayer">
-        <div><span class="highlight">{{activePlayer}}</span> is selecting a number.</div>
-        <div>Words behind the numbers:</div>
+        <div><span class="highlight">{{activePlayer}}</span>{{ $t('selectingHintText1') }}</div>
+        <div>{{ $t('selectingHintText2') }}</div>
         <ul>
           <li class="highlight" v-for="word in wordsForSelection">
             {{wordsForSelection.indexOf(word) + 1}}: {{ word }}

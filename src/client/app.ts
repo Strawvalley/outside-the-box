@@ -32,7 +32,8 @@ const app = new Vue({
     locales: [
       { locale: 'en', title: 'English'},
       { locale: 'de', title: 'Deutsch'},
-    ]
+    ],
+    selectedLocale: i18n.locale
   },
   components: {
     UserList,
@@ -93,7 +94,7 @@ const app = new Vue({
   },
   methods: {
     createGame(): void {
-      createOrJoinGame$.next({username: this.usernameInput, lang: "en"});
+      createOrJoinGame$.next({username: this.usernameInput, lang: i18n.locale});
     },
     joinGame(): void {
       createOrJoinGame$.next({room: this.gameInput, username: this.usernameInput});
@@ -121,14 +122,15 @@ const app = new Vue({
     },
     changeLocale(event): void {
       i18n.locale = event.target.value;
+      localStorage.setItem('locale', event.target.value);
     }
   },
   template:` 
     <div>
       <div class="start-screen highlight" v-if="game.room === undefined">
 
-        <div>
-          <select @change="changeLocale">
+        <div class="select-wrapper">
+          <select v-model="selectedLocale" @change="changeLocale">
             <option v-for="option in locales" v-bind:value="option.locale">
               {{ option.title }}
             </option>

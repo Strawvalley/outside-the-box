@@ -34,8 +34,8 @@ export class Game {
   private deleteGame$: Subject<void> = new Subject<void>();
 
   private readonly SELECTION_TIME = 20;
-  private readonly THINKING_TIME = 30;
-  private readonly GUESSING_TIME = 30;
+  private readonly THINKING_TIME = 35;
+  private readonly GUESSING_TIME = 45;
   private readonly ROUND_FINISHED_TIME = 10;
   private readonly WRONG_GUESS_COUNT = 5;
   private readonly COUNT_WORDS_SELECTION = 3;
@@ -54,7 +54,7 @@ export class Game {
     this.paused = false;
     this.started = false;
     this.state = GameState.NOT_STARTED;
-    this.totalRounds = 3;
+    this.totalRounds = 10;
     this.currentRound = 0;
     this.totalPoints = 0;
     this.users = {};

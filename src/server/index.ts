@@ -2,17 +2,19 @@ import { connection$, disconnect$, listenOnConnect, ExtendedSocket, sendToUser, 
 import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
+import { trackMetric } from "./managers/tracking_manager";
 
 const gameManager = new GameManager(
   (room: string, payload: { gameState: GameDto } ) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload),
   (clienId: string, payload: { gameState: GameDto }) => sendToUser(clienId, SocketEventNames.UPDATE_GAME_STATE, payload)
 );
 
-connection$.subscribe(({ client }) => {
+connection$.subscribe(({ io, client }) => {
   logInfo(`Client ${client.id} connected`);
+  trackMetric("Connected Users", "Connected Users", Object.keys(io.sockets.sockets).length);
 });
 
-disconnect$.subscribe(({ client }) => {
+disconnect$.subscribe(({ io, client }) => {
   logInfo(`Client ${client.id} disconnected`);
   if (gameManager.hasGame(client.room)) {
     const gameWasDeleted = gameManager.disconnectUserFromGame(client.room, client.id, client.username);
@@ -23,6 +25,7 @@ disconnect$.subscribe(({ client }) => {
       logInfo(`Game ${client.room} was deleted because all users were disconnected`);
     }
   }
+  trackMetric("Connected Users", "Connected Users", Object.keys(io.sockets.sockets).length);
 });
 
 listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {

@@ -1,6 +1,7 @@
 import { Game } from "../models/game";
 import { GameDto } from "../../shared";
 import { WordManager } from "./word_manager";
+import { trackMetric } from "./tracking_manager";
 
 export class GameManager {
   private games: {
@@ -54,6 +55,7 @@ export class GameManager {
       // if no users left (all users disconnected), delete game
       game.deleteGame();
       delete this.games[gameId];
+      trackMetric("Running Games", "Running Games", Object.keys(this.games).length);
       return true;
     }
 
@@ -63,7 +65,6 @@ export class GameManager {
     }
 
     if (game.getNumberOfConnectedPlayers() < 3 && game.started) game.pause();
-
     return false;
   }
 
@@ -74,6 +75,7 @@ export class GameManager {
   public createOrJoinGame(gameId: string, userId: string, username: string, lang = "de"): string {
     if (!this.hasGame(gameId)) {
       this.games[gameId] = new Game(userId, gameId, lang, this.updateGameForAllUsers, this.updateGameForUser);
+      trackMetric("Running Games", "Running Games", Object.keys(this.games).length);
     }
     return this.addUserToGame(gameId, userId, username);
   }

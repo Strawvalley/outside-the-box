@@ -145,7 +145,7 @@ const app = new Vue({
         </div>
         <div class="mb-2">
           <span v-if="!getRoomFromPath">{{ $t('roomOr') }}</span>
-          <input style="max-width: 150px;" v-model="gameInput"/>
+          <input style="max-width: 115px;" v-model="gameInput"/>
           <button v-on:click="joinGame" ontouchstart="">{{ $t('roomButtonJoinGame') }}</button>
         </div>
 

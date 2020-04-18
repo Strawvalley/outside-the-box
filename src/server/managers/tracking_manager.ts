@@ -7,7 +7,7 @@ export function trackMetric(action: string, label: string, value: any): void {
   if (process.env.NODE_ENV === 'development') {
     logInfo(`[MOCK ONLY] Tracked Metric: ${action} - ${label} - ${value}`);
   } else {
-    tracker.event("Server Metric", action, label, value, (err) => {
+    tracker.event("Server Metric", action, label, value, { value: value }, (err) => {
       if (err) {
         logWarning(`Could not track metric: ${err}`);
       } else {

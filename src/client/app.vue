@@ -273,7 +273,7 @@ export default Vue.extend({
   },
   methods: {
     onEnterKeyUp(): void {
-      this.hasRoomInPath ? this.createGame() : this.joinGame()
+      this.hasRoomInPath ? this.joinGame() : this.createGame()
     },
     createGame(): void {
       createOrJoinGame$.next({

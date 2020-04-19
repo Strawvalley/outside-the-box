@@ -29,7 +29,7 @@ disconnect$.subscribe(({ io, client }) => {
 });
 
 listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client, data }) => {
-  if (data.room === undefined) {
+  if (!data.room) {
     data.room = Math.floor(Math.random() * 100000).toString();
   }
   if (!data.username) {

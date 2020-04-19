@@ -1,6 +1,14 @@
+<template>
+  <div
+    class="highlight"
+    style="position: absolute; right: 0; top: 0;"
+  >{{internalSecondsLeft}} / {{totalSeconds}}</div>
+</template>
+
+<script lang="ts">
 import Vue from "vue";
 
-export const Timer = Vue.extend({
+export default Vue.extend({
   props: ["totalSeconds", "secondsLeft", "paused"],
   data() {
     return {
@@ -11,34 +19,30 @@ export const Timer = Vue.extend({
   watch: {
     secondsLeft(val): void {
       this.internalSecondsLeft = parseInt(val);
-      if(this.t) clearInterval(this.t);
+      if (this.t) clearInterval(this.t);
       this.t = setInterval(() => {
         if (!this.paused) {
           this.internalSecondsLeft--;
         }
-        if (this.internalSecondsLeft == 0 ) {
+        if (this.internalSecondsLeft == 0) {
           clearInterval(this.t);
         }
       }, 1000);
     }
   },
   mounted() {
-    if(this.t) clearInterval(this.t);
+    if (this.t) clearInterval(this.t);
     this.t = setInterval(() => {
       if (!this.paused) {
         this.internalSecondsLeft--;
       }
-      if (this.internalSecondsLeft == 0 ) {
+      if (this.internalSecondsLeft == 0) {
         clearInterval(this.t);
       }
     }, 1000);
   },
   destroyed() {
-    if(this.t) clearInterval(this.t);
-  },
-  template: `
-    <div class="highlight" style="position: absolute; right: 0; top: 0;">
-      {{internalSecondsLeft}} / {{totalSeconds}}
-    </div>
-  `
+    if (this.t) clearInterval(this.t);
+  }
 });
+</script>

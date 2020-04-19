@@ -133,7 +133,7 @@ Vue.use(VueI18n);
 const browserLang = localStorage.getItem('locale') || navigator.language || (navigator as any).userLanguage;
 const userLang = browserLang.startsWith('de') ? 'de' : 'en';
 
-export const i18n = new VueI18n({
+export default new VueI18n({
   locale: userLang,
   fallbackLocale: 'en',
   messages: messages,

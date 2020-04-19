@@ -6,9 +6,9 @@
     <ul class="mb-2">
       <li
         class="highlight"
-        v-for="word in Object.keys(userWords)"
-        v-bind:key="word"
-      >{{ word.startsWith(token) ? userWords[word].join(", ") + $t('guessingHintsSameWord') : word }}</li>
+        v-for="entry in userWords"
+        v-bind:key="entry.word"
+      >{{ entry.word === undefined ? entry.users.join(", ") + $t('guessingHintsSameWord') : entry.word }}</li>
     </ul>
 
     <div v-if="isActivePlayer">
@@ -56,8 +56,7 @@ export default Vue.extend({
   ],
   data: () => {
     return {
-      myGuess: "",
-      token: "<<"
+      myGuess: ""
     };
   },
   methods: {

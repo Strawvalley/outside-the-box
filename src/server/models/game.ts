@@ -141,14 +141,6 @@ export class Game {
       this.round.wordsInRound[word] = [username];
     }
 
-    this.round.filteredWordsInRound = {};
-    Object.entries(this.round.wordsInRound)
-      .forEach(([word, userList]) =>
-        userList.length > 1
-          ? this.round.filteredWordsInRound[`<<${Object.keys(this.round.filteredWordsInRound).length}>>`] = userList
-          : this.round.filteredWordsInRound[word] = userList
-      );
-
     // Check if all connected players (except activePlayer) submitted a word -> nextState
     const everyPlayerSubmittedWord = Object.entries(this.users)
       .filter(([username, user]) => username !== this.round.activePlayer && user.connected)
@@ -244,12 +236,22 @@ export class Game {
 
   private goToGuessing(): void {
     this.state = GameState.GUESSING;
+    this.filterWordsInRound();
     merge(this.startTimer(this.GUESSING_TIME), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
       first(condition => condition)
     ).subscribe(
       () => this.goToRoundFinished()
     );
     this.updateGameForAllUsers();
+  }
+
+  private filterWordsInRound(): void {
+    Object.entries(this.round.wordsInRound)
+      .forEach(([word, userList]) =>
+        userList.length > 1
+          ? this.round.filteredWordsInRound.push({ users: userList, word: undefined })
+          : this.round.filteredWordsInRound.push({ users: userList, word: word })
+      );
   }
 
   private goToRoundFinished(): void {
@@ -293,7 +295,7 @@ export class Game {
       wordsForSelection: this.generateWordsForSelection(this.COUNT_WORDS_SELECTION),
       wordToGuess: undefined,
       wordsInRound: {},
-      filteredWordsInRound: {},
+      filteredWordsInRound: [],
       pointsInRound: 0,
       wordWasGuessed: false,
       guesses: [],

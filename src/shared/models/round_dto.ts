@@ -11,8 +11,6 @@ export interface RoundDto {
   wordsInRound?: {
     [word: string]: string[];
   };
-  filteredWordsInRound?: {
-    [word: string]: string[];
-  };
+  filteredWordsInRound?: { users: string[]; word: string }[];
   usersSubmittedWordInRound?: string[];
 }

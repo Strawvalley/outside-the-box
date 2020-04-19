@@ -22,17 +22,25 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { submitThinkingWord$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
-  props: ["isActivePlayer", "hasSubmittedWord", "wordToGuess"],
+  props: ["isActivePlayer", "usersSubmittedWordInRound", "wordToGuess", "username"],
   data: () => {
     return {
       word: ""
     };
   },
+  computed: {
+    hasSubmittedWord(): boolean {
+      return this.usersSubmittedWordInRound.includes(
+        this.username
+      );
+    }
+  },
   methods: {
     submitWord(): void {
-      this.$emit("submitWord", this.word);
+      submitThinkingWord$.next(this.word);
     }
   }
 });

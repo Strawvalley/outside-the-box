@@ -45,6 +45,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { submitGuessingWord$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
   props: [
@@ -61,7 +62,7 @@ export default Vue.extend({
   },
   methods: {
     submitGuess(): void {
-      this.$emit("submitGuess", this.myGuess);
+      submitGuessingWord$.next(this.myGuess);
       this.myGuess = "";
       this.$refs.guessinput.focus();
     }

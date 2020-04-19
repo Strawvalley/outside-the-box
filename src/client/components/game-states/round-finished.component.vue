@@ -26,6 +26,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { startNextRound$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
   props: [
@@ -37,7 +38,7 @@ export default Vue.extend({
   ],
   methods: {
     startNextRound(): void {
-      this.$emit("startNextRound");
+      startNextRound$.next();
     }
   }
 });

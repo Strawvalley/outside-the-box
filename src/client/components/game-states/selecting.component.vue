@@ -25,12 +25,13 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { submitWordSelection$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
   props: ["isActivePlayer", "wordsForSelection", "activePlayer"],
   methods: {
-    selectWord(word: number): void {
-      this.$emit("selectWord", word);
+    selectWord(wordIndex: string): void {
+      submitWordSelection$.next(wordIndex);
     }
   }
 });

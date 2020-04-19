@@ -12,18 +12,25 @@
       </div>
 
       <div class="mb-1">{{ $t('roomEnterUsername') }}</div>
-      <input class="mb-2" v-model="usernameInput" type="text" maxlength="12" />
+      <input
+        class="mb-2"
+        v-model="usernameInput"
+        type="text"
+        maxlength="12"
+        v-on:keyup.enter="onEnterKeyUp"
+        autofocus
+      />
       <div class="mb-2">{{ $t('roomAnd') }}</div>
       <div class="mb-2">
         <button
           class="large"
           v-on:click="createGame"
-          v-if="!getRoomFromPath"
+          v-if="!hasRoomInPath"
         >{{ $t('roomButtonCreateGame') }}</button>
       </div>
       <div class="mb-2">
-        <span v-if="!getRoomFromPath">{{ $t('roomOr') }}</span>
-        <input style="max-width: 115px;" v-model="gameInput" />
+        <span v-if="!hasRoomInPath">{{ $t('roomOr') }}</span>
+        <input style="max-width: 115px;" v-model="gameInput" :disabled="hasRoomInPath"/>
         <button v-on:click="joinGame" ontouchstart>{{ $t('roomButtonJoinGame') }}</button>
       </div>
 
@@ -183,7 +190,7 @@ import {
   createOrJoinGame$
 } from "./managers/client_game_manager";
 
-import './app.css';
+import "./app.css";
 
 export default Vue.extend({
   data() {
@@ -260,11 +267,14 @@ export default Vue.extend({
         this.game.username
       );
     },
-    getRoomFromPath(): boolean {
+    hasRoomInPath(): boolean {
       return !!location.pathname.split("/")[1];
     }
   },
   methods: {
+    onEnterKeyUp(): void {
+      this.hasRoomInPath ? this.createGame() : this.joinGame()
+    },
     createGame(): void {
       createOrJoinGame$.next({
         username: this.usernameInput,

@@ -4,8 +4,8 @@
     <ul class="mb-2">
       <li
         class="highlight"
-        v-for="word in Object.keys(userWords)"
-        v-bind:key="word"
+        v-for="(word, index) in Object.keys(userWords)"
+        v-bind:key="index"
       >{{ word }}: {{ userWords[word].join(", ")}}</li>
     </ul>
     <div class="mb-2">
@@ -14,7 +14,7 @@
     </div>
     <div v-if="guesses.length != 0">{{ $t('roundFinishedGuesses') }}</div>
     <ul class="mb-2">
-      <li class="highlight" v-for="guess in guesses" v-bind:key="guess">{{ guess }}</li>
+      <li class="highlight" v-for="(guess, index) in guesses" v-bind:key="index">{{ guess }}</li>
     </ul>
     <div class="highlight mb-2">+{{pointsInRound}} {{ $t('roundFinishedPoints') }}</div>
     <button

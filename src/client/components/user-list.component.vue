@@ -5,9 +5,9 @@
     </p>
     <ul style="list-style: none;">
       <li
-        v-for="user in Object.keys(users)"
+        v-for="(user, index) in Object.keys(users)"
         class="highlight"
-        v-bind:key="user"
+        v-bind:key="index"
       >{{ user === activePlayer ? '-->' : '' }} {{ user }} {{ users[user].connected ? '' : $t('userlistDisconnected') }} {{users[user].socketId === admin ? $t('userlistAdmin') : ""}}</li>
     </ul>
   </div>

@@ -15,8 +15,8 @@
       <ul>
         <li
           class="highlight"
-          v-for="word in wordsForSelection"
-          v-bind:key="word"
+          v-for="(word, index) in wordsForSelection"
+          v-bind:key="index"
         >{{wordsForSelection.indexOf(word) + 1}}: {{ word }}</li>
       </ul>
     </div>

@@ -15,7 +15,9 @@ export const startNextRound$ = new Subject<void>();
 export const pauseGame$ = new Subject<void>();
 export const unpauseGame$ = new Subject<void>();
 
-export function setupAppListeners(app): void {
+export const gameState$ = new Subject<{socketId: string; game: GameDto}>();
+
+export function setupAppListeners(): void {
 
   emitOnConnect<{username: string; room?: string; lang?: string}>(createOrJoinGame$)
     .subscribe(({ socket, data }) => {
@@ -32,8 +34,7 @@ export function setupAppListeners(app): void {
       logInfo(`<<<[INFO] GameState ${gameState.started}`);
       sessionStorage.setItem('username', gameState.username);
       window.history.pushState(gameState.room, 'Outside the box!', `/${gameState.room}`);
-      app.game = gameState;
-      app.socketId = socket.id;
+      gameState$.next({socketId: socket.id, game: gameState});
     });
 
   listenOnConnect<string>(SocketEventNames.USERNAME_CHANGED)

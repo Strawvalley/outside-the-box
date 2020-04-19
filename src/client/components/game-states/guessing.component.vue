@@ -6,8 +6,8 @@
     <ul class="mb-2">
       <li
         class="highlight"
-        v-for="entry in userWords"
-        v-bind:key="entry.word"
+        v-for="(entry, index) in userWords"
+        v-bind:key="index"
       >{{ entry.word === undefined ? entry.users.join(", ") + $t('guessingHintsSameWord') : entry.word }}</li>
     </ul>
 
@@ -38,7 +38,7 @@
 
     <div v-if="guesses.length != 0">{{ $t('guessingGuessesSoFar') }}</div>
     <ul>
-      <li class="highlight" v-for="guess in guesses" v-bind:key="guess">{{ guess }}</li>
+      <li class="highlight" v-for="(guess, index) in guesses" v-bind:key="index">{{ guess }}</li>
     </ul>
   </div>
 </template>

@@ -20,7 +20,16 @@ export default Vue.extend({
     secondsLeft(val): void {
       this.internalSecondsLeft = parseInt(val);
       if (this.t) clearInterval(this.t);
-      this.t = setInterval(() => {
+      this.t = this.startTimer();
+    }
+  },
+  mounted() {
+    if (this.t) clearInterval(this.t);
+    this.t = this.startTimer();
+  },
+  methods: {
+    startTimer() {
+      return setInterval(() => {
         if (!this.paused) {
           this.internalSecondsLeft--;
         }
@@ -29,17 +38,6 @@ export default Vue.extend({
         }
       }, 1000);
     }
-  },
-  mounted() {
-    if (this.t) clearInterval(this.t);
-    this.t = setInterval(() => {
-      if (!this.paused) {
-        this.internalSecondsLeft--;
-      }
-      if (this.internalSecondsLeft == 0) {
-        clearInterval(this.t);
-      }
-    }, 1000);
   },
   destroyed() {
     if (this.t) clearInterval(this.t);

@@ -34,7 +34,7 @@ const messages = {
     selectingHintText2: `Words behind the numbers:`,
     thinkingTitle: `Thinking`,
     thinkingHintText1: `The word in this round is: `,
-    thinkingHintText2: `You submitted your {submittedWordByUser} for this round!`,
+    thinkingHintText2: `You submitted {submittedWordByUser} for this round!`,
     thinkingHintText3: `Wait for other players to submit their words.`,
     thinkingHintText4: ` No one else submitted a word yet. | has already submitted a hint. | have already submitted hints.`,
     thinkingButtonSubmitWord: `Submit word`,

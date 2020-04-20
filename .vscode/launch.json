@@ -17,6 +17,7 @@
           "./tsconfig.server.json",
           "${workspaceRoot}/src/server/index.ts"
       ],
+      "env": {"PROD_ENV": "local"},
       "console": "integratedTerminal",
       "restart": true
     }

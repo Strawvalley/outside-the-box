@@ -6,7 +6,7 @@ import { logDebug, logInfo } from "./managers/log_manager";
 
 const app = express();
 
-logDebug(`NODE_ENV: ${process.env.NODE_ENV}`);
+logDebug(`NODE_ENV: ${process.env.NODE_ENV} | PROD_ENV: ${process.env.PROD_ENV}`);
 
 if (process.env.NODE_ENV === 'development') {
   // Let Parcel handle requests

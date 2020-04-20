@@ -6,7 +6,7 @@
         {{ $t('thinkingHintText1') }}
         <span class="highlight">{{wordToGuess}}</span>
       </div>
-      <div v-if="!hasSubmittedWord">
+      <div v-if="!(hasSentWordToServer || hasSubmittedWord)">
         <input class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord" />
         <button v-on:click="submitWord">{{ $t('thinkingButtonSubmitWord') }}</button>
       </div>
@@ -41,7 +41,8 @@ export default Vue.extend({
   ],
   data: () => {
     return {
-      word: ""
+      word: "",
+      hasSentWordToServer: false
     };
   },
   computed: {
@@ -59,6 +60,7 @@ export default Vue.extend({
   },
   methods: {
     submitWord(): void {
+      this.hasSentWordToServer = true;
       submitThinkingWord$.next(this.word);
     }
   }

@@ -13,4 +13,5 @@ export interface RoundDto {
   };
   filteredWordsInRound?: { users: string[]; word: string }[];
   usersSubmittedWordInRound?: string[];
+  submittedWordByUser?: string;
 }

@@ -91,6 +91,9 @@ export default Vue.extend({
     isAdmin(): boolean {
       return this.game.admin === this.socketId;
     },
+    isActivePlayer(): boolean {
+      return this.game.round.activePlayer === this.game.username;
+    },
     showTimer(): boolean {
       if (this.game.round.totalSeconds === undefined) return false;
       return true;

@@ -301,6 +301,7 @@ export class Game {
       guesses: [],
       guessesLeft: this.WRONG_GUESS_COUNT,
       usersSubmittedWordInRound: [],
+      submittedWordByUser: undefined
     }
   }
 
@@ -328,7 +329,7 @@ export class Game {
         wordToGuess: this.round.wordToGuess,
         wordWasGuessed: this.round.wordWasGuessed,
         pointsInRound: this.round.pointsInRound,
-        usersSubmittedWordInRound: this.round.wordsInRound ? [].concat.apply([], ...Object.values(this.round.wordsInRound)) : [] // flatten the userlists
+        usersSubmittedWordInRound: this.round.wordsInRound ? [].concat(...Object.values(this.round.wordsInRound)) : [] // flatten userlists
       }
     }
   }
@@ -346,6 +347,10 @@ export class Game {
 
     const username = Object.keys(this.users).find(u => this.users[u].socketId === clientId);
 
+    const submittedWordbyUser = this.round.wordsInRound
+      ? Object.keys(this.round.wordsInRound).find(word => this.round.wordsInRound[word].includes(username))
+      : undefined;
+
     return {
       gameState: {
         ...gameDto,
@@ -356,6 +361,7 @@ export class Game {
           filteredWordsInRound: this.state === GameState.GUESSING ? this.round.filteredWordsInRound : undefined,
           wordsInRound: this.state === GameState.ROUND_FINISHED ? this.round.wordsInRound : undefined,
           wordToGuess: shouldnotIncludeWordToGuess ? undefined : this.round.wordToGuess,
+          submittedWordByUser: submittedWordbyUser
         }
       }
     };

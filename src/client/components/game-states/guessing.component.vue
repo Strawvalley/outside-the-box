@@ -1,7 +1,13 @@
 <template>
   <div style="display: flex; flex-direction: column; text-align: center;">
     <p class="highlight">{{ $t('guessingTitle') }}</p>
-    <div class="mb-1" v-if="!isActivePlayer">{{ $t('guessingHintText1') }}</div>
+    <div class="mb-2" v-if="!isActivePlayer">
+      {{ $t('guessingHintText2') }}
+      <span class="highlight">{{wordToGuess}}</span>
+    </div>
+    <div class="mb-2" v-if="!isActivePlayer">
+      <span class="highlight">{{activePlayer}}</span> {{ $t('guessingHintText1') }}
+    </div>
     <div class="mb-1 highlight">{{ $t('guessingHintsTitle') }}</div>
     <ul class="mb-2">
       <li
@@ -53,7 +59,8 @@ export default Vue.extend({
     "guessesLeft",
     "guesses",
     "userWords",
-    "activePlayer"
+    "activePlayer",
+    "wordToGuess"
   ],
   data: () => {
     return {

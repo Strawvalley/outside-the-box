@@ -10,8 +10,15 @@
         <input class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord" />
         <button v-on:click="submitWord">{{ $t('thinkingButtonSubmitWord') }}</button>
       </div>
-      <div v-if="hasSubmittedWord">
-        <div>{{ $t('thinkingHintText2') }}</div>
+      <div class="mb-2" v-if="hasSubmittedWord">
+        <i18n path="thinkingHintText2" tag="div">
+          <template v-slot:submittedWordByUser>
+            <span class="highlight">{{ submittedWordByUser }}</span>
+          </template>
+        </i18n>
+      </div>
+      <div>
+        <span class="highlight">{{ otherUsersSubmittedWords.join(', ') }}</span> {{ $tc('thinkingHintText4', otherUsersSubmittedWords.length ) }}
       </div>
     </div>
     <div v-if="isActivePlayer">
@@ -25,7 +32,13 @@ import Vue from "vue";
 import { submitThinkingWord$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
-  props: ["isActivePlayer", "usersSubmittedWordInRound", "wordToGuess", "username"],
+  props: [
+    "isActivePlayer",
+    "submittedWordByUser",
+    "usersSubmittedWordInRound",
+    "wordToGuess",
+    "username"
+  ],
   data: () => {
     return {
       word: ""
@@ -36,6 +49,12 @@ export default Vue.extend({
       return this.usersSubmittedWordInRound.includes(
         this.username
       );
+    },
+    otherUsersSubmittedWords(): string[] {
+      return this.usersSubmittedWordInRound.filter(u => u !== this.username);
+    },
+    otherUsersHaveSubmittedWords(): boolean {
+      return this.otherUsersSubmittedWords.length > 0;
     }
   },
   methods: {

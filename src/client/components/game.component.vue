@@ -18,6 +18,7 @@
       v-bind:isActivePlayer="isActivePlayer"
       v-bind:wordToGuess="game.round.wordToGuess"
       v-bind:usersSubmittedWordInRound="game.round.usersSubmittedWordInRound"
+      v-bind:submittedWordByUser="game.round.submittedWordByUser"
       v-bind:username="game.username"
     ></thinking>
 
@@ -28,6 +29,7 @@
       v-bind:guesses="game.round.guesses"
       v-bind:activePlayer="game.round.activePlayer"
       v-bind:userWords="game.round.filteredWordsInRound"
+      v-bind:wordToGuess="game.round.wordToGuess"
     ></guessing>
 
     <round-finished

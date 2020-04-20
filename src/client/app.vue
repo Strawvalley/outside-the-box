@@ -9,6 +9,10 @@
     <div v-else>
       <start></start>
     </div>
+    <debug
+      v-if="false"
+      v-bind:game="game"
+    ></debug>
   </div>
 </template>
 

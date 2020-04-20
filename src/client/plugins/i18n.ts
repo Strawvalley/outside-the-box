@@ -36,7 +36,7 @@ const messages = {
     thinkingHintText1: `The word in this round is: `,
     thinkingHintText2: `You submitted your {submittedWordByUser} for this round!`,
     thinkingHintText3: `Wait for other players to submit their words.`,
-    thinkingHintText4: ` No one else submitted a word yet. | has already submitted his hint. | have already submitted their hints.`,
+    thinkingHintText4: ` No one else submitted a word yet. | has already submitted a hint. | have already submitted hints.`,
     thinkingButtonSubmitWord: `Submit word`,
     guessingTitle: `Guessing`,
     guessingHintText1: `is guessing the word.`,

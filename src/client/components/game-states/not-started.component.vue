@@ -7,14 +7,14 @@
         <font-awesome-icon
           class="icon-button"
           :class="canDecreaseGuessingTime ? 'active' : 'not-active'"
-          icon="less-than"
+          :icon="['far', 'minus-square']"
           v-on:click="decreaseGuessingTime"
         ></font-awesome-icon>
         <span class="config">{{this.gameConfig.guessingTime}}</span>
         <font-awesome-icon
           class="icon-button"
           :class="canIncreaseGuessingTime ? 'active' : 'not-active'"
-          icon="greater-than"
+          :icon="['far', 'plus-square']"
           v-on:click="increaseGuessingTime"
         ></font-awesome-icon>
       </span>
@@ -68,15 +68,14 @@ export default Vue.extend({
 <style>
   .active {
     opacity: 1;
+    cursor: pointer;
   }
   .not-active {
     opacity: 0.5;
+    cursor: not-allowed;
   }
   .config {
     font-size: 30px;
-  }
-  .icon-button {
-    cursor: pointer;
   }
   .no-select {
     -moz-user-select: none;

@@ -2,6 +2,7 @@ import { Game } from "../models/game";
 import { GameDto } from "../../shared";
 import { WordManager } from "./word_manager";
 import { trackMetric } from "./tracking_manager";
+import { GameConfig } from "~shared/models/game_config_dto";
 
 export class GameManager {
   private games: {
@@ -80,12 +81,12 @@ export class GameManager {
     return this.addUserToGame(gameId, userId, username);
   }
 
-  public startGame(gameId: string, clientId: string): void {
+  public startGame(gameId: string, clientId: string, gameConfig: GameConfig): void {
     const game = this.games[gameId];
     if (!game.isUserAdmin(clientId)) throw Error("Unauthorized request");
 
     if (game.getNumberOfConnectedPlayers() < 3) throw Error("Min 3 connected players required to start game");
-
+    game.configureGame(gameConfig);
     game.startGame();
   }
 

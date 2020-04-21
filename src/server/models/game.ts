@@ -3,6 +3,8 @@ import { Subject, merge, interval, Observable } from "rxjs";
 import { tap, map, first, takeUntil, filter } from "rxjs/operators";
 import { logInfo, logWarning } from "../managers/log_manager";
 import { WordManager } from "../managers/word_manager";
+import { GameConfig } from "../../shared/models/game_config_dto";
+import { defaults } from "../../shared/models/defaults";
 
 export class Game {
 
@@ -35,10 +37,11 @@ export class Game {
 
   private readonly SELECTION_TIME = 20;
   private readonly THINKING_TIME = 35;
-  private readonly GUESSING_TIME = 45;
   private readonly ROUND_FINISHED_TIME = 10;
   private readonly WRONG_GUESS_COUNT = 5;
   private readonly COUNT_WORDS_SELECTION = 3;
+
+  private guessingTime: number;
 
   constructor(
     admin: string,
@@ -59,6 +62,8 @@ export class Game {
     this.totalPoints = 0;
     this.users = {};
     this.round = {};
+
+    this.guessingTime = defaults.guessingTimeRange.default;
   }
 
   public addUser(username: string, userId: string): void {
@@ -83,6 +88,14 @@ export class Game {
 
   public isUserAdmin(userId: string): boolean {
     return this.admin === userId;
+  }
+
+  public configureGame(gameConfig: GameConfig): void {
+    this.guessingTime = this.valueInRange(gameConfig.guessingTime, defaults.guessingTimeRange) ? gameConfig.guessingTime : defaults.guessingTimeRange.default;
+  }
+
+  private valueInRange(value: number, range: {min: number; max: number}): boolean {
+    return value >= range.min && value <= range.max;
   }
 
   public startGame(): void {
@@ -258,7 +271,7 @@ export class Game {
   private goToGuessing(): void {
     this.state = GameState.GUESSING;
     this.filterWordsInRound();
-    merge(this.startTimer(this.GUESSING_TIME), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
+    merge(this.startTimer(this.guessingTime), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
       first(condition => condition)
     ).subscribe(
       () => this.goToRoundFinished()

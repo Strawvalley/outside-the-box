@@ -3,6 +3,7 @@ import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
 import { trackMetric } from "./managers/tracking_manager";
+import { GameConfig } from "~shared/models/game_config_dto";
 
 const gameManager = new GameManager(
   (room: string, payload: { gameState: GameDto } ) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload),
@@ -57,9 +58,9 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   gameManager.sendGameUpdate(data.room);
 });
 
-listenOnConnect<void>(SocketEventNames.START_GAME).subscribe(({ client }) => {
+listenOnConnect<GameConfig>(SocketEventNames.START_GAME).subscribe(({ client, data }) => {
   try {
-    gameManager.startGame(client.room, client.id);
+    gameManager.startGame(client.room, client.id, data);
     logInfo(`Starting game in room ${client.room}`);
   } catch (err) {
     logWarning(`Error "START_GAME": ${err}`);

@@ -162,7 +162,7 @@ export class Game {
     // TODO: Better word matching
     if (word.toLowerCase().trim() === this.round.wordToGuess.toLowerCase().trim()) {
       logInfo(`Player ${username} guessed the word in room ${this.room}`);
-      this.round.pointsInRound = 100;
+      this.round.pointsInRound = this.getPointsForRound();
       this.round.wordWasGuessed = true;
       this.totalPoints += this.round.pointsInRound;
       this.userGuessedWord$.next(true);
@@ -172,6 +172,21 @@ export class Game {
       this.updateGameForAllUsers();
     }
 
+  }
+
+  private getPointsForRound(): number {
+    let basePoints = 50;
+    // bonus points for secondsLeft, include totalSeconds so longer round do not produce more points
+    basePoints *= (this.round.secondsLeft / this.round.totalSeconds) + 1.0;
+
+    // bonus points for guessesLeft (range 0 to 4)
+    basePoints *= (this.round.guessesLeft * 0.125) + 1.0;
+
+    // bonus points for distinct words
+    const onlyDistinctWords = this.round.filteredWordsInRound.every((entry) => entry.word !== undefined);
+    if (onlyDistinctWords) basePoints *= 2.0;
+
+    return Math.round(basePoints);
   }
 
   private initiateNewRound(): void {

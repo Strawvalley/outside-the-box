@@ -5,14 +5,12 @@
       <div>Guessing Time</div>
       <span class="no-select">
         <font-awesome-icon
-          class="icon-button"
           :class="canDecreaseGuessingTime ? 'active' : 'not-active'"
           :icon="['far', 'minus-square']"
           v-on:click="decreaseGuessingTime"
         ></font-awesome-icon>
         <span class="config">{{this.gameConfig.guessingTime}}</span>
         <font-awesome-icon
-          class="icon-button"
           :class="canIncreaseGuessingTime ? 'active' : 'not-active'"
           :icon="['far', 'plus-square']"
           v-on:click="increaseGuessingTime"

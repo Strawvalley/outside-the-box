@@ -7,7 +7,7 @@
         <span class="highlight">{{wordToGuess}}</span>
       </div>
       <div v-if="!(hasSentWordToServer || hasSubmittedWord)">
-        <input class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord" />
+        <input id="think-input" class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord" />
         <button v-on:click="submitWord">{{ $t('thinkingButtonSubmitWord') }}</button>
       </div>
       <div class="mb-2" v-if="hasSubmittedWord">
@@ -66,3 +66,9 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style>
+  #think-input {
+    text-transform: lowercase;
+  }
+</style>

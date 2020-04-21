@@ -135,10 +135,11 @@ export class Game {
     if (Object.values(this.round.wordsInRound).some(userList => userList.find(u => u === username))) return;
 
     // Set word for this player in this round
-    if (this.round.wordsInRound[word]) {
-      this.round.wordsInRound[word].push(username);
+    const sanitizedWord = this.sanitizeWord(word);
+    if (this.round.wordsInRound[sanitizedWord]) {
+      this.round.wordsInRound[sanitizedWord].push(username);
     } else {
-      this.round.wordsInRound[word] = [username];
+      this.round.wordsInRound[sanitizedWord] = [username];
     }
 
     // Check if all connected players (except activePlayer) submitted a word -> nextState
@@ -151,16 +152,21 @@ export class Game {
     this.updateGameForAllUsers();
   }
 
+  private sanitizeWord(word: string): string {
+    const sanitizedWord = word.toLowerCase().trim();
+    return sanitizedWord;
+  }
+
   public guessWordForPlayer(username: string, word: string): void {
     if (this.state !== GameState.GUESSING) return;
     if (username !== this.round.activePlayer) return;
+    const sanitizedWord = this.sanitizeWord(word);
 
-    this.round.guesses.push(word);
+    this.round.guesses.push(sanitizedWord);
     this.round.guessesLeft--;
 
     // If word matched word to guess
-    // TODO: Better word matching
-    if (word.toLowerCase().trim() === this.round.wordToGuess.toLowerCase().trim()) {
+    if (sanitizedWord === this.round.wordToGuess) {
       logInfo(`Player ${username} guessed the word in room ${this.room}`);
       this.round.pointsInRound = this.getPointsForRound();
       this.round.wordWasGuessed = true;

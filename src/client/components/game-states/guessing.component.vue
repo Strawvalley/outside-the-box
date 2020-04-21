@@ -24,6 +24,7 @@
         {{ $t('guessingGuessesLeft') }}
       </div>
       <input
+        id="guess-input"
         class="mb-2"
         autofocus
         v-model="myGuess"
@@ -76,3 +77,9 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style>
+  #guess-input {
+    text-transform: lowercase;
+  }
+</style>

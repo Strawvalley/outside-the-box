@@ -2,10 +2,13 @@ import { Subject } from "rxjs";
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from "../connection";
 import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
 import { logInfo } from "./client_log_manager";
+import { GameConfig } from "../../shared/models/game_config_dto";
+import { Sounds } from "../../shared/enums/sounds";
+import { playSuccess } from "./audio_manager";
 
 export const createOrJoinGame$ = new Subject<{username: string; room?: string; lang?}>();
 
-export const initiateGame$ = new Subject<void>();
+export const initiateGame$ = new Subject<GameConfig>();
 
 export const submitWordSelection$ = new Subject<string>();
 export const submitThinkingWord$ = new Subject<string>();
@@ -42,11 +45,16 @@ export function setupAppListeners(): void {
       logInfo(`<<<[INFO] Username changed: ${username}`);
       sessionStorage.setItem('username', username);
     });
+
+    listenOnConnect<string>(SocketEventNames.PLAY_SOUND)
+      .subscribe((sound) => {
+        if (sound === Sounds.WORD_GUESSED) playSuccess();
+      });
 }
 
 emitOnConnect(initiateGame$)
-  .subscribe(({ socket }) => {
-    socket.emit(SocketEventNames.START_GAME);
+  .subscribe(({ socket, data }) => {
+    socket.emit(SocketEventNames.START_GAME, data);
   });
 
 emitOnConnect<string>(submitWordSelection$)

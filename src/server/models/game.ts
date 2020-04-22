@@ -136,8 +136,7 @@ export class Game {
 
     this.round.wordToGuess = this.sanitizeWord(this.round.wordsForSelection[selection]);
 
-    this.userSubmittedWordSelection$.next([true, UpdateTrigger.USER_SUBMITTED_WORD]);
-    this.updateGameForAllUsers(UpdateTrigger.USER_SELECTED_WORD);
+    this.userSubmittedWordSelection$.next([true, UpdateTrigger.USER_SELECTED_WORD]);
   }
 
   public submitWordForPlayer(username: string, word: string): void {
@@ -158,8 +157,11 @@ export class Game {
       .filter(([username, user]) => username !== this.round.activePlayer && user.connected)
       .every(([username]) => Object.values(this.round.wordsInRound).some(userList => userList.includes(username)));
 
-    this.everyPlayerSubmittedWord$.next([everyPlayerSubmittedWord, UpdateTrigger.USER_SUBMITTED_WORD]);
-    this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_WORD);
+    if (everyPlayerSubmittedWord) {
+      this.everyPlayerSubmittedWord$.next([true, UpdateTrigger.ALL_USERS_SUBMITTED_WORD]);
+    } else {
+      this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_WORD);
+    }
   }
 
   private sanitizeWord(word: string): string {

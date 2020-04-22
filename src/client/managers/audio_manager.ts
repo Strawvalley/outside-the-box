@@ -1,4 +1,5 @@
 import { SoundEffect, Params } from './audio-libs/jsfxr';
+import { logWarning } from './client_log_manager';
 
 export function playSound(json: string): void {
   try {
@@ -6,7 +7,7 @@ export function playSound(json: string): void {
     const sound = new SoundEffect(params).generate();
     sound.getAudio().play();
   } catch(err) {
-    alert(err);
+    logWarning(`Audio manger error playing sound: ${err}`);
   }
 }
 

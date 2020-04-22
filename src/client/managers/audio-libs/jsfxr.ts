@@ -434,11 +434,7 @@ var _sfxr_getAudioFn = function(wave) {
           var proc = actx.createBufferSource();
           proc.buffer = buff;
           proc.connect(actx.destination);
-          // if ('AudioContext' in window) {
-            proc.start();
-          // } else if ('webkitAudioContext' in window) {
-          //   proc.noteOn(0);
-          // }
+          proc.start();
           this.channels.push(proc);
         }
       };

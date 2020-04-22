@@ -1,9 +1,13 @@
 import { SoundEffect, Params } from './audio-libs/jsfxr';
 
 export function playSound(json: string): void {
-  const params = new Params().fromJSON(JSON.parse(json));
-  const sound = new SoundEffect(params).generate();
-  sound.getAudio().play();
+  try {
+    const params = new Params().fromJSON(JSON.parse(json));
+    const sound = new SoundEffect(params).generate();
+    sound.getAudio().play();
+  } catch(err) {
+    alert(err);
+  }
 }
 
 export function playSuccess(): void {

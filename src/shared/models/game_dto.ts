@@ -1,4 +1,4 @@
-import { GameState, RoundDto } from "shared";
+import { GameState, RoundDto, UpdateTrigger } from "shared";
 
 export interface GameDto {
   username?: string;
@@ -22,4 +22,5 @@ export interface GameDto {
   currentRound: number;
 
   round: RoundDto;
+  updateTrigger?: UpdateTrigger;
 }

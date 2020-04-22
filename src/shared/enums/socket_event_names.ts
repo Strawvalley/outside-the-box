@@ -9,5 +9,4 @@ export enum SocketEventNames {
   UNPAUSE_GAME = ">unpause_game",
   UPDATE_GAME_STATE = "<update_game_state",
   USERNAME_CHANGED = "<update_username",
-  PLAY_SOUND = "<play_sound"
 }

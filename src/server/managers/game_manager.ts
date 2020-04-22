@@ -1,9 +1,7 @@
 import { Game } from "../models/game";
-import { GameDto } from "../../shared";
+import { GameDto, GameConfig, UpdateTrigger } from "../../shared";
 import { WordManager } from "./word_manager";
 import { trackMetric } from "./tracking_manager";
-import { GameConfig } from "../../shared/models/game_config_dto";
-import { Sounds } from "../../shared/enums/sounds";
 
 export class GameManager {
   private games: {
@@ -12,8 +10,7 @@ export class GameManager {
 
   constructor(
     public updateGameForAllUsers: (room: string, toDto: { gameState: GameDto }) => void,
-    public updateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void,
-    public playSoundForAllUsers: (room: string, sound: Sounds) => void
+    public updateGameForUser: (clientId: string, payload: { gameState: GameDto}) => void
   ) {
     WordManager.initalizeWordLists();
     this.games = {}
@@ -77,7 +74,7 @@ export class GameManager {
    */
   public createOrJoinGame(gameId: string, userId: string, username: string, lang = "de"): string {
     if (!this.hasGame(gameId)) {
-      this.games[gameId] = new Game(userId, gameId, lang, this.updateGameForAllUsers, this.updateGameForUser, this.playSoundForAllUsers);
+      this.games[gameId] = new Game(userId, gameId, lang, this.updateGameForAllUsers, this.updateGameForUser);
       trackMetric("Running Games", "Running Games", Object.keys(this.games).length);
     }
     return this.addUserToGame(gameId, userId, username);
@@ -138,8 +135,8 @@ export class GameManager {
     game.guessWordForPlayer(username, word);
   }
 
-  public sendGameUpdate(gameId: string): void {
-    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers();
+  public sendGameUpdate(gameId: string, updateTrigger: UpdateTrigger): void {
+    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers(updateTrigger);
   }
 
   private getUnusedUsername(usersInRoom: string[], username: string): string {

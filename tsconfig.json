@@ -2,9 +2,9 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "lib": [ "dom" ],
-    "paths": {
-      "~*": ["./*"]
-    },
+    // "paths": {
+    //   "~*": ["./*"]
+    // },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,  
     // "noImplicitAny": true,

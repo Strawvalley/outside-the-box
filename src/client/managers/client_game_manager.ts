@@ -1,10 +1,7 @@
 import { Subject } from "rxjs";
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from "../connection";
-import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
+import { SocketEventNames, GameDto, JoinRoomDto, GameConfig } from "../../shared";
 import { logInfo } from "./client_log_manager";
-import { GameConfig } from "../../shared/models/game_config_dto";
-import { Sounds } from "../../shared/enums/sounds";
-import audioManager from "./audio_manager";
 
 export const createOrJoinGame$ = new Subject<{username: string; room?: string; lang?}>();
 
@@ -45,11 +42,6 @@ export function setupAppListeners(): void {
       logInfo(`<<<[INFO] Username changed: ${username}`);
       sessionStorage.setItem('username', username);
     });
-
-    listenOnConnect<string>(SocketEventNames.PLAY_SOUND)
-      .subscribe((sound) => {
-        if (sound === Sounds.WORD_GUESSED) audioManager.playSuccess();
-      });
 }
 
 emitOnConnect(initiateGame$)

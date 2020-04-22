@@ -3,11 +3,13 @@ import { GameManager } from "./managers/game_manager";
 import { SocketEventNames, JoinRoomDto, GameDto } from '../shared';
 import { logInfo, logWarning } from './managers/log_manager';
 import { trackMetric } from "./managers/tracking_manager";
-import { GameConfig } from "~shared/models/game_config_dto";
+import { GameConfig } from "../shared/models/game_config_dto";
+import { Sounds } from "../shared/enums/sounds";
 
 const gameManager = new GameManager(
   (room: string, payload: { gameState: GameDto } ) => sendToRoom(room, SocketEventNames.UPDATE_GAME_STATE, payload),
-  (clienId: string, payload: { gameState: GameDto }) => sendToUser(clienId, SocketEventNames.UPDATE_GAME_STATE, payload)
+  (clienId: string, payload: { gameState: GameDto }) => sendToUser(clienId, SocketEventNames.UPDATE_GAME_STATE, payload),
+  (room: string, sound: Sounds) => sendToRoom(room, SocketEventNames.PLAY_SOUND, sound)
 );
 
 connection$.subscribe(({ io, client }) => {

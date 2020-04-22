@@ -5,6 +5,7 @@ import { logInfo, logWarning } from "../managers/log_manager";
 import { WordManager } from "../managers/word_manager";
 import { GameConfig } from "../../shared/models/game_config_dto";
 import { defaults } from "../../shared/models/defaults";
+import { Sounds } from "../../shared/enums/sounds";
 
 export class Game {
 
@@ -48,7 +49,8 @@ export class Game {
     room: string,
     lang: string,
     public sendUpdateGameForAllUsers: (room: string, payload: { gameState: GameDto }) => void,
-    public sendUpdateGameForUser: (clientId: string, payload: { gameState: GameDto }) => void
+    public sendUpdateGameForUser: (clientId: string, payload: { gameState: GameDto }) => void,
+    public playSound: (room: string, sound: Sounds) => void
   ) {
     this.admin = admin;
     this.room = room;
@@ -64,6 +66,10 @@ export class Game {
     this.round = {};
 
     this.guessingTime = defaults.guessingTimeRange.default;
+
+    this.userGuessedWord$.subscribe(() => {
+      this.playSound(this.room, Sounds.WORD_GUESSED);
+    });
   }
 
   public addUser(username: string, userId: string): void {
@@ -179,7 +185,7 @@ export class Game {
     this.round.guessesLeft--;
 
     // If word matched word to guess
-    if (sanitizedWord === this.round.wordToGuess) {
+    if (sanitizedWord === this.sanitizeWord(this.round.wordToGuess)) {
       logInfo(`Player ${username} guessed the word in room ${this.room}`);
       this.round.pointsInRound = this.getPointsForRound();
       this.round.wordWasGuessed = true;

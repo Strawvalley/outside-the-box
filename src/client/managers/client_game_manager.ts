@@ -3,6 +3,8 @@ import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from ".
 import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
 import { logInfo } from "./client_log_manager";
 import { GameConfig } from "../../shared/models/game_config_dto";
+import { Sounds } from "../../shared/enums/sounds";
+import { playSuccess } from "./audio_manager";
 
 export const createOrJoinGame$ = new Subject<{username: string; room?: string; lang?}>();
 
@@ -43,6 +45,11 @@ export function setupAppListeners(): void {
       logInfo(`<<<[INFO] Username changed: ${username}`);
       sessionStorage.setItem('username', username);
     });
+
+    listenOnConnect<string>(SocketEventNames.PLAY_SOUND)
+      .subscribe((sound) => {
+        if (sound === Sounds.WORD_GUESSED) playSuccess();
+      });
 }
 
 emitOnConnect(initiateGame$)

@@ -64,6 +64,7 @@ import Vue from "vue";
 
 import i18n from "../plugins/i18n";
 import { createOrJoinGame$ } from "../managers/client_game_manager";
+import audioManager from "client/managers/audio_manager";
 
 export default Vue.extend({
   data() {
@@ -87,12 +88,14 @@ export default Vue.extend({
       this.hasRoomInPath ? this.joinGame() : this.createGame();
     },
     createGame(): void {
+      audioManager.playJoinGame();
       createOrJoinGame$.next({
         username: this.usernameInput,
         lang: i18n.locale
       });
     },
     joinGame(): void {
+      audioManager.playJoinGame();
       createOrJoinGame$.next({
         room: this.gameInput,
         username: this.usernameInput

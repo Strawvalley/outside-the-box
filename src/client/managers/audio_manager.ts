@@ -16,7 +16,7 @@ const audioManager = {
   playSoundByUpdateTrigger(updateTrigger: UpdateTrigger): void {
     switch (updateTrigger) {
       case UpdateTrigger.USER_JOINED_ROOM:
-        audioManager.playJoinGame();
+        // audioManager.playJoinGame();
         return;
       case UpdateTrigger.USER_LEFT_ROOM:
         audioManager.playUserLeft();

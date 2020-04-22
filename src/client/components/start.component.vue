@@ -64,7 +64,7 @@ import Vue from "vue";
 
 import i18n from "../plugins/i18n";
 import { createOrJoinGame$ } from "../managers/client_game_manager";
-import audioManager from "client/managers/audio_manager";
+import audioManager from "../managers/audio_manager";
 
 export default Vue.extend({
   data() {

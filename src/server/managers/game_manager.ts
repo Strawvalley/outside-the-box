@@ -1,8 +1,7 @@
 import { Game } from "../models/game";
-import { GameDto } from "../../shared";
+import { GameDto, GameConfig, UpdateTrigger } from "../../shared";
 import { WordManager } from "./word_manager";
 import { trackMetric } from "./tracking_manager";
-import { GameConfig } from "~shared/models/game_config_dto";
 
 export class GameManager {
   private games: {
@@ -136,8 +135,8 @@ export class GameManager {
     game.guessWordForPlayer(username, word);
   }
 
-  public sendGameUpdate(gameId: string): void {
-    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers();
+  public sendGameUpdate(gameId: string, updateTrigger: UpdateTrigger): void {
+    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers(updateTrigger);
   }
 
   private getUnusedUsername(usersInRoom: string[], username: string): string {

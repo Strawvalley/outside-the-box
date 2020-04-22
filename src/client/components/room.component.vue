@@ -36,6 +36,7 @@
         v-bind:totalSeconds="game.round.totalSeconds"
         v-bind:secondsLeft="game.round.secondsLeft"
         v-bind:paused="isPaused"
+        v-bind:playSound="shouldPlayTimerSound"
       ></timer>
     </div>
 
@@ -64,6 +65,7 @@ import Pause from "./pause.component.vue";
 import Game from "./game.component.vue";
 
 import { unpauseGame$, pauseGame$ } from "../managers/client_game_manager";
+import { GameState } from "../../shared";
 
 export default Vue.extend({
   props: ["socketId", "game"],
@@ -97,6 +99,9 @@ export default Vue.extend({
     showTimer(): boolean {
       if (this.game.round.totalSeconds === undefined) return false;
       return true;
+    },
+    shouldPlayTimerSound(): boolean {
+      return this.game.state === GameState.THINKING || this.game.state === GameState.GUESSING;
     }
   },
   methods: {

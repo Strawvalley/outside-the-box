@@ -1,8 +1,7 @@
 import { Subject } from "rxjs";
 import { emitOnConnect, listenOnConnect, listenOnConnectWithConnection } from "../connection";
-import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
+import { SocketEventNames, GameDto, JoinRoomDto, GameConfig } from "../../shared";
 import { logInfo } from "./client_log_manager";
-import { GameConfig } from "../../shared/models/game_config_dto";
 
 export const createOrJoinGame$ = new Subject<{username: string; room?: string; lang?}>();
 

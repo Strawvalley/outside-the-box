@@ -9,4 +9,4 @@ new Vue({
   el: '#game',
   i18n,
   render: (h): VNode => h(App),
-})
+});

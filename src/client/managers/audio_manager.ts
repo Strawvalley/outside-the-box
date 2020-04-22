@@ -7,7 +7,7 @@ export function playSound(json: string): void {
     const sound = new SoundEffect(params).generate();
     sound.getAudio().play();
   } catch(err) {
-    logWarning(`Audio manger error playing sound: ${err}`);
+    logWarning(`Audio manager error playing sound: ${err}`);
   }
 }
 

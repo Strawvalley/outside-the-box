@@ -179,7 +179,7 @@ export class Game {
     this.round.guessesLeft--;
 
     // If word matched word to guess
-    if (sanitizedWord === this.round.wordToGuess) {
+    if (sanitizedWord === this.sanitizeWord(this.round.wordToGuess)) {
       logInfo(`Player ${username} guessed the word in room ${this.room}`);
       this.round.pointsInRound = this.getPointsForRound();
       this.round.wordWasGuessed = true;

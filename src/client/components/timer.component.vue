@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { playTimeTick } from "../managers/audio_manager";
+import audioManager from "../managers/audio_manager";
 
 export default Vue.extend({
   props: ["totalSeconds", "secondsLeft", "paused", "playSound"],
@@ -34,7 +34,7 @@ export default Vue.extend({
         if (!this.paused) {
           this.internalSecondsLeft--;
           if (this.internalSecondsLeft <= 10 && this.playSound) {
-            playTimeTick();
+            audioManager.playTimeTick();
           }
         }
         if (this.internalSecondsLeft == 0) {

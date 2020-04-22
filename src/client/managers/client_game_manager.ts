@@ -4,7 +4,7 @@ import { SocketEventNames, GameDto, JoinRoomDto } from "../../shared";
 import { logInfo } from "./client_log_manager";
 import { GameConfig } from "../../shared/models/game_config_dto";
 import { Sounds } from "../../shared/enums/sounds";
-import { playSuccess } from "./audio_manager";
+import audioManager from "./audio_manager";
 
 export const createOrJoinGame$ = new Subject<{username: string; room?: string; lang?}>();
 
@@ -48,7 +48,7 @@ export function setupAppListeners(): void {
 
     listenOnConnect<string>(SocketEventNames.PLAY_SOUND)
       .subscribe((sound) => {
-        if (sound === Sounds.WORD_GUESSED) playSuccess();
+        if (sound === Sounds.WORD_GUESSED) audioManager.playSuccess();
       });
 }
 

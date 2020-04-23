@@ -26,11 +26,11 @@ export class Game {
 
   round: RoundDto;
 
-  private userSubmittedWordSelection$: Subject<[boolean, UpdateTrigger]> = new Subject<[boolean, UpdateTrigger]>();
-  private everyPlayerSubmittedWord$: Subject<[boolean, UpdateTrigger]> = new Subject<[boolean, UpdateTrigger]>();
-  private userGuessedWord$: Subject<[boolean, UpdateTrigger]> = new Subject<[boolean, UpdateTrigger]>();
-  private wrongGuessesCountReached$: Subject<[boolean, UpdateTrigger]> = new Subject<[boolean, UpdateTrigger]>();
-  private startNextRound$: Subject<[boolean, UpdateTrigger]> = new Subject<[boolean, UpdateTrigger]>();
+  private userSubmittedWordSelection$: Subject<[boolean, UpdateTrigger, string]> = new Subject<[boolean, UpdateTrigger, string]>();
+  private everyPlayerSubmittedWord$: Subject<[boolean, UpdateTrigger, string]> = new Subject<[boolean, UpdateTrigger, string]>();
+  private userGuessedWord$: Subject<[boolean, UpdateTrigger, string]> = new Subject<[boolean, UpdateTrigger, string]>();
+  private wrongGuessesCountReached$: Subject<[boolean, UpdateTrigger, string]> = new Subject<[boolean, UpdateTrigger, string]>();
+  private startNextRound$: Subject<[boolean, UpdateTrigger, string]> = new Subject<[boolean, UpdateTrigger, string]>();
   private deleteGame$: Subject<void> = new Subject<void>();
 
   private readonly SELECTION_TIME = 20;
@@ -114,7 +114,7 @@ export class Game {
   }
 
   public startNextRound(): void {
-    this.startNextRound$.next([true, UpdateTrigger.INITIATED_NEW_ROUND]);
+    this.startNextRound$.next([true, UpdateTrigger.INITIATED_NEW_ROUND, null]);
   }
 
   public deleteGame(): void {
@@ -122,8 +122,8 @@ export class Game {
     this.deleteGame$.complete();
   }
 
-  public updateGameForAllUsers(updateTriger?: UpdateTrigger): void {
-    const gameState = this.toDto(updateTriger);
+  public updateGameForAllUsers(updateTriger?: UpdateTrigger, updateTriggeredBy?: string): void {
+    const gameState = this.toDto(updateTriger, updateTriggeredBy);
     Object.values(this.users).forEach((user) => {
       this.sendUpdateGameForUser(user.socketId, this.filterGameStateForClient(user.socketId, gameState));
     });
@@ -136,7 +136,7 @@ export class Game {
 
     this.round.wordToGuess = this.sanitizeWord(this.round.wordsForSelection[selection]);
 
-    this.userSubmittedWordSelection$.next([true, UpdateTrigger.USER_SELECTED_WORD]);
+    this.userSubmittedWordSelection$.next([true, UpdateTrigger.USER_SELECTED_WORD, username]);
   }
 
   public submitWordForPlayer(username: string, word: string): void {
@@ -158,9 +158,9 @@ export class Game {
       .every(([username]) => Object.values(this.round.wordsInRound).some(userList => userList.includes(username)));
 
     if (everyPlayerSubmittedWord) {
-      this.everyPlayerSubmittedWord$.next([true, UpdateTrigger.ALL_USERS_SUBMITTED_WORD]);
+      this.everyPlayerSubmittedWord$.next([true, UpdateTrigger.ALL_USERS_SUBMITTED_WORD, username]);
     } else {
-      this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_WORD);
+      this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_WORD, username);
     }
   }
 
@@ -182,11 +182,11 @@ export class Game {
       this.round.pointsInRound = this.getPointsForRound();
       this.round.wordWasGuessed = true;
       this.totalPoints += this.round.pointsInRound;
-      this.userGuessedWord$.next([true, UpdateTrigger.USER_GUESSED_WORD]);
+      this.userGuessedWord$.next([true, UpdateTrigger.USER_GUESSED_WORD, username]);
     } else if (this.round.guesses.length === this.WRONG_GUESS_COUNT) {
-      this.wrongGuessesCountReached$.next([true, UpdateTrigger.USER_USED_ALL_GUESSES]);
+      this.wrongGuessesCountReached$.next([true, UpdateTrigger.USER_USED_ALL_GUESSES, username]);
     } else {
-      this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_GUESS);
+      this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_GUESS, username);
     }
   }
 
@@ -212,23 +212,23 @@ export class Game {
     this.updateGameForAllUsers(UpdateTrigger.INITIATED_NEW_ROUND);
 
     merge(this.startTimer(this.SELECTION_TIME), this.userSubmittedWordSelection$).pipe(
-      first(tuple => tuple[0])
+      first(data => data[0])
     ).subscribe(
-      (tuple) => {
+      (data) => {
         // if timer has run out, select first word
         this.round.wordToGuess = this.round.wordToGuess || this.round.wordsForSelection[0]
-        this.goToThinking(tuple[1]);
+        this.goToThinking(data[1], data[2]);
       }
     );
   }
 
-  private goToThinking(updateTrigger: UpdateTrigger): void {
+  private goToThinking(updateTrigger: UpdateTrigger, updateTriggeredBy: string): void {
     this.state = GameState.THINKING;
-    this.updateGameForAllUsers(updateTrigger);
+    this.updateGameForAllUsers(updateTrigger, updateTriggeredBy);
     merge(this.startTimer(this.THINKING_TIME), this.everyPlayerSubmittedWord$).pipe(
-      first(tuple => tuple[0])
+      first(data => data[0])
     ).subscribe(
-      (tuple) => this.goToGuessing(tuple[1])
+      (data) => this.goToGuessing(data[1], data[2])
     );
   }
 
@@ -264,15 +264,15 @@ export class Game {
     );
   }
 
-  private goToGuessing(updateTrigger: UpdateTrigger): void {
+  private goToGuessing(updateTrigger: UpdateTrigger, updateTriggeredBy: string): void {
     this.state = GameState.GUESSING;
     this.filterWordsInRound();
-    this.updateGameForAllUsers(updateTrigger);
+    this.updateGameForAllUsers(updateTrigger, updateTriggeredBy);
     merge(this.startTimer(this.guessingTime), this.userGuessedWord$, this.wrongGuessesCountReached$).pipe(
-      first(tuple => tuple[0])
+      first(data => data[0])
     ).subscribe(
-      (tuple) => {
-        this.goToRoundFinished(tuple[1]);
+      (data) => {
+        this.goToRoundFinished(data[1], data[2]);
       }
     );
   }
@@ -286,11 +286,11 @@ export class Game {
       );
   }
 
-  private goToRoundFinished(updateTrigger: UpdateTrigger): void {
+  private goToRoundFinished(updateTrigger: UpdateTrigger, updateTriggeredBy: string): void {
     this.state = GameState.ROUND_FINISHED;
-    this.updateGameForAllUsers(updateTrigger);
+    this.updateGameForAllUsers(updateTrigger, updateTriggeredBy);
     merge(this.startTimer(this.ROUND_FINISHED_TIME), this.startNextRound$).pipe(
-      first(tuple => tuple[0])
+      first(data => data[0])
     ).subscribe(
       () => {
         if (this.currentRound < this.totalRounds) {
@@ -337,7 +337,7 @@ export class Game {
     }
   }
 
-  private toDto(updateTrigger?: UpdateTrigger): GameDto {
+  private toDto(updateTrigger?: UpdateTrigger, updateTriggeredBy?: string): GameDto {
     return {
       room: this.room,
       started: this.started,
@@ -363,7 +363,8 @@ export class Game {
         pointsInRound: this.round.pointsInRound,
         usersSubmittedWordInRound: this.round.wordsInRound ? [].concat(...Object.values(this.round.wordsInRound)) : [] // flatten userlists
       },
-      updateTrigger: updateTrigger
+      updateTrigger: updateTrigger,
+      updateTriggeredBy: updateTriggeredBy
     }
   }
 

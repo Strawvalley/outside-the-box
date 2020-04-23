@@ -135,8 +135,8 @@ export class GameManager {
     game.guessWordForPlayer(username, word);
   }
 
-  public sendGameUpdate(gameId: string, updateTrigger: UpdateTrigger): void {
-    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers(updateTrigger);
+  public sendGameUpdate(gameId: string, updateTrigger: UpdateTrigger, updateTriggeredBy: string): void {
+    if (this.hasGame(gameId)) this.games[gameId].updateGameForAllUsers(updateTrigger, updateTriggeredBy);
   }
 
   private getUnusedUsername(usersInRoom: string[], username: string): string {

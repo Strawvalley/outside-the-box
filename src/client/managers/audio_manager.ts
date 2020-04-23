@@ -13,10 +13,10 @@ function playSound(json: string): void {
 }
 
 const audioManager = {
-  playSoundByUpdateTrigger(updateTrigger: UpdateTrigger): void {
+  playSoundByUpdateTrigger(username: string, updateTrigger: UpdateTrigger, updateTriggeredBy?: string): void {
     switch (updateTrigger) {
       case UpdateTrigger.USER_JOINED_ROOM:
-        // audioManager.playJoinGame();
+        if (updateTriggeredBy !== username) audioManager.playJoinGame();
         return;
       case UpdateTrigger.USER_LEFT_ROOM:
         audioManager.playUserLeft();

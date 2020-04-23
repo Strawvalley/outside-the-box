@@ -23,4 +23,5 @@ export interface GameDto {
 
   round: RoundDto;
   updateTrigger?: UpdateTrigger;
+  updateTriggeredBy?: string;
 }

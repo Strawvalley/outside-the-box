@@ -20,7 +20,7 @@ disconnect$.subscribe(({ io, client }) => {
     const gameWasDeleted = gameManager.disconnectUserFromGame(client.room, client.id, client.username);
     if (!gameWasDeleted) {
       // Update gameState for all users in room
-      gameManager.sendGameUpdate(client.room, UpdateTrigger.USER_LEFT_ROOM);
+      gameManager.sendGameUpdate(client.room, UpdateTrigger.USER_LEFT_ROOM, client.username);
     } else {
       logInfo(`Game ${client.room} was deleted because all users were disconnected`);
     }
@@ -54,7 +54,7 @@ listenOnConnect<JoinRoomDto>(SocketEventNames.JOIN_ROOM).subscribe(({ io, client
   }
 
   // Send update to all users
-  gameManager.sendGameUpdate(data.room, UpdateTrigger.USER_JOINED_ROOM);
+  gameManager.sendGameUpdate(data.room, UpdateTrigger.USER_JOINED_ROOM, userJoinedAs);
 });
 
 listenOnConnect<GameConfig>(SocketEventNames.START_GAME).subscribe(({ client, data }) => {

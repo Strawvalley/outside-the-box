@@ -47,7 +47,7 @@ export default Vue.extend({
     gameState$.subscribe(({ socketId, game }) => {
       this.socketId = socketId;
       this.game = game;
-      audioManager.playSoundByUpdateTrigger(game.updateTrigger);
+      audioManager.playSoundByUpdateTrigger(game.username, game.updateTrigger, game.updateTriggeredBy);
     });
   }
 });

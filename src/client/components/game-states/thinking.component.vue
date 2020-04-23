@@ -60,8 +60,10 @@ export default Vue.extend({
   },
   methods: {
     submitWord(): void {
-      this.hasSentWordToServer = true;
-      submitThinkingWord$.next(this.word);
+      if (this.word && this.word.trim().length) {
+        this.hasSentWordToServer = true;
+        submitThinkingWord$.next(this.word);
+      }
     }
   }
 });

@@ -70,9 +70,11 @@ export default Vue.extend({
   },
   methods: {
     submitGuess(): void {
-      submitGuessingWord$.next(this.myGuess);
-      this.myGuess = "";
-      this.$refs.guessinput.focus();
+      if (this.myGuess && this.myGuess.trim().length) {
+        submitGuessingWord$.next(this.myGuess);
+        this.myGuess = "";
+        this.$refs.guessinput.focus();
+      }
     }
   }
 });

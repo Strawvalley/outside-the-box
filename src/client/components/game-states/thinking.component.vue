@@ -61,7 +61,7 @@ export default Vue.extend({
   },
   methods: {
     submitWord(): void {
-      if (this.word && this.word.trim().length) {
+      if (this.word && this.word.trim().length && this.word.trim() != this.wordToGuess.trim()) {
         this.hasSentWordToServer = true;
         submitThinkingWord$.next(this.word);
       } else {

@@ -37,7 +37,7 @@ export default Vue.extend({
             audioManager.playTimeTick();
           }
         }
-        if (this.internalSecondsLeft == 0) {
+        if (this.internalSecondsLeft <= 0) {
           clearInterval(this.t);
         }
       }, 1000);

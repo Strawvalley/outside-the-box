@@ -1,18 +1,21 @@
 import { SoundEffect, Params } from './audio-libs/jsfxr';
 import { logWarning } from './client_log_manager';
 import { UpdateTrigger } from '../../shared';
-
-function playSound(json: string): void {
-  try {
-    const params = new Params().fromJSON(JSON.parse(json));
-    const sound = new SoundEffect(params).generate();
-    sound.getAudio().play();
-  } catch (err) {
-    logWarning(`Audio manager error playing sound: ${err}`);
-  }
-}
+import { Subject } from 'rxjs';
 
 const audioManager = {
+  muted: false,
+  playSound(json: string): void {
+    try {
+      if (!this.muted) {
+        const params = new Params().fromJSON(JSON.parse(json));
+        const sound = new SoundEffect(params).generate();
+        sound.getAudio().play();
+      }
+    } catch (err) {
+      logWarning(`Audio manager error playing sound: ${err}`);
+    }
+  },
   playSoundByUpdateTrigger(username: string, updateTrigger: UpdateTrigger, updateTriggeredBy?: string): void {
     switch (updateTrigger) {
       case UpdateTrigger.USER_JOINED_ROOM:
@@ -57,7 +60,7 @@ const audioManager = {
     }
   },
   playJoinGame(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -90,7 +93,7 @@ const audioManager = {
     `);
   },
   playSuccess(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -123,7 +126,7 @@ const audioManager = {
     `)
   },
   playTimeTick(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 0,
@@ -156,7 +159,7 @@ const audioManager = {
     `);
   },
   playUserLeft(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 0,
@@ -189,7 +192,7 @@ const audioManager = {
     `);
   },
   playZonk(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 0,
@@ -222,7 +225,7 @@ const audioManager = {
     `);
   },
   playBigZonk(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 3,
@@ -255,7 +258,7 @@ const audioManager = {
     `);
   },
   playInitiatedNewRound(): void {
-    playSound(`
+    this.playSound(`
     {
       "oldParams": true,
       "wave_type": 1,
@@ -288,7 +291,7 @@ const audioManager = {
   `);
   },
   playUnpause(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -321,7 +324,7 @@ const audioManager = {
     `);
   },
   playPause(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -354,7 +357,7 @@ const audioManager = {
     `);
   },
   playTimeRanOut(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -387,7 +390,7 @@ const audioManager = {
     `);
   },
   playSelectedWord(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -420,7 +423,7 @@ const audioManager = {
     `);
   },
   playSubmittedWord(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -453,7 +456,7 @@ const audioManager = {
     `);
   },
   playAllUsersSubmittedWord(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -486,7 +489,7 @@ const audioManager = {
     `);
   },
   playFinishedGame(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 1,
@@ -519,7 +522,7 @@ const audioManager = {
     `);
   },
   playForbidden(): void {
-    playSound(`
+    this.playSound(`
       {
         "oldParams": true,
         "wave_type": 0,
@@ -552,5 +555,9 @@ const audioManager = {
     `);
   },
 }
+
+export const muteState$: Subject<boolean> = new Subject<boolean>();
+
+muteState$.subscribe((muted) => audioManager.muted = muted);
 
 export default audioManager

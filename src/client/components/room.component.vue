@@ -1,6 +1,18 @@
 <template>
   <div>
-    <button v-if="isAdmin && game.started" v-on:click="pauseGame">{{ $t('gameButtonPauseGame') }}</button>
+    <div style="display: flex;">
+      <button v-if="isAdmin && game.started" v-on:click="pauseGame">{{ $t('gameButtonPauseGame') }}</button>
+      <button v-on:click="toggleMute" :style="{ color: '#DDFDFF', 'margin-left': 'auto' }">
+        <font-awesome-icon
+          :icon="['fas', 'volume-up']"
+          v-if="muted"
+        ></font-awesome-icon>
+        <font-awesome-icon
+          v-if="!muted"
+          :icon="['fas', 'volume-mute']"
+        ></font-awesome-icon>
+      </button>
+    </div>
     <div
       style="display: flex; justify-content: space-between; border-bottom: 1px dashed #004348; padding-bottom: 0.75rem; margin-bottom: 0.75rem;"
     >
@@ -66,9 +78,10 @@ import Game from "./game.component.vue";
 
 import { unpauseGame$, pauseGame$ } from "../managers/client_game_manager";
 import { GameState } from "../../shared";
+import audioManager, { muteState$ } from "../managers/audio_manager";
 
 export default Vue.extend({
-  props: ["socketId", "game"],
+  props: ["socketId", "game", "muted"],
   components: {
     UserList,
     Timer,
@@ -110,6 +123,9 @@ export default Vue.extend({
     },
     continueGame(): void {
       unpauseGame$.next();
+    },
+    toggleMute(): void {
+      muteState$.next(!this.muted);
     }
   }
 });

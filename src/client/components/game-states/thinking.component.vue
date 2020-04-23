@@ -30,6 +30,7 @@
 <script lang="ts">
 import Vue from "vue";
 import { submitThinkingWord$ } from "../../managers/client_game_manager";
+import audioManager from "../../managers/audio_manager";
 
 export default Vue.extend({
   props: [
@@ -63,6 +64,8 @@ export default Vue.extend({
       if (this.word && this.word.trim().length) {
         this.hasSentWordToServer = true;
         submitThinkingWord$.next(this.word);
+      } else {
+        audioManager.playForbidden();
       }
     }
   }

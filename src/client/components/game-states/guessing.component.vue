@@ -52,6 +52,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import audioManager from "../../managers/audio_manager";
 import { submitGuessingWord$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
@@ -74,6 +75,8 @@ export default Vue.extend({
         submitGuessingWord$.next(this.myGuess);
         this.myGuess = "";
         this.$refs.guessinput.focus();
+      } else {
+        audioManager.playForbidden();
       }
     }
   }

@@ -1,7 +1,7 @@
 import { SoundEffect, Params } from './audio-libs/jsfxr';
 import { logWarning } from './client_log_manager';
 import { UpdateTrigger } from '../../shared';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 const audioManager = {
   muted: false,
@@ -556,8 +556,14 @@ const audioManager = {
   },
 }
 
-export const muteState$: Subject<boolean> = new Subject<boolean>();
+export const muteState$: ReplaySubject<boolean> = new ReplaySubject<boolean>(1);
 
-muteState$.subscribe((muted) => audioManager.muted = muted);
+muteState$.subscribe((muted) => {
+  audioManager.muted = muted;
+  sessionStorage.setItem("muted", JSON.stringify(muted));
+});
+
+const initalMuteState = sessionStorage.getItem("muted");
+if (initalMuteState !== null && typeof JSON.parse(initalMuteState) === "boolean") muteState$.next(JSON.parse(initalMuteState));
 
 export default audioManager

@@ -17,12 +17,12 @@
           </template>
         </i18n>
       </div>
-      <div>
-        <span class="highlight">{{ otherUsersSubmittedWords.join(', ') }}</span> {{ $tc('thinkingHintText4', otherUsersSubmittedWords.length ) }}
-      </div>
     </div>
     <div v-if="isActivePlayer">
       <span>{{ $t('thinkingHintText3') }}</span>
+    </div>
+    <div>
+      <span class="highlight">{{ otherUsersSubmittedWords.join(', ') }}</span> {{ $tc('thinkingHintText4', otherUsersSubmittedWords.length ) }}
     </div>
   </div>
 </template>

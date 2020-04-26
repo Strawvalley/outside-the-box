@@ -6,6 +6,7 @@
         {{ $t('thinkingHintText1') }}
         <span class="highlight">{{wordToGuess}}</span>
       </div>
+      <p class="error" v-if="hasError">{{errorMessage}}</p>
       <div v-if="!(hasSentWordToServer || hasSubmittedWord)">
         <input id="think-input" class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord" />
         <button v-on:click="submitWord">{{ $t('thinkingButtonSubmitWord') }}</button>
@@ -43,7 +44,9 @@ export default Vue.extend({
   data: () => {
     return {
       word: "",
-      hasSentWordToServer: false
+      hasSentWordToServer: false,
+      hasError: false,
+      errorMessage: ""
     };
   },
   computed: {
@@ -61,12 +64,29 @@ export default Vue.extend({
   },
   methods: {
     submitWord(): void {
-      if (this.word && this.word.trim().length && this.word.trim() != this.wordToGuess.trim()) {
-        this.hasSentWordToServer = true;
-        submitThinkingWord$.next(this.word);
-      } else {
+      try {
+        const sanitizedWord = this.word.toLowerCase().trim();
+        if (this.isWordValid(sanitizedWord)) {
+          this.hasSentWordToServer = true;
+          this.hasError = false;
+          this.errorMessage = "";
+          submitThinkingWord$.next(this.word);
+        }
+      } catch (err) {
+        this.hasError = true;
+        this.errorMessage = err;
         audioManager.playForbidden();
       }
+
+    },
+    isWordValid(s: string): boolean {
+      if (!s) throw this.$t('thinkingErrorEmptyWord');
+      if (s === this.wordToGuess) throw this.$t('thinkingErrorHintEqualGuess');
+      if (this.hasWhiteSpace(s)) throw this.$t('thinkingErrorMultipleWords');
+      return true;
+    },
+    hasWhiteSpace(s: string): boolean {
+      return /\s/g.test(s);
     }
   }
 });
@@ -75,5 +95,8 @@ export default Vue.extend({
 <style>
   #think-input {
     text-transform: lowercase;
+  }
+  .error {
+    color: red;
   }
 </style>

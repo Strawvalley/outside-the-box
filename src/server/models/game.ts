@@ -144,8 +144,10 @@ export class Game {
     if (username === this.round.activePlayer) return;
     if (Object.values(this.round.wordsInRound).some(userList => userList.find(u => u === username))) return;
 
-    // Set word for this player in this round
     const sanitizedWord = this.sanitizeWord(word);
+    if (/\s/g.test(sanitizedWord)) return; // check if whitespace present
+
+    // Set word for this player in this round
     if (this.round.wordsInRound[sanitizedWord]) {
       this.round.wordsInRound[sanitizedWord].push(username);
     } else {
@@ -313,7 +315,7 @@ export class Game {
   }
 
   private generateWord(): string {
-    return WordManager.getRandomWord(this.language);
+    return WordManager.getRandomWord(this.language).toLowerCase();
   }
 
   private generateWordsForSelection(count: number): string[] {

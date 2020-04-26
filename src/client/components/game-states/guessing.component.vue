@@ -23,6 +23,7 @@
         <span class="highlight">{{guessesLeft}}</span>
         {{ $t('guessingGuessesLeft') }}
       </div>
+      <p class="error" v-if="hasError">{{errorMessage}}</p>
       <input
         id="guess-input"
         class="mb-2"
@@ -66,18 +67,31 @@ export default Vue.extend({
   ],
   data: () => {
     return {
-      myGuess: ""
+      myGuess: "",
+      hasError: false,
+      errorMessage: ""
     };
   },
   methods: {
     submitGuess(): void {
-      if (this.myGuess && this.myGuess.trim().length) {
-        submitGuessingWord$.next(this.myGuess);
-        this.myGuess = "";
-        this.$refs.guessinput.focus();
-      } else {
+      try {
+        const sanitizedGuess = this.myGuess.toLowerCase().trim();
+        if (this.isGuessValid(sanitizedGuess)) {
+          this.hasError = false;
+          this.errorMessage = "";
+          submitGuessingWord$.next(this.myGuess);
+          this.myGuess = "";
+          this.$refs.guessinput.focus();
+        }
+      } catch (err) {
+        this.hasError = true;
+        this.errorMessage = err;
         audioManager.playForbidden();
       }
+    },
+    isGuessValid(s: string): boolean {
+      if (!s) throw this.$t('guessingErrorEmptyWord');
+      return true;
     }
   }
 });
@@ -86,5 +100,8 @@ export default Vue.extend({
 <style>
   #guess-input {
     text-transform: lowercase;
+  }
+  .error {
+    color: red;
   }
 </style>

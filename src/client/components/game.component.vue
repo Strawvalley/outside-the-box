@@ -4,6 +4,8 @@
       v-if="isNotStarted"
       v-bind:isAdmin="isAdmin"
       v-bind:canBeStarted="canBeStarted"
+      v-bind:gameConfig="gameConfig"
+      @updateGameConfig="gameConfig = $event"
     ></not-started>
 
     <selecting
@@ -46,6 +48,7 @@
       v-bind:isAdmin="isAdmin"
       v-bind:totalPoints="game.totalPoints"
       v-bind:canBeStarted="canBeStarted"
+      v-bind:gameConfig="gameConfig"
     ></game-finished>
   </div>
 </template>
@@ -60,7 +63,7 @@ import Guessing from "./game-states/guessing.component.vue";
 import RoundFinished from "./game-states/round-finished.component.vue";
 import GameFinished from "./game-states/game-finished.component.vue";
 
-import { GameState } from "../../shared";
+import { GameState, defaults } from "../../shared";
 
 export default Vue.extend({
   props: ["game", "isAdmin", "canBeStarted"],
@@ -71,6 +74,13 @@ export default Vue.extend({
     Guessing,
     RoundFinished,
     GameFinished
+  },
+  data: () => {
+    return {
+      gameConfig: {
+        guessingTime: defaults.guessingTimeRange.default
+      },
+    };
   },
   computed: {
     isNotStarted(): boolean {

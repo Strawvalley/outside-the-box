@@ -34,14 +34,7 @@ import { defaults } from "../../../shared/models/defaults";
 import audioManager from "../../managers/audio_manager";
 
 export default Vue.extend({
-  props: ["isAdmin", "canBeStarted"],
-  data: () => {
-    return {
-      gameConfig: {
-        guessingTime: defaults.guessingTimeRange.default
-      },
-    };
-  },
+  props: ["isAdmin", "canBeStarted", "gameConfig"],
   computed: {
     canIncreaseGuessingTime(): boolean {
       return this.gameConfig.guessingTime < defaults.guessingTimeRange.max;
@@ -58,6 +51,7 @@ export default Vue.extend({
       if (this.canIncreaseGuessingTime) {
         this.gameConfig.guessingTime += defaults.guessingTimeRange.increments;
         audioManager.playClick();
+        this.updateGameConfig();
       } else {
         audioManager.playForbidden();
       }
@@ -66,9 +60,13 @@ export default Vue.extend({
       if (this.canDecreaseGuessingTime) {
         this.gameConfig.guessingTime -= defaults.guessingTimeRange.increments;
         audioManager.playClick();
+        this.updateGameConfig();
       } else {
         audioManager.playForbidden();
       }
+    },
+    updateGameConfig(): void {
+      this.$emit('updateGameConfig', this.gameConfig);
     }
   }
 });

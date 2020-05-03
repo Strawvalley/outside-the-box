@@ -41,6 +41,7 @@
       v-bind:userWords="game.round.wordsInRound"
       v-bind:wordToGuess="game.round.wordToGuess"
       v-bind:pointsInRound="game.round.pointsInRound"
+      v-bind:isLastRound="isLastRound"
     ></round-finished>
 
     <game-finished
@@ -105,6 +106,11 @@ export default Vue.extend({
     isActivePlayer(): boolean {
       return this.game.round.activePlayer === this.game.username;
     },
+    isLastRound(): boolean {
+      const usernames = Object.keys(this.game.users);
+      const isLastPlayer = usernames.indexOf(this.game.round.activePlayer) === usernames.length - 1;
+      return isLastPlayer && this.game.currentRound === this.game.totalRounds;
+    }
   }
 })
 </script>

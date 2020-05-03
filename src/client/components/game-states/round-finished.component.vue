@@ -20,7 +20,7 @@
     <button
       v-if="isActivePlayer"
       v-on:click="startNextRound"
-    >{{ $t('roundFinishedButtonStartNextRound') }}</button>
+    >{{ getButtonText }}</button>
   </div>
 </template>
 
@@ -34,8 +34,14 @@ export default Vue.extend({
     "wordToGuess",
     "userWords",
     "guesses",
-    "pointsInRound"
+    "pointsInRound",
+    "isLastRound"
   ],
+  computed: {
+    getButtonText(): string {
+      return this.isLastRound ? this.$t('roundFinishedButtonFinishGame') : this.$t('roundFinishedButtonStartNextRound');
+    }
+  },
   methods: {
     startNextRound(): void {
       startNextRound$.next();

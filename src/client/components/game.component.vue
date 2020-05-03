@@ -78,7 +78,8 @@ export default Vue.extend({
   data: () => {
     return {
       gameConfig: {
-        guessingTime: defaults.guessingTimeRange.default
+        guessingTime: defaults.guessingTime.default,
+        totalRounds: defaults.totalRounds.default
       },
     };
   },

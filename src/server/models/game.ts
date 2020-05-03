@@ -55,13 +55,13 @@ export class Game {
     this.paused = false;
     this.started = false;
     this.state = GameState.NOT_STARTED;
-    this.totalRounds = 10;
-    this.currentRound = 0;
+    this.totalRounds = defaults.totalRounds.default;
+    this.currentRound = 1;
     this.totalPoints = 0;
     this.users = {};
     this.round = {};
 
-    this.guessingTime = defaults.guessingTimeRange.default;
+    this.guessingTime = defaults.guessingTime.default;
   }
 
   public addUser(username: string, userId: string): void {
@@ -89,7 +89,8 @@ export class Game {
   }
 
   public configureGame(gameConfig: GameConfig): void {
-    this.guessingTime = this.valueInRange(gameConfig.guessingTime, defaults.guessingTimeRange) ? gameConfig.guessingTime : defaults.guessingTimeRange.default;
+    this.guessingTime = this.valueInRange(gameConfig.guessingTime, defaults.guessingTime) ? gameConfig.guessingTime : defaults.guessingTime.default;
+    this.totalRounds = this.valueInRange(gameConfig.totalRounds, defaults.totalRounds) ? gameConfig.totalRounds : defaults.totalRounds.default;
   }
 
   private valueInRange(value: number, range: {min: number; max: number}): boolean {
@@ -98,7 +99,7 @@ export class Game {
 
   public startGame(): void {
     this.started = true;
-    this.currentRound = 0;
+    this.currentRound = 1;
     this.totalPoints = 0;
     this.initiateNewRound();
   }
@@ -208,7 +209,6 @@ export class Game {
   }
 
   private initiateNewRound(): void {
-    this.currentRound++;
     this.state = GameState.SELECTING;
     this.round = this.getNewRound();
     const timer = this.startTimer(this.SELECTION_TIME);
@@ -245,6 +245,7 @@ export class Game {
     for (let i = 1; i < usernames.length; i++) {
       if (nextUsernameIndex >= usernames.length) {
         nextUsernameIndex = 0;
+        this.currentRound++;
       }
 
       if (this.users[usernames[nextUsernameIndex]].connected) {
@@ -298,13 +299,19 @@ export class Game {
       take(1)
     ).subscribe(
       () => {
-        if (this.currentRound < this.totalRounds) {
-          this.initiateNewRound();
-        } else {
+        if (this.isGameFinished()) {
           this.goToGameFinished();
+        } else {
+          this.initiateNewRound();
         }
       }
     );
+  }
+
+  private isGameFinished(): boolean {
+    const usernames = Object.keys(this.users);
+    const isLastPlayer = usernames.indexOf(this.round.activePlayer) === usernames.length - 1;
+    return isLastPlayer && this.currentRound === this.totalRounds;
   }
 
   private goToGameFinished(): void {

@@ -16,6 +16,20 @@
           v-on:click="increaseGuessingTime"
         ></font-awesome-icon>
       </span>
+      <div>Number of Rounds</div>
+      <span class="no-select">
+        <font-awesome-icon
+          :class="canDecreaseTotalRounds ? 'active' : 'not-active'"
+          :icon="['far', 'minus-square']"
+          v-on:click="decreaseTotalRounds"
+        ></font-awesome-icon>
+        <span class="config">{{this.gameConfig.totalRounds}}</span>
+        <font-awesome-icon
+          :class="canIncreaseTotalRounds ? 'active' : 'not-active'"
+          :icon="['far', 'plus-square']"
+          v-on:click="increaseTotalRounds"
+        ></font-awesome-icon>
+      </span>
     </div>
     <div class="mb-2" v-if="!canBeStarted">{{ $t('notStartedHintText1') }}</div>
     <button
@@ -37,10 +51,16 @@ export default Vue.extend({
   props: ["isAdmin", "canBeStarted", "gameConfig"],
   computed: {
     canIncreaseGuessingTime(): boolean {
-      return this.gameConfig.guessingTime < defaults.guessingTimeRange.max;
+      return this.gameConfig.guessingTime < defaults.guessingTime.max;
     },
     canDecreaseGuessingTime(): boolean {
-      return this.gameConfig.guessingTime > defaults.guessingTimeRange.min;
+      return this.gameConfig.guessingTime > defaults.guessingTime.min;
+    },
+    canIncreaseTotalRounds(): boolean {
+      return this.gameConfig.totalRounds < defaults.totalRounds.max;
+    },
+    canDecreaseTotalRounds(): boolean {
+      return this.gameConfig.totalRounds > defaults.totalRounds.min;
     },
   },
   methods: {
@@ -49,7 +69,7 @@ export default Vue.extend({
     },
     increaseGuessingTime(): void {
       if (this.canIncreaseGuessingTime) {
-        this.gameConfig.guessingTime += defaults.guessingTimeRange.increments;
+        this.gameConfig.guessingTime += defaults.guessingTime.increments;
         audioManager.playClick();
         this.updateGameConfig();
       } else {
@@ -58,7 +78,25 @@ export default Vue.extend({
     },
     decreaseGuessingTime(): void {
       if (this.canDecreaseGuessingTime) {
-        this.gameConfig.guessingTime -= defaults.guessingTimeRange.increments;
+        this.gameConfig.guessingTime -= defaults.guessingTime.increments;
+        audioManager.playClick();
+        this.updateGameConfig();
+      } else {
+        audioManager.playForbidden();
+      }
+    },
+    increaseTotalRounds(): void {
+      if (this.canIncreaseTotalRounds) {
+        this.gameConfig.totalRounds += defaults.totalRounds.increments;
+        audioManager.playClick();
+        this.updateGameConfig();
+      } else {
+        audioManager.playForbidden();
+      }
+    },
+    decreaseTotalRounds(): void {
+      if (this.canDecreaseTotalRounds) {
+        this.gameConfig.totalRounds -= defaults.totalRounds.increments;
         audioManager.playClick();
         this.updateGameConfig();
       } else {

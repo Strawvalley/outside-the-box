@@ -101,6 +101,7 @@ export class Game {
     this.started = true;
     this.currentRound = 1;
     this.totalPoints = 0;
+    this.round = {};
     this.initiateNewRound();
   }
 

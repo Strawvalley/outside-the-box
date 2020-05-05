@@ -49,7 +49,7 @@
       v-bind:isAdmin="isAdmin"
       v-bind:totalPoints="game.totalPoints"
       v-bind:canBeStarted="canBeStarted"
-      v-bind:gameConfig="gameConfig"
+      v-bind:returnToMenu="returnToMenu"
     ></game-finished>
   </div>
 </template>
@@ -110,6 +110,11 @@ export default Vue.extend({
       const usernames = Object.keys(this.game.users);
       const isLastPlayer = usernames.indexOf(this.game.round.activePlayer) === usernames.length - 1;
       return isLastPlayer && this.game.currentRound === this.game.totalRounds;
+    }
+  },
+  methods: {
+    returnToMenu(): void {
+      this.game.state = GameState.NOT_STARTED;
     }
   }
 })

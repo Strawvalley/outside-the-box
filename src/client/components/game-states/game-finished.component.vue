@@ -18,13 +18,12 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { initiateGame$ } from "../../managers/client_game_manager";
 
 export default Vue.extend({
-  props: ["isAdmin", "totalPoints", "canBeStarted", "gameConfig"],
+  props: ["isAdmin", "totalPoints", "canBeStarted", "returnToMenu"],
   methods: {
     startNewGame(): void {
-      initiateGame$.next(this.gameConfig);
+      this.returnToMenu();
     }
   }
 });

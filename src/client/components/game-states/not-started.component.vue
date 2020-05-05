@@ -2,7 +2,7 @@
   <div style="display: flex; flex-direction: column; text-align: center;">
     <p class="highlight">{{ $t('notStartedTitle') }}</p>
     <div class="mb-2 highlight" v-if="isAdmin">
-      <div>Guessing Time</div>
+      <div>{{ $t('notStartedConfigGuessingTime') }}</div>
       <span class="no-select">
         <font-awesome-icon
           :class="canDecreaseGuessingTime ? 'active' : 'not-active'"
@@ -16,7 +16,7 @@
           v-on:click="increaseGuessingTime"
         ></font-awesome-icon>
       </span>
-      <div>Number of Rounds</div>
+      <div>{{ $t('notStartedConfigNumRounds') }}</div>
       <span class="no-select">
         <font-awesome-icon
           :class="canDecreaseTotalRounds ? 'active' : 'not-active'"

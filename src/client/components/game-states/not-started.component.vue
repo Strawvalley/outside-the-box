@@ -1,7 +1,17 @@
 <template>
   <div style="display: flex; flex-direction: column; text-align: center;">
     <p class="highlight">{{ $t('notStartedTitle') }}</p>
-    <div class="mb-2 highlight" v-if="isAdmin">
+    <div class="mb-2 highlight config-wrapper" v-if="isAdmin">
+      <div>{{ $t('notStartedConfigDataset') }}</div>
+      <div class="select-wrapper">
+        <select v-model="selectedDataset" @change="changeDataset">
+          <option
+            v-for="(option, index) in datasets"
+            v-bind:value="option.key"
+            v-bind:key="index"
+          >{{ option.title }}</option>
+        </select>
+      </div>
       <div>{{ $t('notStartedConfigGuessingTime') }}</div>
       <span class="no-select">
         <font-awesome-icon
@@ -44,11 +54,17 @@
 <script lang="ts">
 import Vue from "vue";
 import { initiateGame$ } from "../../managers/client_game_manager";
-import { defaults } from "../../../shared/models/defaults";
+import { defaults, datasets } from "../../../shared/";
 import audioManager from "../../managers/audio_manager";
 
 export default Vue.extend({
   props: ["isAdmin", "canBeStarted", "gameConfig"],
+  data() {
+    return {
+      datasets: datasets,
+      selectedDataset: this.gameConfig.dataset,
+    }
+  },
   computed: {
     canIncreaseGuessingTime(): boolean {
       return this.gameConfig.guessingTime < defaults.guessingTime.max;
@@ -103,6 +119,10 @@ export default Vue.extend({
         audioManager.playForbidden();
       }
     },
+    changeDataset(event): void {
+      this.gameConfig.dataset = event.target.value;
+      this.updateGameConfig();
+    },
     updateGameConfig(): void {
       this.$emit('updateGameConfig', this.gameConfig);
     }
@@ -118,6 +138,11 @@ export default Vue.extend({
   .not-active {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+  .config-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   .config {
     font-size: 30px;

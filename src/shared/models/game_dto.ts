@@ -7,7 +7,7 @@ export interface GameDto {
   started: boolean;
   admin: string;
   state: GameState;
-  language: string;
+  dataset: string;
   paused: boolean;
 
   users: {

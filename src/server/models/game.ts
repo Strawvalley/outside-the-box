@@ -1,4 +1,4 @@
-import { GameState, GameDto, RoundDto, GameConfig, defaults, UpdateTrigger } from "../../shared";
+import { GameState, GameDto, RoundDto, GameConfig, defaults, UpdateTrigger, datasets } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
 import { tap, map, first, takeUntil, filter, take } from "rxjs/operators";
 import { logInfo, logWarning } from "../managers/log_manager";
@@ -11,7 +11,7 @@ export class Game {
   admin: string;
   room: string;
   state: GameState;
-  language: string;
+  dataset: string;
 
   totalRounds: number;
   totalPoints: number;
@@ -50,7 +50,7 @@ export class Game {
   ) {
     this.admin = admin;
     this.room = room;
-    this.language = WordManager.supportedLanguages.includes(lang) ? lang : "de";
+    this.dataset = datasets[0].key;
 
     this.paused = false;
     this.started = false;
@@ -89,6 +89,7 @@ export class Game {
   }
 
   public configureGame(gameConfig: GameConfig): void {
+    this.dataset = datasets.findIndex(dataset => dataset.key === gameConfig.dataset) > -1 ? gameConfig.dataset : datasets[0].key;
     this.guessingTime = this.valueInRange(gameConfig.guessingTime, defaults.guessingTime) ? gameConfig.guessingTime : defaults.guessingTime.default;
     this.totalRounds = this.valueInRange(gameConfig.totalRounds, defaults.totalRounds) ? gameConfig.totalRounds : defaults.totalRounds.default;
   }
@@ -323,7 +324,7 @@ export class Game {
   }
 
   private generateWord(): string {
-    return WordManager.getRandomWord(this.language).toLowerCase();
+    return WordManager.getRandomWord(this.dataset).toLowerCase();
   }
 
   private generateWordsForSelection(count: number): string[] {
@@ -357,7 +358,7 @@ export class Game {
       paused: this.paused,
       admin: this.admin,
       state: this.state,
-      language: this.language,
+      dataset: this.dataset,
       totalRounds: this.totalRounds,
       currentRound: this.currentRound,
       totalPoints: this.totalPoints,

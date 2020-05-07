@@ -1,21 +1,20 @@
 import fs from 'fs';
 import { logWarning, logInfo } from './log_manager';
+import { datasets } from '../../shared';
 
 export class WordManager {
-
-  public static readonly supportedLanguages = ["de", "en"];
-
+  
   private static wordLists: {
-    [languageKey: string]: string[];
+    [datasetKey: string]: string[];
   } = {};
 
   public static initalizeWordLists(): void {
     logInfo("Initalize word lists");
-    this.supportedLanguages.forEach((lang) => {
-      fs.readFile(`word_lists/${lang}.txt`, (err, data) => {
-        if (err) logWarning(`Could not read file ${lang}.txt`);
-        logInfo(`Word list loaded: ${lang}`);
-        WordManager.wordLists[lang] = data.toString().split("\n").map(word => word.replace('\r','').trim());
+    datasets.forEach((dataset) => {
+      fs.readFile(`word_lists/${dataset.file}`, (err, data) => {
+        if (err) logWarning(`Could not read file ${dataset.file}`);
+        logInfo(`Word list loaded: ${dataset.key}`);
+        WordManager.wordLists[dataset.key] = data.toString().split("\n").map(word => word.replace('\r','').trim());
       });
     });
   }

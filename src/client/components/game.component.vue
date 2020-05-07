@@ -64,7 +64,7 @@ import Guessing from "./game-states/guessing.component.vue";
 import RoundFinished from "./game-states/round-finished.component.vue";
 import GameFinished from "./game-states/game-finished.component.vue";
 
-import { GameState, defaults } from "../../shared";
+import { GameState, defaults, generateGameConfigDefaults } from "../../shared";
 
 export default Vue.extend({
   props: ["game", "isAdmin", "canBeStarted"],
@@ -78,10 +78,7 @@ export default Vue.extend({
   },
   data: () => {
     return {
-      gameConfig: {
-        guessingTime: defaults.guessingTime.default,
-        totalRounds: defaults.totalRounds.default
-      },
+      gameConfig: generateGameConfigDefaults(),
     };
   },
   computed: {

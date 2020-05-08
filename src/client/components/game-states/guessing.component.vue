@@ -35,6 +35,16 @@
       <span class="highlight hint">{{hint}}</span>
     </div>
 
+    <div v-if="isUserClose" class="mb-2">
+      <div v-if="isActivePlayer">
+        <span class="close">{{ $t('guessingCloseToSolution1') }}</span>
+      </div>
+      <div v-else>
+        <span class="highlight close">{{activePlayer}}</span>
+        <span class="close">{{ $t('guessingCloseToSolution2') }}</span>
+      </div>
+    </div>
+
     <div v-if="isActivePlayer">
       <p class="error" v-if="hasError">{{errorMessage}}</p>
       <input
@@ -68,7 +78,8 @@ export default Vue.extend({
     "userWords",
     "activePlayer",
     "wordToGuess",
-    "hint"
+    "hint",
+    "isUserClose"
   ],
   data: () => {
     return {
@@ -105,6 +116,9 @@ export default Vue.extend({
 <style>
   #guess-input {
     text-transform: lowercase;
+  }
+  .close {
+    color: blue;
   }
   .error {
     color: red;

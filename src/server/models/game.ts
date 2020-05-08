@@ -1,8 +1,9 @@
 import { GameState, GameDto, RoundDto, GameConfig, defaults, UpdateTrigger, datasets } from "../../shared";
 import { Subject, merge, interval, Observable } from "rxjs";
-import { tap, map, first, takeUntil, filter, take } from "rxjs/operators";
+import { tap, map, takeUntil, filter, take } from "rxjs/operators";
 import { logInfo, logWarning } from "../managers/log_manager";
 import { WordManager } from "../managers/word_manager";
+import distance from "jaro-winkler"
 
 export class Game {
 
@@ -38,6 +39,7 @@ export class Game {
   private readonly ROUND_FINISHED_TIME = 10;
   private readonly WRONG_GUESS_COUNT = 5;
   private readonly COUNT_WORDS_SELECTION = 3;
+  private readonly SIMILARITY_THRESHOLD = 0.9;
 
   private guessingTime: number;
 
@@ -191,6 +193,7 @@ export class Game {
     } else if (this.round.guesses.length === this.WRONG_GUESS_COUNT) {
       this.wrongGuessesCountReached$.next([UpdateTrigger.USER_USED_ALL_GUESSES, username]);
     } else {
+      this.checkIfGuessCloseToSolution(sanitizedWord);
       this.updateGameForAllUsers(UpdateTrigger.USER_SUBMITTED_GUESS, username);
     }
   }
@@ -208,6 +211,12 @@ export class Game {
     if (onlyDistinctWords) basePoints *= 2.0;
 
     return Math.round(basePoints);
+  }
+
+  private checkIfGuessCloseToSolution(guess: string) {
+    const isUserClose = distance(this.round.wordToGuess, guess, { caseSensitive: false }) > this.SIMILARITY_THRESHOLD;
+    console.log(distance(this.round.wordToGuess, guess, { caseSensitive: false }));
+    this.round.isUserClose = isUserClose;
   }
 
   private initiateNewRound(): void {
@@ -364,7 +373,8 @@ export class Game {
       guessesLeft: this.WRONG_GUESS_COUNT,
       usersSubmittedWordInRound: [],
       submittedWordByUser: undefined,
-      hint: undefined
+      hint: undefined,
+      isUserClose: false
     }
   }
 
@@ -393,7 +403,8 @@ export class Game {
         wordWasGuessed: this.round.wordWasGuessed,
         pointsInRound: this.round.pointsInRound,
         usersSubmittedWordInRound: this.round.wordsInRound ? [].concat(...Object.values(this.round.wordsInRound)) : [], // flatten userlists
-        hint: this.round.hint
+        hint: this.round.hint,
+        isUserClose: this.round.isUserClose
       },
       updateTrigger: updateTrigger,
       updateTriggeredBy: updateTriggeredBy

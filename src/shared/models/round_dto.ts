@@ -15,4 +15,5 @@ export interface RoundDto {
   usersSubmittedWordInRound?: string[];
   submittedWordByUser?: string;
   hint?: string;
+  isUserClose?: boolean;
 }

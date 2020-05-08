@@ -265,9 +265,25 @@ export class Game {
       takeUntil(this.deleteGame$),
       filter(() => !this.paused),
       tap(() => this.round.secondsLeft--),
+      tap(() => {
+        if (this.state === GameState.GUESSING) {
+          this.provideHint();
+        }
+      }),
       filter(() => this.round.secondsLeft < 0),
       map(() => [UpdateTrigger.TIME_RAN_OUT, null])
     );
+  }
+
+  private provideHint(): void {
+    if (this.round.secondsLeft === 10) {
+      this.round.hint = '_'.repeat(this.round.wordToGuess.length);
+      this.updateGameForAllUsers(UpdateTrigger.PROVIDE_HINT);
+    } else if (this.round.secondsLeft === 5) {
+      const i = Math.floor(Math.random() * this.round.wordToGuess.length);
+      this.round.hint = '_'.repeat(i) + this.round.wordToGuess.charAt(i) + '_'.repeat(this.round.wordToGuess.length - 1 - i);
+      this.updateGameForAllUsers(UpdateTrigger.PROVIDE_HINT);
+    }
   }
 
   private goToGuessing(updateTrigger: UpdateTrigger, updateTriggeredBy: string): void {
@@ -347,7 +363,8 @@ export class Game {
       guesses: [],
       guessesLeft: this.WRONG_GUESS_COUNT,
       usersSubmittedWordInRound: [],
-      submittedWordByUser: undefined
+      submittedWordByUser: undefined,
+      hint: undefined
     }
   }
 
@@ -375,7 +392,8 @@ export class Game {
         wordToGuess: this.round.wordToGuess,
         wordWasGuessed: this.round.wordWasGuessed,
         pointsInRound: this.round.pointsInRound,
-        usersSubmittedWordInRound: this.round.wordsInRound ? [].concat(...Object.values(this.round.wordsInRound)) : [] // flatten userlists
+        usersSubmittedWordInRound: this.round.wordsInRound ? [].concat(...Object.values(this.round.wordsInRound)) : [], // flatten userlists
+        hint: this.round.hint
       },
       updateTrigger: updateTrigger,
       updateTriggeredBy: updateTriggeredBy

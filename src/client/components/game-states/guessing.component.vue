@@ -17,12 +17,25 @@
       >{{ entry.word === undefined ? entry.users.join(", ") + $t('guessingHintsSameWord') : entry.word }}</li>
     </ul>
 
-    <div v-if="isActivePlayer">
-      <div class="mb-2">
+    <div class="mb-2">
+      <div v-if="isActivePlayer">
         {{ $t('guessingYouHave') }}
         <span class="highlight">{{guessesLeft}}</span>
         {{ $t('guessingGuessesLeft') }}
       </div>
+      <div v-else>
+        <span class="highlight">{{activePlayer}}</span>
+        {{ $t('guessingHas') }}
+        <span class="highlight">{{guessesLeft}}</span>
+        {{ $t('guessingGuessesLeft') }}
+      </div>
+    </div>
+    
+    <div v-if="hint" class="mb-2">
+      <span class="highlight hint">{{hint}}</span>
+    </div>
+
+    <div v-if="isActivePlayer">
       <p class="error" v-if="hasError">{{errorMessage}}</p>
       <input
         id="guess-input"
@@ -33,15 +46,6 @@
         v-on:keyup.enter="submitGuess"
       />
       <button v-on:click="submitGuess">{{ $t('guessingButtonSubmit') }}</button>
-    </div>
-
-    <div v-if="!isActivePlayer" class="mb-2">
-      <div>
-        <span class="highlight">{{activePlayer}}</span>
-        {{ $t('guessingHas') }}
-        <span class="highlight">{{guessesLeft}}</span>
-        {{ $t('guessingGuessesLeft') }}
-      </div>
     </div>
 
     <div v-if="guesses.length != 0">{{ $t('guessingGuessesSoFar') }}</div>
@@ -63,7 +67,8 @@ export default Vue.extend({
     "guesses",
     "userWords",
     "activePlayer",
-    "wordToGuess"
+    "wordToGuess",
+    "hint"
   ],
   data: () => {
     return {
@@ -103,5 +108,8 @@ export default Vue.extend({
   }
   .error {
     color: red;
+  }
+  .hint {
+    letter-spacing: 0.2em;
   }
 </style>

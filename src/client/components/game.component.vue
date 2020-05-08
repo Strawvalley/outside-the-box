@@ -32,6 +32,7 @@
       v-bind:activePlayer="game.round.activePlayer"
       v-bind:userWords="game.round.filteredWordsInRound"
       v-bind:wordToGuess="game.round.wordToGuess"
+      v-bind:hint="game.round.hint"
     ></guessing>
 
     <round-finished

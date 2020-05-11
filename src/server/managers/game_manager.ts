@@ -2,6 +2,7 @@ import { Game } from "../models/game";
 import { GameDto, GameConfig, UpdateTrigger } from "../../shared";
 import { WordManager } from "./word_manager";
 import { trackMetric } from "./tracking_manager";
+import { logInfo } from "./log_manager";
 
 export class GameManager {
   private games: {
@@ -44,28 +45,34 @@ export class GameManager {
   /**
    * Sets the user to disconnected. If all users are disconnected from game, the game is also deleted.
    * If admin disconneced, a new admin is assigned.
-   * @returns true if the game was deleted
    */
-  public disconnectUserFromGame(gameId: string, userId: string, username: string): boolean {
-    const game = this.games[gameId];
+  public disconnectUserFromGame(gameId: string, userId: string, username: string): void {
+    if (this.hasGame(gameId)) {
+      const game = this.games[gameId];
 
-    game.removeUser(username);
+      game.removeUser(username);
 
-    if (game.areAllUsersDisconnected()) {
-      // if no users left (all users disconnected), delete game
-      game.deleteGame();
-      delete this.games[gameId];
-      trackMetric("Running Games", "Running Games", Object.keys(this.games).length);
-      return true;
+      if (game.areAllUsersDisconnected()) {
+        // if no users left (all users disconnected), delete game
+        game.deleteGame();
+        delete this.games[gameId];
+        trackMetric("Running Games", "Running Games", Object.keys(this.games).length);
+        logInfo(`Game ${gameId} was deleted because all users were disconnected`);
+        return;
+      }
+
+      // If the admin left the game -> assign new admin
+      if (game.isUserAdmin(userId)) {
+        game.admin = Object.values(game.users).find(user => user.connected).socketId;
+      }
+
+      if (game.getNumberOfConnectedPlayers() < 3 && game.started) {
+        game.pause();
+      }
+      
+      // Update gameState for all users in room
+      this.sendGameUpdate(gameId, UpdateTrigger.USER_LEFT_ROOM, username);
     }
-
-    // If the admin left the game -> assign new admin
-    if (game.isUserAdmin(userId)) {
-      game.admin = Object.values(game.users).find(user => user.connected).socketId;
-    }
-
-    if (game.getNumberOfConnectedPlayers() < 3 && game.started) game.pause();
-    return false;
   }
 
   /**

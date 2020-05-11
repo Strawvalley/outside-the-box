@@ -5,6 +5,7 @@
         v-bind:socketId="socketId"
         v-bind:game="game"
         v-bind:muted="muted"
+        v-on:leaveGame="leaveGame"
       ></room>
     </div>
     <div v-else>
@@ -25,7 +26,7 @@ import Start from "./components/start.component.vue";
 import Room from "./components/room.component.vue";
 import Debug from "./components/debug.component.vue";
 
-import { gameState$ } from "./managers/client_game_manager";
+import { gameState$, leaveGame$ } from "./managers/client_game_manager";
 import { setupAppListeners } from "./managers/client_game_manager";
 import audioManager, { muteState$ } from "./managers/audio_manager";
 
@@ -43,6 +44,12 @@ export default Vue.extend({
     Start,
     Room,
     Debug
+  },
+  methods: {
+    leaveGame() {
+      leaveGame$.next();
+      this.game = {};
+    }
   },
   created: function() {
     setupAppListeners();

@@ -1,5 +1,6 @@
 export enum SocketEventNames {
   JOIN_ROOM = ">join_room",
+  LEAVE_ROOM = ">leave_room",
   START_GAME = ">start_game",
   START_NEXT_ROUND = ">start_next_round",
   SUBMIT_WORD_SELECTION = ">submit_word_selection",

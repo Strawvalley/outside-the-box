@@ -14,6 +14,7 @@ export const submitGuessingWord$ = new Subject<string>();
 export const startNextRound$ = new Subject<void>();
 export const pauseGame$ = new Subject<void>();
 export const unpauseGame$ = new Subject<void>();
+export const leaveGame$ = new Subject<void>();
 
 export const gameState$ = new Subject<{socketId: string; game: GameDto}>();
 
@@ -77,4 +78,9 @@ emitOnConnect(pauseGame$)
 emitOnConnect(unpauseGame$)
   .subscribe(({ socket }) => {
     socket.emit(SocketEventNames.UNPAUSE_GAME);
+  });
+
+emitOnConnect(leaveGame$)
+  .subscribe(({ socket }) => {
+    socket.emit(SocketEventNames.LEAVE_ROOM);
   });

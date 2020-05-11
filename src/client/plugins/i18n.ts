@@ -77,7 +77,8 @@ const messages = {
     userlistTitle: `Users`,
     userlistDisconnected: `disconnected`,
     userlistAdmin: `Admin`,
-    userlistActivePlayer: `Guesser`
+    userlistActivePlayer: `Guesser`,
+    userListYou: `(You)`
   },
   'de': {
     roomEnterUsername: `Bitte gebe deinen Benutzernamen ein`,
@@ -154,7 +155,8 @@ const messages = {
     userlistTitle: `Spieler`,
     userlistDisconnected: `nicht verbunden`,
     userlistAdmin: `Admin`,
-    userlistActivePlayer: `Rater`
+    userlistActivePlayer: `Rater`,
+    userListYou: `(Du)`
   }
 }
 

@@ -15,7 +15,7 @@
           :icon="['fas', 'angle-right']"
           v-bind:title="$t('userlistActivePlayer')"
         ></font-awesome-icon>
-        {{ user }}
+        {{ user }} {{ user === username ? $t('userListYou') : '' }}
         <font-awesome-icon
           v-if="!users[user].connected"
           :icon="['fas', 'user-alt-slash']"
@@ -35,6 +35,6 @@
 import Vue from "vue";
 
 export default Vue.extend({
-  props: ["users", "admin", "activePlayer"]
+  props: ["users", "admin", "activePlayer", "username"]
 });
 </script>

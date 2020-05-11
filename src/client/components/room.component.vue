@@ -21,14 +21,11 @@
         <user-list
           v-bind:users="users"
           v-bind:admin="game.admin"
+          v-bind:username="game.username"
           v-bind:activePlayer="game.round.activePlayer"
         ></user-list>
       </div>
       <div>
-        <p class="stats">
-          <b>{{ $t('gameUsername') }}</b>
-          <span>{{game.username}}</span>
-        </p>
         <p class="stats">
           <b>{{ $t('gameRoom') }}</b>
           <span>{{game.room}}</span>

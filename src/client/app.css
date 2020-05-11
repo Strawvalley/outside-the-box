@@ -31,7 +31,7 @@ body {
   max-width: 800px;
   background-color: #DDFDFF;
   padding: 1rem;
-  min-height: 100vh;
+  margin: 0.25rem;
 }
 
 ul {

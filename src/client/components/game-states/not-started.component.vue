@@ -1,9 +1,9 @@
 <template>
   <div style="display: flex; flex-direction: column; text-align: center;">
-    <p class="highlight">{{ $t('notStartedTitle') }}</p>
     <div class="mb-2 highlight config-wrapper" v-if="isAdmin">
+      <div class="mb-2">{{ $t('notStartedConfigure') }}</div>
       <div>{{ $t('notStartedConfigDataset') }}</div>
-      <div class="select-wrapper">
+      <div class="select-wrapper mb-2">
         <select v-model="selectedDataset" @change="changeDataset">
           <option
             v-for="(option, index) in datasets"
@@ -13,7 +13,7 @@
         </select>
       </div>
       <div>{{ $t('notStartedConfigGuessingTime') }}</div>
-      <span class="no-select">
+      <span class="no-select mb-2">
         <font-awesome-icon
           :class="canDecreaseGuessingTime ? 'active' : 'not-active'"
           :icon="['far', 'minus-square']"
@@ -27,7 +27,7 @@
         ></font-awesome-icon>
       </span>
       <div>{{ $t('notStartedConfigNumRounds') }}</div>
-      <span class="no-select">
+      <span class="no-select mb-2">
         <font-awesome-icon
           :class="canDecreaseTotalRounds ? 'active' : 'not-active'"
           :icon="['far', 'minus-square']"

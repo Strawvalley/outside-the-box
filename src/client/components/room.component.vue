@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="display: flex;">
-      <button v-on:click="$emit('leaveGame')">{{ $t('gameButtonLeaveGame') }}</button>
+      <button class="mr-1" v-on:click="$emit('leaveGame')">{{ $t('gameButtonLeaveGame') }}</button>
       <button v-if="isAdmin && game.started" v-on:click="pauseGame">{{ $t('gameButtonPauseGame') }}</button>
       <button v-on:click="toggleMute" :style="{ color: '#DDFDFF', 'margin-left': 'auto' }">
         <font-awesome-icon

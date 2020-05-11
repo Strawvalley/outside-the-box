@@ -32,6 +32,7 @@ const messages = {
     notStartedConfigGuessingTime: `Guessing Time`,
     notStartedConfigNumRounds: `Number of Rounds`,
     notStartedConfigDataset: `Dataset`,
+    notStartedConfigure: `Configure game`,
     selectingTitle: `Selecting`,
     selectingButtonWordSelect: `Word {0}`,
     selectingHintText1: ` is selecting a number.`,
@@ -74,8 +75,9 @@ const messages = {
     pauseButtonUnpauseGame: `Unpause game`,
     pauseHintText2: `Please wait for the admin to unpause the game`,
     userlistTitle: `Users`,
-    userlistDisconnected: `(disconnected)`,
-    userlistAdmin: `[ADMIN]`,
+    userlistDisconnected: `disconnected`,
+    userlistAdmin: `Admin`,
+    userlistActivePlayer: `Guesser`
   },
   'de': {
     roomEnterUsername: `Bitte gebe deinen Benutzernamen ein`,
@@ -107,6 +109,7 @@ const messages = {
     notStartedConfigGuessingTime: `Ratezeit`,
     notStartedConfigNumRounds: `Anzahl der Runden`,
     notStartedConfigDataset: `Datensatz`,
+    notStartedConfigure: `Spiel konfigurieren`,
     selectingTitle: `Auswählen`,
     selectingButtonWordSelect: `Wort {0}`,
     selectingHintText1: ` wählt eine Nummer aus.`,
@@ -149,8 +152,9 @@ const messages = {
     pauseButtonUnpauseGame: `Spiel fortsetzen`,
     pauseHintText2: `Bitte warte, bis der Admin das Spiel fortsetzt`,
     userlistTitle: `Spieler`,
-    userlistDisconnected: `(nicht verbunden)`,
-    userlistAdmin: `[ADMIN]`,
+    userlistDisconnected: `nicht verbunden`,
+    userlistAdmin: `Admin`,
+    userlistActivePlayer: `Rater`
   }
 }
 

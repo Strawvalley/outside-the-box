@@ -8,7 +8,25 @@
         v-for="(user, index) in Object.keys(users)"
         class="highlight"
         v-bind:key="index"
-      >{{ user === activePlayer ? '-->' : '' }} {{ user }} {{ users[user].connected ? '' : $t('userlistDisconnected') }} {{users[user].socketId === admin ? $t('userlistAdmin') : ""}}</li>
+        v-bind:class="{ 'disconnected': !users[user].connected }"
+      >
+        <font-awesome-icon
+          v-if="user === activePlayer"
+          :icon="['fas', 'angle-right']"
+          v-bind:title="$t('userlistActivePlayer')"
+        ></font-awesome-icon>
+        {{ user }}
+        <font-awesome-icon
+          v-if="!users[user].connected"
+          :icon="['fas', 'user-alt-slash']"
+          v-bind:title="$t('userlistDisconnected')"
+        ></font-awesome-icon>
+        <font-awesome-icon
+          v-if="users[user].socketId === admin"
+          :icon="['fas', 'crown']"
+          v-bind:title="$t('userlistAdmin')"
+        ></font-awesome-icon>
+      </li>
     </ul>
   </div>
 </template>

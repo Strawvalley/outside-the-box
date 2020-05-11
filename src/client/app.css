@@ -83,6 +83,10 @@ h1 {
   margin-bottom: 0.75rem;
 }
 
+.mr-1 {
+  margin-right: 0.25rem;
+}
+
 button {
   font-family: 'Boogaloo', cursive;
   background-color:  #068890;
@@ -181,4 +185,8 @@ select::-ms-expand {
 
 select:focus::-ms-value {
   background-color: transparent;
+}
+
+.disconnected {
+  opacity: 0.5;
 }

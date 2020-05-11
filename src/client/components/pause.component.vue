@@ -34,6 +34,7 @@ export default Vue.extend({
     z-index: 100;
     align-items: center;
     justify-content: center;
+    padding: 0.5rem;
   }
   .paused-overlay * {
     color: #DDFDFF;

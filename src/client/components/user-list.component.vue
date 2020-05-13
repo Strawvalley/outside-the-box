@@ -38,3 +38,9 @@ export default Vue.extend({
   props: ["users", "admin", "activePlayer", "username"]
 });
 </script>
+
+<style>
+.disconnected {
+  opacity: 0.5;
+}
+</style>

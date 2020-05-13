@@ -1,61 +1,48 @@
 <template>
   <div>
-    <div style="display: flex;">
-      <button class="mr-1" v-on:click="$emit('leaveGame')">{{ $t('gameButtonLeaveGame') }}</button>
-      <button v-if="isAdmin && game.started" v-on:click="pauseGame">{{ $t('gameButtonPauseGame') }}</button>
-      <button v-on:click="toggleMute" :style="{ color: '#DDFDFF', 'margin-left': 'auto' }">
-        <font-awesome-icon
-          :icon="['fas', 'volume-up']"
-          v-if="muted"
-        ></font-awesome-icon>
-        <font-awesome-icon
-          v-if="!muted"
-          :icon="['fas', 'volume-mute']"
-        ></font-awesome-icon>
-      </button>
-    </div>
-    <div
-      style="display: flex; justify-content: space-between; border-bottom: 1px dashed #004348; padding-bottom: 0.75rem; margin-bottom: 0.75rem;"
-    >
-      <div>
-        <user-list
-          v-bind:users="users"
-          v-bind:admin="game.admin"
-          v-bind:username="game.username"
-          v-bind:activePlayer="game.round.activePlayer"
-        ></user-list>
+    <div class="meta-container">
+      <div style="display: flex;">
+        <button class="mr-1" v-on:click="$emit('leaveGame')">{{ $t('gameButtonLeaveGame') }}</button>
+        <button class="mr-1" v-if="isAdmin && game.started" v-on:click="pauseGame">{{ $t('gameButtonPauseGame') }}</button>
+        <button v-on:click="toggleMute" :style="{ color: '#DDFDFF', 'margin-left': 'auto' }">
+          <font-awesome-icon
+            :icon="['fas', 'volume-up']"
+            v-if="muted"
+          ></font-awesome-icon>
+          <font-awesome-icon
+            v-if="!muted"
+            :icon="['fas', 'volume-mute']"
+          ></font-awesome-icon>
+        </button>
       </div>
-      <div>
-        <p class="stats">
-          <b>{{ $t('gameRoom') }}</b>
-          <span>{{game.room}}</span>
-        </p>
-        <p class="stats">
-          <b>{{ $t('gamePoints') }}</b>
-          <span>{{ game.totalPoints }}</span>
-        </p>
-        <p class="stats">
-          <b>{{ $t('gameRound') }}</b>
-          <span>{{ game.currentRound }} / {{ game.totalRounds }}</span>
-        </p>
+      <div
+        style="display: flex; justify-content: space-between; padding-bottom: 0.75rem; margin-bottom: 0.75rem;"
+      >
+        <div>
+          <user-list
+            v-bind:users="users"
+            v-bind:admin="game.admin"
+            v-bind:username="game.username"
+            v-bind:activePlayer="game.round.activePlayer"
+          ></user-list>
+        </div>
+        <div>
+          <p>
+            <b style="font-size: 13px;">{{ $t('gameRoom') }}</b>
+            <span class="highlight">{{game.room}}</span>
+          </p>
+        </div>
       </div>
-    </div>
-    <div style="position: relative;">
-      <timer
-        v-if="showTimer"
-        v-bind:totalSeconds="game.round.totalSeconds"
-        v-bind:secondsLeft="game.round.secondsLeft"
-        v-bind:paused="isPaused"
-        v-bind:playSound="shouldPlayTimerSound"
-      ></timer>
     </div>
 
-    <game
-      v-bind:game="game"
-      v-bind:isAdmin="isAdmin"
-      v-bind:isActivePlayer="isActivePlayer"
-      v-bind:canBeStarted="hasMinRequiredUsers"
-    ></game>
+    <div class="game-container">
+      <game
+        v-bind:game="game"
+        v-bind:isAdmin="isAdmin"
+        v-bind:isActivePlayer="isActivePlayer"
+        v-bind:canBeStarted="hasMinRequiredUsers"
+      ></game>
+    </div>
 
     <pause
       v-if="isPaused"
@@ -70,7 +57,6 @@
 import Vue from "vue";
 
 import UserList from "./user-list.component.vue";
-import Timer from "./timer.component.vue";
 import Pause from "./pause.component.vue";
 import Game from "./game.component.vue";
 
@@ -82,7 +68,6 @@ export default Vue.extend({
   props: ["socketId", "game", "muted"],
   components: {
     UserList,
-    Timer,
     Pause,
     Game
   },
@@ -106,13 +91,6 @@ export default Vue.extend({
     },
     isActivePlayer(): boolean {
       return this.game.round.activePlayer === this.game.username;
-    },
-    showTimer(): boolean {
-      if (this.game.round.totalSeconds === undefined) return false;
-      return true;
-    },
-    shouldPlayTimerSound(): boolean {
-      return this.game.state === GameState.THINKING || this.game.state === GameState.GUESSING;
     }
   },
   methods: {
@@ -128,3 +106,27 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style>
+.meta-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  max-width: 800px;
+  min-width: 400px;
+  background-color: #DDFDFF;
+  padding: 1rem;
+  margin: 0.5rem;
+}
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 800px;
+  min-width: 400px;
+  background-color: #DDFDFF;
+  padding: 1rem;
+  margin: 0.5rem;
+}
+</style>

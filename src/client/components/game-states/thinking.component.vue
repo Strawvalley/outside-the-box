@@ -1,11 +1,11 @@
 <template>
   <div style="display: flex; flex-direction: column; text-align: center;">
-    <p class="highlight">{{ $t('thinkingTitle') }}</p>
+
     <div v-if="!isActivePlayer">
-      <div class="mb-2">
+      <!--<div class="mb-2">
         {{ $t('thinkingHintText1') }}
         <span class="highlight">{{wordToGuess}}</span>
-      </div>
+      </div>-->
       <p class="error" v-if="hasError">{{errorMessage}}</p>
       <div v-if="!(hasSentWordToServer || hasSubmittedWord)">
         <input id="think-input" class="mb-2" autofocus v-model="word" v-on:keyup.enter="submitWord" />

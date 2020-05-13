@@ -27,42 +27,8 @@ body {
   justify-content: center;
 }
 
-.game-container {
-  max-width: 800px;
-  min-width: 400px;
-  background-color: #DDFDFF;
-  padding: 1rem;
-  margin: 0.25rem;
-}
-
 ul {
   list-style: none;
-}
-
-.start-screen {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-p.stats {
-  margin-bottom: 0.25rem;
-}
-
-p.stats b {
-  font-size: 16px;
-  margin-right: 0.25rem;
-  min-width: 90px;
-  display: inline-block;
-  text-align: right;
-}
-
-p.stats span {
-  min-width: 60px;
-  font-family: 'Boogaloo', cursive;
-  display: inline-block;
-  text-align: left;
 }
 
 h1 {

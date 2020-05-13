@@ -4,7 +4,7 @@
     <svg width="100" height="100">
       <circle id="outer" cx="50" cy="50" r="40" fill="transparent" stroke-width="10" stroke="#068890" opacity="0.1"/>
     </svg>
-    <div class="label highlight">
+    <div class="label highlight" v-if="showTimer">
       {{internalSecondsLeft}} <span class="small">/ {{totalSeconds}}</span>
     </div>
   </div>
@@ -15,7 +15,7 @@ import Vue from "vue";
 import audioManager from "../managers/audio_manager";
 
 export default Vue.extend({
-  props: ["totalSeconds", "secondsLeft", "paused", "playSound"],
+  props: ["totalSeconds", "secondsLeft", "paused", "playSound", "showTimer"],
   data() {
     return {
       t: undefined,
@@ -80,6 +80,7 @@ export default Vue.extend({
   }
   .label {
     position: absolute;
+    min-width: 50px;
     top: 35px;
     left: 25px;
     text-align: center;

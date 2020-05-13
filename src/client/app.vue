@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1 v-if="!game.room" class="highlight">Outside the box!</h1>
     <div v-if="game.room">
       <room
         v-bind:socketId="socketId"

@@ -1,5 +1,7 @@
 <template>
-  <div class="start-screen highlight">
+<div class="highlight">
+  <div class="start-screen">
+    <h1 class="highlight">Outside the box!</h1>
     <div class="select-wrapper">
       <select v-model="selectedLocale" @change="changeLocale">
         <option
@@ -32,7 +34,9 @@
       <input style="max-width: 115px;" v-model="gameInput" :disabled="hasRoomInPath" />
       <button v-on:click="joinGame" ontouchstart>{{ $t('roomButtonJoinGame') }}</button>
     </div>
+  </div>
 
+  <div class="start-screen">
     <h3 class="highlight mb-2">{{ $t('roomInstructionTitle') }}</h3>
     <p>
       <i18n path="roomInstructionParagraph1">
@@ -57,6 +61,7 @@
       </i18n>
     </p>
   </div>
+</div>
 </template>
 
 <script lang="ts">
@@ -108,3 +113,17 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style>
+.start-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  max-width: 800px;
+  min-width: 400px;
+  background-color: #DDFDFF;
+  padding: 1rem;
+  margin: 0.5rem;
+}
+</style>

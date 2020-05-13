@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; flex-direction: column; text-align: center;">
-    <p class="highlight">{{ $t('selectingTitle') }}</p>
+
     <div v-if="isActivePlayer">
       <button v-on:click="selectWord(0)">{{ $t('selectingButtonWordSelect', ['1']) }}</button>
       <button v-on:click="selectWord(1)">{{ $t('selectingButtonWordSelect', ['2']) }}</button>

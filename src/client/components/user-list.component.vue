@@ -1,7 +1,7 @@
 <template>
   <div>
-    <p class="stats" style="text-align: left;">
-      <b style="text-align: left;">{{ $t('userlistTitle') }}</b>
+    <p style="margin-bottom: 0.25rem; font-size: 13px;">
+      <b>{{ $t('userlistTitle') }}</b>
     </p>
     <ul style="list-style: none;">
       <li

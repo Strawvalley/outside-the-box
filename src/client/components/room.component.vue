@@ -16,7 +16,7 @@
         </button>
       </div>
       <div
-        style="display: flex; justify-content: space-between; padding-bottom: 0.75rem; margin-bottom: 0.75rem;"
+        style="display: flex; justify-content: space-between;"
       >
         <div>
           <user-list
@@ -27,10 +27,11 @@
           ></user-list>
         </div>
         <div>
-          <p>
+          <p style="margin-bottom: 0.25rem;">
             <b style="font-size: 13px;">{{ $t('gameRoom') }}</b>
-            <span class="highlight">{{game.room}}</span>
           </p>
+          <p class="highlight" style="margin-bottom: 0.25rem;">{{game.room}}</p>
+          <button class="small" v-on:click="inviteOthers">Invite others</button>
         </div>
       </div>
     </div>
@@ -55,6 +56,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import VueToast from 'vue-toast-notification';
 
 import UserList from "./user-list.component.vue";
 import Pause from "./pause.component.vue";
@@ -63,6 +65,10 @@ import Game from "./game.component.vue";
 import { unpauseGame$, pauseGame$ } from "../managers/client_game_manager";
 import { GameState } from "../../shared";
 import audioManager, { muteState$ } from "../managers/audio_manager";
+
+import 'vue-toast-notification/dist/theme-sugar.css';
+
+Vue.use(VueToast);
 
 export default Vue.extend({
   props: ["socketId", "game", "muted"],
@@ -102,6 +108,22 @@ export default Vue.extend({
     },
     toggleMute(): void {
       muteState$.next(!this.muted);
+    },
+    inviteOthers(): void {
+      const dummyInput = document.createElement('input'), text = window.location.href;
+
+      document.body.appendChild(dummyInput);
+      dummyInput.value = text;
+      dummyInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(dummyInput);
+
+      (Vue as any).$toast.open({
+        message: this.$t('invitationLinkCopied'),
+        type: 'success',
+        position: 'top-right',
+        duration: 1500,
+      });
     }
   }
 });
@@ -113,7 +135,7 @@ export default Vue.extend({
   justify-content: center;
   flex-direction: column;
   max-width: 800px;
-  min-width: 400px;
+  min-width: 350px;
   background-color: #DDFDFF;
   padding: 1rem;
   margin: 0.5rem;
@@ -124,9 +146,26 @@ export default Vue.extend({
   align-items: center;
   flex-direction: column;
   max-width: 800px;
-  min-width: 400px;
+  min-width: 350px;
   background-color: #DDFDFF;
   padding: 1rem;
   margin: 0.5rem;
+}
+.notices {
+  top: 5px;
+  right: 5px;
+}
+.notices .toast {
+  min-height: 2rem;
+  margin: 0.25rem 0rem;
+}
+.notices .toast-success {
+  background-color: #068890;
+}
+.notices .toast .toast-text {
+  padding: 0.5rem 0.5rem;
+}
+.notices .toast .toast-icon {
+  margin-left: 0.5rem;
 }
 </style>

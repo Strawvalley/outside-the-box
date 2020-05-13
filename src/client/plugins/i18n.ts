@@ -78,7 +78,8 @@ const messages = {
     userlistDisconnected: `disconnected`,
     userlistAdmin: `Admin`,
     userlistActivePlayer: `Guesser`,
-    userListYou: `(You)`
+    userListYou: `(You)`,
+    invitationLinkCopied: `Invitation link copied`
   },
   'de': {
     roomEnterUsername: `Bitte gebe deinen Benutzernamen ein`,
@@ -130,7 +131,7 @@ const messages = {
     guessingHintsTitle: `Hinweise:`,
     guessingHintsSameWord: ` hatten die gleiche Idee`,
     guessingYouHave: `Du hast`,
-    guessingGuessesLeft: `Hinweise übrig.`,
+    guessingGuessesLeft: `Versuche übrig.`,
     guessingButtonSubmit: `Wort erraten`,
     guessingHas: `hat`,
     guessingGuessesSoFar: `Bisherige Vermutungen:`,
@@ -156,7 +157,8 @@ const messages = {
     userlistDisconnected: `nicht verbunden`,
     userlistAdmin: `Admin`,
     userlistActivePlayer: `Rater`,
-    userListYou: `(Du)`
+    userListYou: `(Du)`,
+    invitationLinkCopied: `Einladungslink kopiert`
   }
 }
 

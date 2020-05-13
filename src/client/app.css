@@ -70,6 +70,11 @@ button {
   font-size: 1rem;
 }
 
+button.small {
+  padding: 5px 10px;
+  font-size: 0.70rem;
+}
+
 button.large {
   padding: 15px 30px;
   font-size: 1.25rem;

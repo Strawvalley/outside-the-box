@@ -29,8 +29,8 @@
         v-if="!hasRoomInPath"
       >{{ $t('roomButtonCreateGame') }}</button>
     </div>
+    <p class="highlight" v-if="!hasRoomInPath">{{ $t('roomOr') }}</p>
     <div class="mb-2">
-      <span v-if="!hasRoomInPath">{{ $t('roomOr') }}</span>
       <input style="max-width: 115px;" v-model="gameInput" :disabled="hasRoomInPath" />
       <button v-on:click="joinGame" ontouchstart>{{ $t('roomButtonJoinGame') }}</button>
     </div>
@@ -121,7 +121,7 @@ export default Vue.extend({
   align-items: center;
   flex-direction: column;
   max-width: 800px;
-  min-width: 400px;
+  min-width: 350px;
   background-color: #DDFDFF;
   padding: 1rem;
   margin: 0.5rem;

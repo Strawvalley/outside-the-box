@@ -7,10 +7,10 @@
         <button v-on:click="toggleMute" :style="{ color: '#DDFDFF', 'margin-left': 'auto' }">
           <font-awesome-icon
             :icon="['fas', 'volume-up']"
-            v-if="muted"
+            v-if="!muted"
           ></font-awesome-icon>
           <font-awesome-icon
-            v-if="!muted"
+            v-if="muted"
             :icon="['fas', 'volume-mute']"
           ></font-awesome-icon>
         </button>
@@ -27,9 +27,7 @@
           ></user-list>
         </div>
         <div>
-          <p style="margin-bottom: 0.25rem;">
-            <b style="font-size: 13px;">{{ $t('gameRoom') }}</b>
-          </p>
+          <b style="font-size: 13px; margin-bottom: 0.25rem; text-align: center; display: block;">{{ $t('gameRoom') }}</b>
           <p class="highlight" style="margin-bottom: 0.25rem;">{{game.room}}</p>
           <button class="small" v-on:click="inviteOthers">Invite others</button>
         </div>

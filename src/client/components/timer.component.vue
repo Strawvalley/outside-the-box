@@ -42,7 +42,7 @@ export default Vue.extend({
           if (this.internalSecondsLeft <= 10 && this.playSound) {
             audioManager.playTimeTick();
           }
-          this.render(); // Draw!
+          this.render();
         }
         if (this.internalSecondsLeft <= 0) {
           clearInterval(this.t);
@@ -51,7 +51,7 @@ export default Vue.extend({
     },
     deg(d) {
       // Convert radians to degrees
-      return (Math.PI/180)*d-(Math.PI/180)*90
+      return (Math.PI/180)*d-(Math.PI/180)*90;
     },
     render() {
       const c = (document.getElementById('seconds-canvas') as HTMLCanvasElement).getContext('2d');

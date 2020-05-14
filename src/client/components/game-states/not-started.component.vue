@@ -2,7 +2,7 @@
   <div style="display: flex; flex-direction: column; text-align: center;">
     <div class="mb-2 highlight config-wrapper" v-if="isAdmin">
       <div class="mb-2">{{ $t('notStartedConfigure') }}</div>
-      <div>{{ $t('notStartedConfigDataset') }}</div>
+      <div class="mb-1">{{ $t('notStartedConfigDataset') }}</div>
       <div class="select-wrapper mb-2">
         <select v-model="selectedDataset" @change="changeDataset">
           <option
@@ -12,7 +12,7 @@
           >{{ option.title }}</option>
         </select>
       </div>
-      <div>{{ $t('notStartedConfigGuessingTime') }}</div>
+      <div class="mb-1">{{ $t('notStartedConfigGuessingTime') }}</div>
       <span class="no-select mb-2">
         <font-awesome-icon
           :class="canDecreaseGuessingTime ? 'active' : 'not-active'"
@@ -26,7 +26,7 @@
           v-on:click="increaseGuessingTime"
         ></font-awesome-icon>
       </span>
-      <div>{{ $t('notStartedConfigNumRounds') }}</div>
+      <div class="mb-1">{{ $t('notStartedConfigNumRounds') }}</div>
       <span class="no-select mb-2">
         <font-awesome-icon
           :class="canDecreaseTotalRounds ? 'active' : 'not-active'"

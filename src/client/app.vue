@@ -12,8 +12,9 @@
       <start></start>
     </div>
     <debug
-      v-if="false"
+      v-if="debug"
       v-bind:game="game"
+      v-bind:updateGame="updateGame"
     ></debug>
   </div>
 </template>
@@ -37,7 +38,7 @@ export default Vue.extend({
     return {
       socketId: "",
       game: {},
-      muted: false
+      muted: false,
     };
   },
   components: {
@@ -45,10 +46,18 @@ export default Vue.extend({
     Room,
     Debug
   },
+  computed: {
+    debug: function() {
+      return process.env.NODE_ENV === 'development';
+    }
+  },
   methods: {
     leaveGame() {
       leaveGame$.next();
       this.game = {};
+    },
+    updateGame(game: any) {
+      this.game = game;
     }
   },
   created: function() {

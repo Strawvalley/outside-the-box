@@ -9,6 +9,21 @@
     "node": "10.x"
   },
   "main": "index.js",
+  "pwaManifest": {
+    "name": "Outside the box!",
+    "shortName": "Outside the box!",
+    "startURL": "./",
+    "theme": "#004348",
+    "generateIconOptions": {
+      "baseIcon": "./src/client/assets/logo.png",
+      "sizes": [
+        192,
+        384,
+        512
+      ],
+      "genFavicons": true
+    }
+  },
   "scripts": {
     "tsc": "tsc",
     "prebuild": "rimraf dist build",
@@ -58,6 +73,7 @@
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-pwa-manifest": "^3.0.7",
     "rimraf": "^3.0.2",
     "sass": "^1.26.5",
     "ts-node-dev": "^1.0.0-pre.44",

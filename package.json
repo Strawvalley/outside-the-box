@@ -56,7 +56,7 @@
     "express-sslify": "^1.2.0",
     "jaro-winkler": "^0.2.8",
     "rxjs": "^6.5.5",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "socket.io-client": "^2.3.0",
     "typescript": "^3.8.3",
     "universal-analytics": "^0.4.20",
